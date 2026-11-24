@@ -62,11 +62,21 @@ function loadStories(): FamilyStory[] {
 }
 
 export const StoriesBar: React.FC = () => {
-  const { snapshot, currentUser, openProfile, openChatWithMember, sendMessage, triggerJoyBurst, notify } =
-    useFamilyApp();
+  const {
+    snapshot,
+    cloudStories,
+    publishCloudStory,
+    currentUser,
+    openProfile,
+    openChatWithMember,
+    sendMessage,
+    triggerJoyBurst,
+    notify,
+  } = useFamilyApp();
   const { triggerFeedback } = useAppearance();
 
-  const [stories, setStories] = useState<FamilyStory[]>(loadStories);
+  const [localStories, setLocalStories] = useState<FamilyStory[]>(loadStories);
+  const stories = cloudStories.length > 0 ? cloudStories : localStories;
   const [viewerIndex, setViewerIndex] = useState<number | null>(null);
   const [showAddStory, setShowAddStory] = useState(false);
   const [newCaption, setNewCaption] = useState('');
@@ -79,11 +89,11 @@ export const StoriesBar: React.FC = () => {
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORIES_KEY, JSON.stringify(stories));
+      localStorage.setItem(STORIES_KEY, JSON.stringify(localStories));
     } catch {
       // ignore quota
     }
-  }, [stories]);
+  }, [localStories]);
 
   // Auto-advance Instagram-style story timer
   useEffect(() => {
@@ -112,13 +122,12 @@ export const StoriesBar: React.FC = () => {
     const idx = stories.findIndex((s) => s.authorId === memberId);
     if (idx >= 0) {
       setViewerIndex(idx);
-      setStories((prev) =>
-        prev.map((st, i) =>
-          i === idx && !st.viewedBy.includes(currentUser.id)
-            ? { ...st, viewedBy: [...st.viewedBy, currentUser.id] }
-            : st
-        )
-      );
+      const target = stories[idx];
+      if (!target.viewedBy.includes(currentUser.id)) {
+        const updated = { ...target, viewedBy: [...target.viewedBy, currentUser.id] };
+        setLocalStories((prev) => prev.map((st) => (st.id === target.id ? updated : st)));
+        publishCloudStory(updated);
+      }
     } else {
       openProfile(memberId);
     }
@@ -126,7 +135,7 @@ export const StoriesBar: React.FC = () => {
 
   const handleStoryPhoto = async (file: File | undefined) => {
     if (!file) return;
-    const blob = await compressImageFile(file, 1080, 0.84);
+    const blob = await compressImageFile(file, 960, 0.78);
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result === 'string') setNewImage(reader.result);
@@ -147,13 +156,14 @@ export const StoriesBar: React.FC = () => {
       viewedBy: [currentUser.id],
       reactions: [],
     };
-    setStories((prev) => [item, ...prev]);
+    setLocalStories((prev) => [item, ...prev]);
+    publishCloudStory(item);
     setNewCaption('');
     setNewImage(undefined);
     setShowAddStory(false);
     triggerFeedback('chime');
     triggerJoyBurst('✨', 8);
-    notify('¡Tu historia familiar ya está publicada!', 'success');
+    notify('¡Tu historia ya se comparte en todos los teléfonos!', 'success');
   };
 
   const currentStory = viewerIndex !== null ? stories[viewerIndex] : null;

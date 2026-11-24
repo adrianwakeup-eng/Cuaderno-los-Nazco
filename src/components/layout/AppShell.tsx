@@ -36,6 +36,7 @@ import { SideDrawer } from './SideDrawer';
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const {
     snapshot,
+    cloudStatus,
     currentUser,
     activeSection,
     setActiveSection,
@@ -202,8 +203,14 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               {!scrolled && (
                 <span className="crochet-green-3d -mt-1.5 ml-3 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
                   <span className="text-solar-300">💛</span>
-                  Santuario Familiar Privado
-                  <span className="text-solar-300">💛</span>
+                  Santuario Familiar ·{' '}
+                  <span className={cloudStatus === 'CONNECTED' ? 'text-solar-200' : 'text-cotton-200'}>
+                    {cloudStatus === 'CONNECTED'
+                      ? '☁️ En vivo'
+                      : cloudStatus === 'CONNECTING'
+                        ? 'Conectando…'
+                        : 'Local'}
+                  </span>
                 </span>
               )}
             </button>

@@ -82,7 +82,8 @@ function loadCustomAlbumPhotos(): AlbumPhotoItem[] {
 }
 
 export const AlbumsView: React.FC = () => {
-  const { snapshot, currentUser, notify, triggerJoyBurst } = useFamilyApp();
+  const { snapshot, cloudAlbumPhotos, publishCloudAlbumPhoto, currentUser, notify, triggerJoyBurst } =
+    useFamilyApp();
   const { triggerFeedback } = useAppearance();
 
   const [selectedAlbum, setSelectedAlbum] = useState<AlbumCategoryId | null>(null);
@@ -162,8 +163,11 @@ export const AlbumsView: React.FC = () => {
       },
     ];
 
-    return [...customPhotos, ...fromPosts, ...defaults];
-  }, [snapshot.posts, customPhotos]);
+    const mergedCustom = [...cloudAlbumPhotos, ...customPhotos].filter(
+      (item, idx, arr) => arr.findIndex((x) => x.id === item.id) === idx
+    );
+    return [...mergedCustom, ...fromPosts, ...defaults];
+  }, [snapshot.posts, customPhotos, cloudAlbumPhotos]);
 
   if (!currentUser) return null;
 
@@ -175,7 +179,7 @@ export const AlbumsView: React.FC = () => {
 
   const handleUploadToAlbum = async (file: File | undefined) => {
     if (!file || !selectedAlbum) return;
-    const blob = await compressImageFile(file, 1400, 0.85);
+    const blob = await compressImageFile(file, 960, 0.78);
     const reader = new FileReader();
     reader.onload = () => {
       if (typeof reader.result !== 'string') return;
@@ -190,9 +194,10 @@ export const AlbumsView: React.FC = () => {
         comments: [],
       };
       savePhotos([item, ...customPhotos]);
+      publishCloudAlbumPhoto(item);
       triggerFeedback('chime');
       triggerJoyBurst('📸', 7);
-      notify('Fotografía guardada en el álbum familiar ✨', 'success');
+      notify('Fotografía sincronizada en el álbum familiar ✨', 'success');
     };
     reader.readAsDataURL(blob);
   };

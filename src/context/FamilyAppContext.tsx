@@ -1,12 +1,18 @@
-import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { JoyBurstItem } from '../components/shared/JoyBurstLayer';
 import { familyRepository } from '../services/familyRepository';
+import {
+  firebaseSyncService,
+  type CloudSyncState,
+  type LiveCallSignal,
+} from '../services/firebaseSyncService';
 import { realtimeBus } from '../services/realtimeBus';
 import { computeStorageUsage, deleteMediaBlob } from '../services/storageService';
 import { generateFamilyRoomCode } from '../services/webrtcService';
 import type {
   AccountStatus,
   ActiveCallSession,
+  AlbumPhotoItem,
   AppSection,
   CallMode,
   CallScope,
@@ -16,6 +22,7 @@ import type {
   FamilyInvite,
   FamilyMember,
   FamilyPost,
+  FamilyStory,
   FeatureFlags,
   MediaAttachment,
   PostComment,
@@ -31,6 +38,14 @@ export interface ToastNotice {
 
 interface FamilyAppContextValue {
   snapshot: FamilyAppSnapshot;
+  cloudStatus: CloudSyncState;
+  cloudStories: FamilyStory[];
+  cloudAlbumPhotos: AlbumPhotoItem[];
+  incomingCall: LiveCallSignal | null;
+  acceptIncomingCall: () => void;
+  rejectIncomingCall: () => void;
+  publishCloudStory: (story: FamilyStory) => void;
+  publishCloudAlbumPhoto: (photo: AlbumPhotoItem) => void;
   /** Null when not signed in — shows the Welcome Login Screen on page load */
   currentUser: FamilyMember | null;
   activeSection: AppSection;
@@ -58,7 +73,7 @@ interface FamilyAppContextValue {
   triggerJoyBurst: (emoji: string, count?: number) => void;
   notify: (message: string, tone?: ToastNotice['tone']) => void;
 
-  // Auth & Profiles (password per relative + password-only Admin login)
+  // Auth & Profiles
   loginFamilyMember: (identifier: string, password: string) => { ok: boolean; error?: string };
   loginAsAdminPasswordOnly: (password: string) => { ok: boolean; error?: string };
   logout: () => void;
@@ -106,7 +121,7 @@ interface FamilyAppContextValue {
   notifyTyping: (chatId: string, isTyping: boolean) => void;
   createGroupChat: (title: string, description: string, participantIds: string[]) => FamilyChat;
 
-  // Admin (exclusive to Adrián)
+  // Admin
   createInvite: (label: string, maxUses: number) => FamilyInvite;
   toggleInviteActive: (code: string) => void;
   setMemberStatus: (memberId: string, status: AccountStatus) => void;
@@ -117,11 +132,16 @@ interface FamilyAppContextValue {
 }
 
 const FamilyAppContext = createContext<FamilyAppContextValue | null>(null);
-
-const AVATAR_PALETTE = ['#E05A47', '#2F855A', '#D97706', '#DB2777', '#3B82A6', '#7C3AED'];
+const AVATAR_PALETTE = ['#164D32', '#398B4B', '#BA9254', '#16466C', '#C85531', '#7C3AED'];
 
 export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [snapshot, setSnapshot] = useState<FamilyAppSnapshot>(() => familyRepository.loadSnapshot());
+  const [cloudStatus, setCloudStatus] = useState<CloudSyncState>('CONNECTING');
+  const [cloudStories, setCloudStories] = useState<FamilyStory[]>([]);
+  const [cloudAlbumPhotos, setCloudAlbumPhotos] = useState<AlbumPhotoItem[]>([]);
+  const [liveCalls, setLiveCalls] = useState<LiveCallSignal[]>([]);
+  const [dismissedCallIds, setDismissedCallIds] = useState<string[]>([]);
+
   const [activeUserId, setActiveUserId] = useState<string | null>(() => {
     const initial = familyRepository.loadSnapshot();
     const saved = familyRepository.loadActiveUserId();
@@ -130,6 +150,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
     return null;
   });
+
   const [activeSection, setActiveSection] = useState<AppSection>('FEED');
   const [viewedProfileId, setViewedProfileId] = useState<string>('nazco_adrian');
   const [activeChatId, setActiveChatId] = useState<string>('chat_familia_general');
@@ -145,6 +166,9 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     quotaBytes: 500 * 1024 * 1024,
   });
 
+  const snapshotRef = useRef(snapshot);
+  snapshotRef.current = snapshot;
+
   const notify = useCallback((message: string, tone: ToastNotice['tone'] = 'info') => {
     const id = `toast_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
     setToasts((prev) => [...prev.slice(-3), { id, message, tone }]);
@@ -157,16 +181,17 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const batch: JoyBurstItem[] = Array.from({ length: count }, (_, idx) => ({
       id: `burst_${Date.now()}_${idx}_${Math.random().toString(36).slice(2, 5)}`,
       emoji,
-      leftPct: 16 + Math.random() * 68,
-      delayMs: idx * 70,
+      leftPct: 14 + Math.random() * 72,
+      delayMs: idx * 65,
     }));
     setJoyBursts((prev) => [...prev, ...batch]);
     window.setTimeout(() => {
       const ids = new Set(batch.map((b) => b.id));
       setJoyBursts((prev) => prev.filter((b) => !ids.has(b.id)));
-    }, 1850);
+    }, 1900);
   }, []);
 
+  // Hydrate local IndexedDB media first
   useEffect(() => {
     let alive = true;
     void familyRepository.hydrateMediaUrls(familyRepository.loadSnapshot()).then((hydrated) => {
@@ -177,6 +202,60 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
   }, []);
 
+  // Real-time Firebase Cloud Firestore subscription across ALL family phones
+  useEffect(() => {
+    void firebaseSyncService.ensureCloudSeeded(familyRepository.loadSnapshot());
+
+    const unsubscribe = firebaseSyncService.subscribeAll({
+      onStatus: setCloudStatus,
+      onMeta: (meta) => {
+        setSnapshot((prev) => {
+          const next: FamilyAppSnapshot = {
+            ...prev,
+            familyName: meta.familyName || prev.familyName,
+            cloudOwnerEmail: meta.cloudOwnerEmail || prev.cloudOwnerEmail,
+            adminPassword: meta.adminPassword || prev.adminPassword,
+            invites: Array.isArray(meta.invites) ? meta.invites : prev.invites,
+            featureFlags: meta.featureFlags || prev.featureFlags,
+          };
+          familyRepository.saveSnapshot(next);
+          return next;
+        });
+      },
+      onMembers: (members) => {
+        setSnapshot((prev) => {
+          const normalized = members.map((m) => ({
+            ...m,
+            role: (m.id === 'nazco_adrian' ? 'ADMIN' : 'MEMBER') as FamilyMember['role'],
+          }));
+          const next = { ...prev, members: normalized };
+          familyRepository.saveSnapshot(next);
+          return next;
+        });
+      },
+      onPosts: (posts) => {
+        setSnapshot((prev) => {
+          const next = { ...prev, posts };
+          familyRepository.saveSnapshot(next);
+          return next;
+        });
+      },
+      onChats: (chats) => {
+        setSnapshot((prev) => {
+          const next = { ...prev, chats };
+          familyRepository.saveSnapshot(next);
+          return next;
+        });
+      },
+      onStories: setCloudStories,
+      onAlbums: setCloudAlbumPhotos,
+      onCalls: setLiveCalls,
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  // Same-device cross-tab fallback sync
   useEffect(() => {
     return realtimeBus.subscribe((ev) => {
       if (ev.type === 'STATE_SYNC') {
@@ -198,6 +277,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     });
   }, []);
 
+  // Compute media usage
   useEffect(() => {
     const allAttachments: MediaAttachment[] = [
       ...snapshot.posts.flatMap((p) => p.attachments),
@@ -222,6 +302,22 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const found = snapshot.members.find((m) => m.id === activeUserId && m.status === 'ACTIVE');
     return found ?? null;
   }, [snapshot.members, activeUserId]);
+
+  // Live incoming call detected from Firestore (ringing within last 90s for this relative)
+  const incomingCall = useMemo(() => {
+    if (!currentUser || activeCall) return null;
+    const cutoff = Date.now() - 90_000;
+    return (
+      liveCalls.find(
+        (c) =>
+          c.status === 'RINGING' &&
+          c.startedById !== currentUser.id &&
+          c.participantIds.includes(currentUser.id) &&
+          !dismissedCallIds.includes(c.id) &&
+          new Date(c.createdAt).getTime() >= cutoff
+      ) ?? null
+    );
+  }, [liveCalls, currentUser, activeCall, dismissedCallIds]);
 
   const unreadMessageCount = useMemo(() => {
     if (!currentUser) return 0;
@@ -259,7 +355,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return;
       }
       const newChat: FamilyChat = {
-        id: `chat_dm_${Date.now()}`,
+        id: `chat_dm_${[currentUser.id, memberId].sort().join('_')}`,
         kind: 'DIRECT',
         participantIds: [currentUser.id, memberId],
         messages: [],
@@ -268,15 +364,16 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       };
       commitSnapshot((prev) => ({
         ...prev,
-        chats: [newChat, ...prev.chats],
+        chats: [newChat, ...prev.chats.filter((c) => c.id !== newChat.id)],
       }));
+      void firebaseSyncService.saveChat(newChat).catch(() => {});
       setActiveChatId(newChat.id);
       setActiveSection('MESSAGES');
     },
     [currentUser, snapshot.chats, commitSnapshot]
   );
 
-  // --- Auth: Member login with personal password ---
+  // --- Auth: Member login ---
   const loginFamilyMember = useCallback(
     (identifier: string, password: string): { ok: boolean; error?: string } => {
       const cleanId = identifier.trim().toLowerCase();
@@ -298,7 +395,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (target.role === 'ADMIN') {
         return {
           ok: false,
-          error: 'Para entrar como Administrador usa la pestaña "Soy el Administrador" (solo contraseña).',
+          error: 'Para entrar como Administrador deja Correo familiar vacío e ingresa solo tu contraseña maestra.',
         };
       }
       if (target.status === 'DISABLED') {
@@ -308,18 +405,20 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return { ok: false, error: 'Contraseña incorrecta. Intenta nuevamente.' };
       }
 
+      const updated: FamilyMember = {
+        ...target,
+        presence: 'ONLINE',
+        lastActiveAt: new Date().toISOString(),
+      };
       setActiveUserId(target.id);
       setViewedProfileId(target.id);
       setActiveSection('FEED');
       familyRepository.saveActiveUserId(target.id);
       commitSnapshot((prev) => ({
         ...prev,
-        members: prev.members.map((m) =>
-          m.id === target.id
-            ? { ...m, presence: 'ONLINE', lastActiveAt: new Date().toISOString() }
-            : m
-        ),
+        members: prev.members.map((m) => (m.id === target.id ? updated : m)),
       }));
+      void firebaseSyncService.saveMember(updated).catch(() => {});
       triggerJoyBurst('💛', 8);
       notify(`¡Bienvenido a casa, ${target.name.split(' ')[0]}!`, 'success');
       return { ok: true };
@@ -327,35 +426,35 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     [snapshot.members, commitSnapshot, triggerJoyBurst, notify]
   );
 
-  // --- Auth: Sole Administrator login (PASSWORD ONLY — NO USERNAME!) ---
+  // --- Auth: Sole Administrator login (PASSWORD ONLY — NO USERNAME) ---
   const loginAsAdminPasswordOnly = useCallback(
     (password: string): { ok: boolean; error?: string } => {
       const cleanPass = password.trim();
-      if (!cleanPass) {
-        return { ok: false, error: 'Ingresa la contraseña de Administrador.' };
-      }
+      if (!cleanPass) return { ok: false, error: 'Ingresa la contraseña de Administrador.' };
       if (cleanPass !== snapshot.adminPassword) {
         return { ok: false, error: 'Contraseña de Administrador incorrecta.' };
       }
       const adminMember =
         snapshot.members.find((m) => m.id === 'nazco_adrian') ??
         snapshot.members.find((m) => m.role === 'ADMIN');
-      if (!adminMember) {
-        return { ok: false, error: 'Perfil administrador no encontrado.' };
-      }
+      if (!adminMember) return { ok: false, error: 'Perfil administrador no encontrado.' };
 
+      const updated: FamilyMember = {
+        ...adminMember,
+        role: 'ADMIN',
+        status: 'ACTIVE',
+        presence: 'ONLINE',
+        lastActiveAt: new Date().toISOString(),
+      };
       setActiveUserId(adminMember.id);
       setViewedProfileId(adminMember.id);
       setActiveSection('FEED');
       familyRepository.saveActiveUserId(adminMember.id);
       commitSnapshot((prev) => ({
         ...prev,
-        members: prev.members.map((m) =>
-          m.id === adminMember.id
-            ? { ...m, role: 'ADMIN', status: 'ACTIVE', presence: 'ONLINE', lastActiveAt: new Date().toISOString() }
-            : m
-        ),
+        members: prev.members.map((m) => (m.id === adminMember.id ? updated : m)),
       }));
+      void firebaseSyncService.saveMember(updated).catch(() => {});
       triggerJoyBurst('✨', 9);
       notify('¡Bienvenido, Adrián (Administrador)!', 'success');
       return { ok: true };
@@ -364,12 +463,20 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   );
 
   const logout = useCallback(() => {
+    if (currentUser) {
+      const offlineMember: FamilyMember = {
+        ...currentUser,
+        presence: 'OFFLINE',
+        lastActiveAt: new Date().toISOString(),
+      };
+      void firebaseSyncService.saveMember(offlineMember).catch(() => {});
+    }
     setActiveCall(null);
     setActiveUserId(null);
     setActiveSection('FEED');
     familyRepository.saveActiveUserId(null);
     notify('Sesión cerrada. ¡Vuelve pronto!', 'info');
-  }, [notify]);
+  }, [currentUser, notify]);
 
   const registerMember = useCallback(
     (input: {
@@ -389,9 +496,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         input.email.trim().toLowerCase() || `${cleanUsername || 'familiar'}@losnazco.familia`;
       const cleanPassword = input.password.trim();
 
-      if (cleanName.length < 2) {
-        return { ok: false, error: 'Escribe tu nombre completo.' };
-      }
+      if (cleanName.length < 2) return { ok: false, error: 'Escribe tu nombre completo.' };
       if (cleanUsername.length < 3) {
         return { ok: false, error: 'El usuario debe tener al menos 3 letras o números.' };
       }
@@ -411,7 +516,6 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ? snapshot.invites.find((inv) => inv.code === cleanCode && inv.active && inv.uses < inv.maxUses)
         : undefined;
 
-      // Always MEMBER — only Adrián holds Admin role
       const member: FamilyMember = {
         id: `nazco_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         username: cleanUsername,
@@ -419,7 +523,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         email: cleanEmail,
         password: cleanPassword,
         relationship: input.relationship.trim() || 'Familiar',
-        location: input.location.trim() || 'Familia Nazco',
+        location: input.location.trim() || 'Brasil',
         bio: input.bio.trim() || 'Feliz de estar en Cuaderno los Nazco 💛',
         role: 'MEMBER',
         status: 'ACTIVE',
@@ -430,32 +534,45 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         lastActiveAt: new Date().toISOString(),
       };
 
-      commitSnapshot((prev) => ({
-        ...prev,
-        members: [...prev.members, member],
-        invites: matchedInvite
-          ? prev.invites.map((inv) =>
-              inv.code === matchedInvite.code
-                ? { ...inv, uses: inv.uses + 1, active: inv.uses + 1 < inv.maxUses }
-                : inv
-            )
-          : prev.invites,
-        chats: prev.chats.map((chat) =>
-          chat.id === 'chat_familia_general'
-            ? { ...chat, participantIds: Array.from(new Set([...chat.participantIds, member.id])) }
-            : chat
-        ),
-      }));
+      const generalChat = snapshot.chats.find((c) => c.id === 'chat_familia_general');
+      const updatedGeneralChat = generalChat
+        ? {
+            ...generalChat,
+            participantIds: Array.from(new Set([...generalChat.participantIds, member.id])),
+          }
+        : null;
+
+      commitSnapshot((prev) => {
+        const next: FamilyAppSnapshot = {
+          ...prev,
+          members: [...prev.members, member],
+          invites: matchedInvite
+            ? prev.invites.map((inv) =>
+                inv.code === matchedInvite.code
+                  ? { ...inv, uses: inv.uses + 1, active: inv.uses + 1 < inv.maxUses }
+                  : inv
+              )
+            : prev.invites,
+          chats: prev.chats.map((chat) =>
+            chat.id === 'chat_familia_general' && updatedGeneralChat ? updatedGeneralChat : chat
+          ),
+        };
+        if (matchedInvite) void firebaseSyncService.saveMetaConfig(next).catch(() => {});
+        return next;
+      });
+
+      void firebaseSyncService.saveMember(member).catch(() => {});
+      if (updatedGeneralChat) void firebaseSyncService.saveChat(updatedGeneralChat).catch(() => {});
 
       setActiveUserId(member.id);
       setViewedProfileId(member.id);
       setActiveSection('FEED');
       familyRepository.saveActiveUserId(member.id);
       triggerJoyBurst('🎉', 10);
-      notify(`¡Cuenta creada! Bienvenido a Cuaderno los Nazco, ${member.name}!`, 'success');
+      notify(`¡Cuenta creada en la nube! Bienvenido, ${member.name}!`, 'success');
       return { ok: true, member };
     },
-    [snapshot.members, snapshot.invites, commitSnapshot, triggerJoyBurst, notify]
+    [snapshot.members, snapshot.invites, snapshot.chats, commitSnapshot, triggerJoyBurst, notify]
   );
 
   const updateMemberProfile = useCallback(
@@ -468,11 +585,13 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         >
       >
     ) => {
-      commitSnapshot((prev) => ({
-        ...prev,
-        members: prev.members.map((m) => (m.id === memberId ? { ...m, ...patch } : m)),
-      }));
-      notify('Perfil actualizado con cariño ✨', 'success');
+      commitSnapshot((prev) => {
+        const nextMembers = prev.members.map((m) => (m.id === memberId ? { ...m, ...patch } : m));
+        const updated = nextMembers.find((m) => m.id === memberId);
+        if (updated) void firebaseSyncService.saveMember(updated).catch(() => {});
+        return { ...prev, members: nextMembers };
+      });
+      notify('Perfil actualizado en todos los teléfonos ✨', 'success');
     },
     [commitSnapshot, notify]
   );
@@ -486,20 +605,26 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (cleanNew.length < 4) {
         return { ok: false, error: 'La nueva contraseña debe tener al menos 4 caracteres.' };
       }
-      commitSnapshot((prev) => ({
-        ...prev,
-        adminPassword: cleanNew,
-        members: prev.members.map((m) =>
-          m.id === 'nazco_adrian' ? { ...m, password: cleanNew } : m
-        ),
-      }));
-      notify('Contraseña de Administrador actualizada correctamente.', 'success');
+      commitSnapshot((prev) => {
+        const next: FamilyAppSnapshot = {
+          ...prev,
+          adminPassword: cleanNew,
+          members: prev.members.map((m) =>
+            m.id === 'nazco_adrian' ? { ...m, password: cleanNew } : m
+          ),
+        };
+        void firebaseSyncService.saveMetaConfig(next).catch(() => {});
+        const adrian = next.members.find((m) => m.id === 'nazco_adrian');
+        if (adrian) void firebaseSyncService.saveMember(adrian).catch(() => {});
+        return next;
+      });
+      notify('Contraseña de Administrador actualizada en la nube.', 'success');
       return { ok: true };
     },
     [snapshot.adminPassword, commitSnapshot, notify]
   );
 
-  // --- Feed Actions ---
+  // --- Feed Actions (Cloud Real-Time Synced) ---
   const createPost = useCallback(
     (input: {
       text: string;
@@ -527,9 +652,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ...prev,
         posts: [post, ...prev.posts],
       }));
-      triggerJoyBurst(input.category === 'ANNOUNCEMENT' ? '🎉' : '💖', 8);
+      void firebaseSyncService.savePost(post).catch(() => {});
+      triggerJoyBurst(input.category === 'ANNOUNCEMENT' ? '🎉' : '❤️', 8);
       notify(
-        post.pinned ? 'Publicación fijada en el muro familiar ✨' : '¡Recuerdo publicado en Cuaderno los Nazco!',
+        post.pinned
+          ? 'Publicación fijada en la nube familiar ✨'
+          : '¡Recuerdo compartido en tiempo real con toda la familia!',
         'success'
       );
     },
@@ -547,7 +675,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           const existing = post.reactions[emoji] ?? [];
           const has = existing.includes(currentUser.id);
           if (!has) added = true;
-          return {
+          const updated: FamilyPost = {
             ...post,
             reactions: {
               ...post.reactions,
@@ -556,6 +684,8 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 : [...existing, currentUser.id],
             },
           };
+          void firebaseSyncService.savePost(updated).catch(() => {});
+          return updated;
         }),
       }));
       if (added) triggerJoyBurst(emoji, 6);
@@ -579,9 +709,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       };
       commitSnapshot((prev) => ({
         ...prev,
-        posts: prev.posts.map((post) =>
-          post.id === postId ? { ...post, comments: [...post.comments, comment] } : post
-        ),
+        posts: prev.posts.map((post) => {
+          if (post.id !== postId) return post;
+          const updated = { ...post, comments: [...post.comments, comment] };
+          void firebaseSyncService.savePost(updated).catch(() => {});
+          return updated;
+        }),
       }));
       if (stickerId) triggerJoyBurst('✨', 4);
     },
@@ -592,14 +725,15 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     (postId: string, commentId: string) => {
       commitSnapshot((prev) => ({
         ...prev,
-        posts: prev.posts.map((post) =>
-          post.id === postId
-            ? {
-                ...post,
-                comments: post.comments.filter((c) => c.id !== commentId && c.parentId !== commentId),
-              }
-            : post
-        ),
+        posts: prev.posts.map((post) => {
+          if (post.id !== postId) return post;
+          const updated = {
+            ...post,
+            comments: post.comments.filter((c) => c.id !== commentId && c.parentId !== commentId),
+          };
+          void firebaseSyncService.savePost(updated).catch(() => {});
+          return updated;
+        }),
       }));
       notify('Comentario eliminado.', 'info');
     },
@@ -610,7 +744,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     (postId: string) => {
       commitSnapshot((prev) => ({
         ...prev,
-        posts: prev.posts.map((p) => (p.id === postId ? { ...p, pinned: !p.pinned } : p)),
+        posts: prev.posts.map((p) => {
+          if (p.id !== postId) return p;
+          const updated = { ...p, pinned: !p.pinned };
+          void firebaseSyncService.savePost(updated).catch(() => {});
+          return updated;
+        }),
       }));
     },
     [commitSnapshot]
@@ -620,7 +759,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     (postId: string) => {
       commitSnapshot((prev) => ({
         ...prev,
-        posts: prev.posts.map((p) => (p.id === postId ? { ...p, featured: !p.featured } : p)),
+        posts: prev.posts.map((p) => {
+          if (p.id !== postId) return p;
+          const updated = { ...p, featured: !p.featured };
+          void firebaseSyncService.savePost(updated).catch(() => {});
+          return updated;
+        }),
       }));
     },
     [commitSnapshot]
@@ -630,7 +774,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     (postId: string) => {
       commitSnapshot((prev) => ({
         ...prev,
-        posts: prev.posts.map((p) => (p.id === postId ? { ...p, hidden: !p.hidden } : p)),
+        posts: prev.posts.map((p) => {
+          if (p.id !== postId) return p;
+          const updated = { ...p, hidden: !p.hidden };
+          void firebaseSyncService.savePost(updated).catch(() => {});
+          return updated;
+        }),
       }));
     },
     [commitSnapshot]
@@ -638,7 +787,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const deletePost = useCallback(
     (postId: string) => {
-      const target = snapshot.posts.find((p) => p.id === postId);
+      const target = snapshotRef.current.posts.find((p) => p.id === postId);
       target?.attachments.forEach((a) => {
         if (a.storageKey) void deleteMediaBlob(a.storageKey);
       });
@@ -646,12 +795,24 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ...prev,
         posts: prev.posts.filter((p) => p.id !== postId),
       }));
+      void firebaseSyncService.deletePost(postId).catch(() => {});
       notify('Publicación eliminada del cuaderno.', 'info');
     },
-    [snapshot.posts, commitSnapshot, notify]
+    [commitSnapshot, notify]
   );
 
-  // --- Messenger Actions ---
+  // --- Stories & Albums Cloud Publishing ---
+  const publishCloudStory = useCallback((story: FamilyStory) => {
+    setCloudStories((prev) => [story, ...prev.filter((s) => s.id !== story.id)]);
+    void firebaseSyncService.saveStory(story).catch(() => {});
+  }, []);
+
+  const publishCloudAlbumPhoto = useCallback((photo: AlbumPhotoItem) => {
+    setCloudAlbumPhotos((prev) => [photo, ...prev.filter((p) => p.id !== photo.id)]);
+    void firebaseSyncService.saveAlbumPhoto(photo).catch(() => {});
+  }, []);
+
+  // --- Messenger Actions (Cloud Real-Time Synced) ---
   const sendMessage = useCallback(
     (chatId: string, text: string, attachment?: MediaAttachment, stickerId?: string) => {
       if (!currentUser) return;
@@ -670,16 +831,17 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       commitSnapshot((prev) => ({
         ...prev,
         chats: prev.chats
-          .map((chat) =>
-            chat.id === chatId
-              ? {
-                  ...chat,
-                  messages: [...chat.messages, msg],
-                  typingUserIds: chat.typingUserIds.filter((id) => id !== currentUser.id),
-                  updatedAt: msg.createdAt,
-                }
-              : chat
-          )
+          .map((chat) => {
+            if (chat.id !== chatId) return chat;
+            const updated: FamilyChat = {
+              ...chat,
+              messages: [...chat.messages, msg],
+              typingUserIds: chat.typingUserIds.filter((id) => id !== currentUser.id),
+              updatedAt: msg.createdAt,
+            };
+            void firebaseSyncService.saveChat(updated).catch(() => {});
+            return updated;
+          })
           .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
       }));
       if (stickerId) triggerJoyBurst('💕', 4);
@@ -698,7 +860,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             (m) => m.senderId !== currentUser.id && !m.readBy.includes(currentUser.id)
           );
           if (!hasUnread) return chat;
-          return {
+          const updated: FamilyChat = {
             ...chat,
             messages: chat.messages.map((m) =>
               m.readBy.includes(currentUser.id)
@@ -706,6 +868,8 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                 : { ...m, readBy: [...m.readBy, currentUser.id] }
             ),
           };
+          void firebaseSyncService.saveChat(updated).catch(() => {});
+          return updated;
         }),
       }));
     },
@@ -737,14 +901,15 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ...prev,
         chats: [chat, ...prev.chats],
       }));
+      void firebaseSyncService.saveChat(chat).catch(() => {});
       setActiveChatId(chat.id);
-      notify(`Grupo "${chat.title}" creado 🎉`, 'success');
+      notify(`Grupo "${chat.title}" creado en la nube 🎉`, 'success');
       return chat;
     },
     [currentUser, commitSnapshot, notify]
   );
 
-  // --- Calls ---
+  // --- Calls with Real-Time Cross-Phone Cloud Ringing ---
   const startCall = useCallback(
     (params: {
       mode: CallMode;
@@ -760,25 +925,78 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         notify('Las videollamadas están desactivadas temporalmente desde el Panel Admin.', 'warning');
         return;
       }
+      const callId = `call_${Date.now()}`;
+      const roomCode = params.roomCode?.trim() || generateFamilyRoomCode();
+      const isHost = params.isHost ?? true;
+      const nowIso = new Date().toISOString();
+
       setActiveCall({
-        id: `call_${Date.now()}`,
-        roomCode: params.roomCode?.trim() || generateFamilyRoomCode(),
+        id: callId,
+        roomCode,
         title: params.title,
         mode: params.mode,
         scope: params.scope,
         chatId: params.chatId,
         participantIds: params.participantIds,
         startedById: currentUser.id,
-        startedAt: new Date().toISOString(),
-        isHost: params.isHost ?? true,
+        startedAt: nowIso,
+        isHost,
       });
+
+      // Notify all invited family phones in real time via Firestore
+      if (isHost) {
+        const signal: LiveCallSignal = {
+          id: callId,
+          roomCode,
+          title: params.title,
+          mode: params.mode,
+          scope: params.scope,
+          chatId: params.chatId,
+          participantIds: params.participantIds,
+          startedById: currentUser.id,
+          callerName: currentUser.name,
+          status: 'RINGING',
+          createdAt: nowIso,
+        };
+        void firebaseSyncService.publishCallSignal(signal).catch(() => {});
+      }
     },
     [snapshot.featureFlags.videoCallsEnabled, currentUser, notify]
   );
 
+  const acceptIncomingCall = useCallback(() => {
+    if (!incomingCall || !currentUser) return;
+    setDismissedCallIds((prev) => [...prev, incomingCall.id]);
+    void firebaseSyncService.updateCallSignalStatus(incomingCall.id, 'ACCEPTED').catch(() => {});
+    setActiveCall({
+      id: incomingCall.id,
+      roomCode: incomingCall.roomCode,
+      title: incomingCall.title,
+      mode: incomingCall.mode,
+      scope: incomingCall.scope,
+      chatId: incomingCall.chatId,
+      participantIds: incomingCall.participantIds,
+      startedById: incomingCall.startedById,
+      startedAt: incomingCall.createdAt,
+      isHost: false,
+    });
+  }, [incomingCall, currentUser]);
+
+  const rejectIncomingCall = useCallback(() => {
+    if (!incomingCall) return;
+    setDismissedCallIds((prev) => [...prev, incomingCall.id]);
+    if (incomingCall.scope === 'DIRECT') {
+      void firebaseSyncService.updateCallSignalStatus(incomingCall.id, 'ENDED').catch(() => {});
+    }
+    notify('Llamada rechazada.', 'info');
+  }, [incomingCall, notify]);
+
   const endCall = useCallback(() => {
+    if (activeCall) {
+      void firebaseSyncService.updateCallSignalStatus(activeCall.id, 'ENDED').catch(() => {});
+    }
     setActiveCall(null);
-  }, []);
+  }, [activeCall]);
 
   // --- Admin ---
   const createInvite = useCallback(
@@ -794,11 +1012,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         uses: 0,
         maxUses: Math.max(1, Math.min(50, maxUses)),
       };
-      commitSnapshot((prev) => ({
-        ...prev,
-        invites: [invite, ...prev.invites],
-      }));
-      notify(`Código ${invite.code} creado.`, 'success');
+      commitSnapshot((prev) => {
+        const next = { ...prev, invites: [invite, ...prev.invites] };
+        void firebaseSyncService.saveMetaConfig(next).catch(() => {});
+        return next;
+      });
+      notify(`Código ${invite.code} creado en la nube.`, 'success');
       return invite;
     },
     [currentUser, commitSnapshot, notify]
@@ -806,12 +1025,16 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const toggleInviteActive = useCallback(
     (code: string) => {
-      commitSnapshot((prev) => ({
-        ...prev,
-        invites: prev.invites.map((inv) =>
-          inv.code === code ? { ...inv, active: !inv.active } : inv
-        ),
-      }));
+      commitSnapshot((prev) => {
+        const next = {
+          ...prev,
+          invites: prev.invites.map((inv) =>
+            inv.code === code ? { ...inv, active: !inv.active } : inv
+          ),
+        };
+        void firebaseSyncService.saveMetaConfig(next).catch(() => {});
+        return next;
+      });
     },
     [commitSnapshot]
   );
@@ -822,14 +1045,16 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         notify('La cuenta de Administrador no puede desactivarse.', 'warning');
         return;
       }
-      commitSnapshot((prev) => ({
-        ...prev,
-        members: prev.members.map((m) =>
+      commitSnapshot((prev) => {
+        const nextMembers = prev.members.map((m) =>
           m.id === memberId
             ? { ...m, status, presence: status === 'DISABLED' ? 'OFFLINE' : m.presence }
             : m
-        ),
-      }));
+        );
+        const updated = nextMembers.find((m) => m.id === memberId);
+        if (updated) void firebaseSyncService.saveMember(updated).catch(() => {});
+        return { ...prev, members: nextMembers };
+      });
       notify(status === 'ACTIVE' ? 'Cuenta reactivada.' : 'Cuenta desactivada.', 'info');
     },
     [commitSnapshot, notify]
@@ -837,11 +1062,15 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const updateFeatureFlags = useCallback(
     (patch: Partial<FeatureFlags>) => {
-      commitSnapshot((prev) => ({
-        ...prev,
-        featureFlags: { ...prev.featureFlags, ...patch },
-      }));
-      notify('Configuración del espacio familiar actualizada.', 'success');
+      commitSnapshot((prev) => {
+        const next = {
+          ...prev,
+          featureFlags: { ...prev.featureFlags, ...patch },
+        };
+        void firebaseSyncService.saveMetaConfig(next).catch(() => {});
+        return next;
+      });
+      notify('Configuración del espacio familiar actualizada en todos los teléfonos.', 'success');
     },
     [commitSnapshot, notify]
   );
@@ -866,7 +1095,11 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           throw new Error('Formato de respaldo inválido.');
         }
         commitSnapshot(() => parsed);
-        notify('Respaldo familiar restaurado correctamente.', 'success');
+        void firebaseSyncService.saveMetaConfig(parsed).catch(() => {});
+        parsed.members.forEach((m) => void firebaseSyncService.saveMember(m).catch(() => {}));
+        parsed.posts.forEach((p) => void firebaseSyncService.savePost(p).catch(() => {}));
+        parsed.chats.forEach((c) => void firebaseSyncService.saveChat(c).catch(() => {}));
+        notify('Respaldo familiar restaurado y sincronizado en la nube.', 'success');
       } catch (err) {
         notify((err as Error).message || 'No se pudo importar el archivo JSON.', 'warning');
       }
@@ -880,11 +1113,19 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setActiveUserId(null);
     setActiveSection('FEED');
     realtimeBus.publishStateSync();
-    notify('Datos de demostración restaurados.', 'info');
+    notify('Datos de demostración restaurados localmente.', 'info');
   }, [notify]);
 
   const value: FamilyAppContextValue = {
     snapshot,
+    cloudStatus,
+    cloudStories,
+    cloudAlbumPhotos,
+    incomingCall,
+    acceptIncomingCall,
+    rejectIncomingCall,
+    publishCloudStory,
+    publishCloudAlbumPhoto,
     currentUser,
     activeSection,
     setActiveSection,

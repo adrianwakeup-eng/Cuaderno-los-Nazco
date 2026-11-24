@@ -1,0 +1,599 @@
+rules_version = '2';
+
+// ===============================================================
+// Assumed Data Model — Cuaderno los Nazco (cuaderno-los-nazco-fam)
+// ===============================================================
+//
+// All application data is scoped exclusively under /families/los_nazco.
+// All other paths are denied by default.
+//
+// Authentication requirement:
+//   - Every read and write requires a valid Firebase Auth session
+//     (request.auth != null). Enable Firebase Anonymous Auth (or
+//     Email/Password Auth) in the Firebase Console and call
+//     signInAnonymously(auth) on app initialization.
+//   - PROTOTYPE HARDENING NOTE: Because the current web app validates
+//     custom member passwords and adminPassword client-side against
+//     Firestore, authenticated sessions can read `meta/config` and
+//     `members`. Before sharing broadly, migrate login to Firebase Auth
+//     (Email/Password + Admin custom claims) and split PII/credentials
+//     out of client-readable documents.
+//
+// Document: families/los_nazco/meta/config
+//   - familyName: string (required, 1..120 chars)
+//   - cloudOwnerEmail: string (required, valid email, <= 160 chars)
+//   - adminPassword: string (required, 4..128 chars)
+//   - invites: list (required, <= 100 items)
+//   - featureFlags: map (required, exact 7 keys with boolean/number bounds)
+//   - updatedAt: timestamp | ISO-8601 string (optional, <= 40 chars)
+//   - version: int (optional, 1..100)
+//
+// Collection: families/los_nazco/members/{memberId}
+//   - id: string (required, immutable, must equal memberId, 2..80 chars)
+//   - username: string (required, 2..50 chars)
+//   - name: string (required, 1..100 chars)
+//   - email: string (required, valid email, <= 160 chars)
+//   - password: string (required, 4..128 chars)
+//   - relationship: string (required, <= 80 chars)
+//   - location: string (required, <= 100 chars)
+//   - bio: string (required, <= 500 chars)
+//   - role: string (required, immutable, 'ADMIN' ONLY for 'nazco_adrian', 'MEMBER' for all others)
+//   - status: string (required, 'ACTIVE' | 'DISABLED'; 'nazco_adrian' must stay 'ACTIVE')
+//   - presence: string (required, 'ONLINE' | 'AWAY' | 'OFFLINE')
+//   - avatarColor: string (required, hex color #RGB or #RRGGBB)
+//   - avatarUrl: string | null (optional, https/http URL, ./textures/*, or data:image/* <= 750KB)
+//   - coverUrl: string | null (optional, https/http URL, ./textures/*, or data:image/* <= 750KB)
+//   - joinedAt: timestamp | ISO-8601 string (required, immutable)
+//   - lastActiveAt: timestamp | ISO-8601 string (required)
+//
+// Collection: families/los_nazco/posts/{postId}
+//   - id: string (required, immutable, must equal postId, 2..80 chars)
+//   - authorId: string (required, immutable, 2..80 chars)
+//   - text: string (required, <= 5000 chars)
+//   - category: string (required, 'PHOTO' | 'VIDEO' | 'VOICE' | 'ANNOUNCEMENT' | 'UPDATE')
+//   - attachments: list (required, <= 10 items)
+//   - stickerId: string | null (optional, <= 80 chars)
+//   - reactions: map (required, only allowed reaction emoji keys)
+//   - comments: list (required, <= 300 items)
+//   - pinned: bool (required)
+//   - featured: bool (required)
+//   - hidden: bool (required)
+//   - createdAt: timestamp | ISO-8601 string (required, immutable)
+//
+// Collection: families/los_nazco/chats/{chatId}
+//   - id: string (required, immutable, must equal chatId, 2..80 chars)
+//   - kind: string (required, immutable, 'DIRECT' | 'GROUP')
+//   - title: string | null (optional, <= 120 chars)
+//   - description: string | null (optional, <= 400 chars)
+//   - participantIds: list (required, 1..100 items)
+//   - messages: list (required, <= 500 items)
+//   - typingUserIds: list (required, <= 50 items)
+//   - updatedAt: timestamp | ISO-8601 string (required)
+//
+// Collection: families/los_nazco/stories/{storyId}
+//   - id: string (required, immutable, must equal storyId, 2..80 chars)
+//   - authorId: string (required, immutable, 2..80 chars)
+//   - caption: string (required, <= 600 chars)
+//   - imageUrl: string | null (optional, valid media URL <= 750KB)
+//   - bgGradient: string | null (optional, <= 200 chars)
+//   - createdAt: timestamp | ISO-8601 string (required, immutable)
+//   - viewedBy: list (required, <= 200 items)
+//   - reactions: list (required, <= 200 items)
+//
+// Collection: families/los_nazco/albums/{photoId}
+//   - id: string (required, immutable, must equal photoId, 2..80 chars)
+//   - album: string (required, 'FAMILIA' | 'VIAJES' | 'CUMPLEANOS' | 'REUNIONES' | 'RECUERDOS' | 'CELEBRACIONES')
+//   - authorId: string (required, immutable, 2..80 chars)
+//   - title: string (required, 1..200 chars)
+//   - imageUrl: string (required, valid media URL <= 750KB)
+//   - createdAt: timestamp | ISO-8601 string (required, immutable)
+//   - likes: list (required, <= 200 items)
+//   - comments: list (required, <= 300 items)
+//
+// Collection: families/los_nazco/calls/{callId}
+//   - id: string (required, immutable, must equal callId, 2..80 chars)
+//   - roomCode: string (required, immutable, 4..32 alphanumeric/_/- chars)
+//   - title: string (required, 1..140 chars)
+//   - mode: string (required, immutable, 'AUDIO' | 'VIDEO')
+//   - scope: string (required, immutable, 'DIRECT' | 'FAMILY_ROOM')
+//   - chatId: string | null (optional, <= 80 chars)
+//   - participantIds: list (required, 1..100 items)
+//   - startedById: string (required, immutable, 2..80 chars)
+//   - callerName: string (required, 1..100 chars)
+//   - status: string (required, valid call signaling status; terminal states cannot revert)
+//   - createdAt: timestamp | ISO-8601 string (required, immutable)
+//
+// ===============================================================
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() && (
+        ('admin' in request.auth.token && request.auth.token.admin == true) ||
+        ('email' in request.auth.token &&
+         'email_verified' in request.auth.token &&
+         request.auth.token.email == 'adrianwakeup@gmail.com' &&
+         request.auth.token.email_verified == true)
+      );
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function uidUnchanged() {
+      return !('uid' in request.resource.data) ||
+        request.resource.data.uid == request.auth.uid;
+    }
+
+    function uidNotModified() {
+      return !('uid' in request.resource.data) ||
+        request.resource.data.uid == resource.data.uid;
+    }
+
+    function hasRequiredFields(fields) {
+      return request.resource.data.keys().hasAll(fields);
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    function areImmutableFieldsUnchanged(fields) {
+      return !request.resource.data.diff(resource.data).affectedKeys().hasAny(fields);
+    }
+
+    function isValidString(val, minLen, maxLen) {
+      return val is string && val.size() >= minLen && val.size() <= maxLen;
+    }
+
+    function isValidOptionalString(data, field, maxLen) {
+      return !(field in data) ||
+        data[field] == null ||
+        (data[field] is string && data[field].size() <= maxLen);
+    }
+
+    function isValidEmail(email) {
+      return email is string &&
+        email.size() <= 160 &&
+        email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function isValidDateString(dateStr) {
+      return dateStr is string &&
+        dateStr.size() >= 19 &&
+        dateStr.size() <= 40 &&
+        dateStr.matches("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d{1,6})?(Z|[+-]\\d{2}:\\d{2})?$");
+    }
+
+    function isValidDateOrTimestamp(val) {
+      return val is timestamp || isValidDateString(val);
+    }
+
+    function isValidOptionalDateOrTimestamp(data, field) {
+      return !(field in data) || data[field] == null || isValidDateOrTimestamp(data[field]);
+    }
+
+    function isValidMediaUrl(url) {
+      return url is string && (
+        (url.size() <= 2048 && (url.matches("^https://.*") || url.matches("^http://.*"))) ||
+        (url.size() <= 200 && url.matches("^\\./textures/[a-zA-Z0-9._-]+$")) ||
+        (url.size() <= 750000 && url.matches("^data:image/(jpeg|jpg|png|webp|gif|svg\\+xml);.*"))
+      );
+    }
+
+    function isValidOptionalMediaUrl(data, field) {
+      return !(field in data) ||
+        data[field] == null ||
+        data[field] == '' ||
+        isValidMediaUrl(data[field]);
+    }
+
+    function isValidList(listVal, minSize, maxSize) {
+      return listVal is list && listVal.size() >= minSize && listVal.size() <= maxSize;
+    }
+
+    function isValidHexColor(val) {
+      return val is string && val.matches("^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$");
+    }
+
+    // ===============================================================
+    // Domain Validators (Called in BOTH create and update)
+    // ===============================================================
+
+    function isValidFeatureFlags(flags) {
+      return flags is map &&
+        flags.keys().hasOnly([
+          'videoCallsEnabled',
+          'voiceNotesEnabled',
+          'videoUploadsEnabled',
+          'announcementsEnabled',
+          'autoCompressImages',
+          'maxUploadMb',
+          'storageQuotaMb'
+        ]) &&
+        flags.keys().hasAll([
+          'videoCallsEnabled',
+          'voiceNotesEnabled',
+          'videoUploadsEnabled',
+          'announcementsEnabled',
+          'autoCompressImages',
+          'maxUploadMb',
+          'storageQuotaMb'
+        ]) &&
+        flags.videoCallsEnabled is bool &&
+        flags.voiceNotesEnabled is bool &&
+        flags.videoUploadsEnabled is bool &&
+        flags.announcementsEnabled is bool &&
+        flags.autoCompressImages is bool &&
+        flags.maxUploadMb is number && flags.maxUploadMb >= 1 && flags.maxUploadMb <= 200 &&
+        flags.storageQuotaMb is number && flags.storageQuotaMb >= 50 && flags.storageQuotaMb <= 50000;
+    }
+
+    function isValidFamilyConfig(data) {
+      return hasOnlyAllowedFields([
+          'familyName',
+          'cloudOwnerEmail',
+          'adminPassword',
+          'invites',
+          'featureFlags',
+          'updatedAt',
+          'version'
+        ]) &&
+        hasRequiredFields([
+          'familyName',
+          'cloudOwnerEmail',
+          'adminPassword',
+          'invites',
+          'featureFlags'
+        ]) &&
+        isValidString(data.familyName, 1, 120) &&
+        isValidEmail(data.cloudOwnerEmail) &&
+        isValidString(data.adminPassword, 4, 128) &&
+        isValidList(data.invites, 0, 100) &&
+        isValidFeatureFlags(data.featureFlags) &&
+        isValidOptionalDateOrTimestamp(data, 'updatedAt') &&
+        (!('version' in data) || (data.version is int && data.version >= 1 && data.version <= 100));
+    }
+
+    function isValidMember(data, memberId) {
+      return hasOnlyAllowedFields([
+          'id',
+          'username',
+          'name',
+          'email',
+          'password',
+          'relationship',
+          'location',
+          'bio',
+          'role',
+          'status',
+          'presence',
+          'avatarColor',
+          'avatarUrl',
+          'coverUrl',
+          'joinedAt',
+          'lastActiveAt'
+        ]) &&
+        hasRequiredFields([
+          'id',
+          'username',
+          'name',
+          'email',
+          'password',
+          'relationship',
+          'location',
+          'bio',
+          'role',
+          'status',
+          'presence',
+          'avatarColor',
+          'joinedAt',
+          'lastActiveAt'
+        ]) &&
+        isValidString(data.id, 2, 80) && data.id == memberId &&
+        isValidString(data.username, 2, 50) &&
+        isValidString(data.name, 1, 100) &&
+        isValidEmail(data.email) &&
+        isValidString(data.password, 4, 128) &&
+        isValidString(data.relationship, 0, 80) &&
+        isValidString(data.location, 0, 100) &&
+        isValidString(data.bio, 0, 500) &&
+        // Sole Administrator invariant: only nazco_adrian may hold ADMIN role and remain ACTIVE
+        ((memberId == 'nazco_adrian' && data.role == 'ADMIN' && data.status == 'ACTIVE') ||
+         (memberId != 'nazco_adrian' && data.role == 'MEMBER' && data.status in ['ACTIVE', 'DISABLED'])) &&
+        data.presence in ['ONLINE', 'AWAY', 'OFFLINE'] &&
+        isValidHexColor(data.avatarColor) &&
+        isValidOptionalMediaUrl(data, 'avatarUrl') &&
+        isValidOptionalMediaUrl(data, 'coverUrl') &&
+        isValidDateOrTimestamp(data.joinedAt) &&
+        isValidDateOrTimestamp(data.lastActiveAt);
+    }
+
+    function isValidPost(data, postId) {
+      return hasOnlyAllowedFields([
+          'id',
+          'authorId',
+          'text',
+          'category',
+          'attachments',
+          'stickerId',
+          'reactions',
+          'comments',
+          'pinned',
+          'featured',
+          'hidden',
+          'createdAt'
+        ]) &&
+        hasRequiredFields([
+          'id',
+          'authorId',
+          'text',
+          'category',
+          'attachments',
+          'reactions',
+          'comments',
+          'pinned',
+          'featured',
+          'hidden',
+          'createdAt'
+        ]) &&
+        isValidString(data.id, 2, 80) && data.id == postId &&
+        isValidString(data.authorId, 2, 80) &&
+        isValidString(data.text, 0, 5000) &&
+        data.category in ['PHOTO', 'VIDEO', 'VOICE', 'ANNOUNCEMENT', 'UPDATE'] &&
+        isValidList(data.attachments, 0, 10) &&
+        isValidOptionalString(data, 'stickerId', 80) &&
+        data.reactions is map &&
+        data.reactions.keys().hasOnly(['❤️', '🥰', '🥹', '👏', '😂', '🎉', '🙏']) &&
+        isValidList(data.comments, 0, 300) &&
+        data.pinned is bool &&
+        data.featured is bool &&
+        data.hidden is bool &&
+        isValidDateOrTimestamp(data.createdAt);
+    }
+
+    function isValidChat(data, chatId) {
+      return hasOnlyAllowedFields([
+          'id',
+          'kind',
+          'title',
+          'description',
+          'participantIds',
+          'messages',
+          'typingUserIds',
+          'updatedAt'
+        ]) &&
+        hasRequiredFields([
+          'id',
+          'kind',
+          'participantIds',
+          'messages',
+          'typingUserIds',
+          'updatedAt'
+        ]) &&
+        isValidString(data.id, 2, 80) && data.id == chatId &&
+        data.kind in ['DIRECT', 'GROUP'] &&
+        isValidOptionalString(data, 'title', 120) &&
+        isValidOptionalString(data, 'description', 400) &&
+        isValidList(data.participantIds, 1, 100) &&
+        isValidList(data.messages, 0, 500) &&
+        isValidList(data.typingUserIds, 0, 50) &&
+        isValidDateOrTimestamp(data.updatedAt);
+    }
+
+    function isValidStory(data, storyId) {
+      return hasOnlyAllowedFields([
+          'id',
+          'authorId',
+          'caption',
+          'imageUrl',
+          'bgGradient',
+          'createdAt',
+          'viewedBy',
+          'reactions'
+        ]) &&
+        hasRequiredFields([
+          'id',
+          'authorId',
+          'caption',
+          'createdAt',
+          'viewedBy',
+          'reactions'
+        ]) &&
+        isValidString(data.id, 2, 80) && data.id == storyId &&
+        isValidString(data.authorId, 2, 80) &&
+        isValidString(data.caption, 0, 600) &&
+        isValidOptionalMediaUrl(data, 'imageUrl') &&
+        isValidOptionalString(data, 'bgGradient', 200) &&
+        isValidDateOrTimestamp(data.createdAt) &&
+        isValidList(data.viewedBy, 0, 200) &&
+        isValidList(data.reactions, 0, 200);
+    }
+
+    function isValidAlbumPhoto(data, photoId) {
+      return hasOnlyAllowedFields([
+          'id',
+          'album',
+          'authorId',
+          'title',
+          'imageUrl',
+          'createdAt',
+          'likes',
+          'comments'
+        ]) &&
+        hasRequiredFields([
+          'id',
+          'album',
+          'authorId',
+          'title',
+          'imageUrl',
+          'createdAt',
+          'likes',
+          'comments'
+        ]) &&
+        isValidString(data.id, 2, 80) && data.id == photoId &&
+        data.album in ['FAMILIA', 'VIAJES', 'CUMPLEANOS', 'REUNIONES', 'RECUERDOS', 'CELEBRACIONES'] &&
+        isValidString(data.authorId, 2, 80) &&
+        isValidString(data.title, 1, 200) &&
+        isValidMediaUrl(data.imageUrl) &&
+        isValidDateOrTimestamp(data.createdAt) &&
+        isValidList(data.likes, 0, 200) &&
+        isValidList(data.comments, 0, 300);
+    }
+
+    function isValidCall(data, callId) {
+      return hasOnlyAllowedFields([
+          'id',
+          'roomCode',
+          'title',
+          'mode',
+          'scope',
+          'chatId',
+          'participantIds',
+          'startedById',
+          'callerName',
+          'status',
+          'createdAt'
+        ]) &&
+        hasRequiredFields([
+          'id',
+          'roomCode',
+          'title',
+          'mode',
+          'scope',
+          'participantIds',
+          'startedById',
+          'callerName',
+          'status',
+          'createdAt'
+        ]) &&
+        isValidString(data.id, 2, 80) && data.id == callId &&
+        isValidString(data.roomCode, 4, 32) && data.roomCode.matches("^[0-9A-Za-z_-]+$") &&
+        isValidString(data.title, 1, 140) &&
+        data.mode in ['AUDIO', 'VIDEO'] &&
+        data.scope in ['DIRECT', 'FAMILY_ROOM'] &&
+        isValidOptionalString(data, 'chatId', 80) &&
+        isValidList(data.participantIds, 1, 100) &&
+        isValidString(data.startedById, 2, 80) &&
+        isValidString(data.callerName, 1, 100) &&
+        data.status in [
+          'RINGING',
+          'CONNECTING',
+          'CONNECTED',
+          'ACTIVE',
+          'ACCEPTED',
+          'DECLINED',
+          'ENDED',
+          'MISSED',
+          'CANCELLED'
+        ] &&
+        isValidDateOrTimestamp(data.createdAt);
+    }
+
+    function isValidCallStatusTransition() {
+      return !(resource.data.status in ['ENDED', 'DECLINED', 'MISSED', 'CANCELLED']) ||
+        request.resource.data.status == resource.data.status;
+    }
+
+    // ===============================================================
+    // Family Workspace Rules: /families/los_nazco
+    // ===============================================================
+
+    match /families/los_nazco {
+
+      // 1. Family settings document
+      match /meta/config {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() &&
+          isValidFamilyConfig(request.resource.data);
+        allow update: if isAuthenticated() &&
+          isValidFamilyConfig(request.resource.data);
+        allow delete: if false;
+      }
+
+      // 2. Family member accounts
+      match /members/{memberId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() &&
+          isValidMember(request.resource.data, memberId);
+        allow update: if isAuthenticated() &&
+          isValidMember(request.resource.data, memberId) &&
+          areImmutableFieldsUnchanged(['id', 'joinedAt', 'role']);
+        allow delete: if isAdmin() && memberId != 'nazco_adrian';
+      }
+
+      // 3. Family wall posts
+      match /posts/{postId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() &&
+          isValidPost(request.resource.data, postId);
+        allow update: if isAuthenticated() &&
+          isValidPost(request.resource.data, postId) &&
+          areImmutableFieldsUnchanged(['id', 'authorId', 'createdAt']);
+        allow delete: if isAuthenticated();
+      }
+
+      // 4. Family direct & group chats
+      match /chats/{chatId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() &&
+          isValidChat(request.resource.data, chatId);
+        allow update: if isAuthenticated() &&
+          isValidChat(request.resource.data, chatId) &&
+          areImmutableFieldsUnchanged(['id', 'kind']);
+        allow delete: if isAdmin();
+      }
+
+      // 5. Family stories
+      match /stories/{storyId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() &&
+          isValidStory(request.resource.data, storyId);
+        allow update: if isAuthenticated() &&
+          isValidStory(request.resource.data, storyId) &&
+          areImmutableFieldsUnchanged(['id', 'authorId', 'createdAt']);
+        allow delete: if isAuthenticated();
+      }
+
+      // 6. Family album photos
+      match /albums/{photoId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() &&
+          isValidAlbumPhoto(request.resource.data, photoId);
+        allow update: if isAuthenticated() &&
+          isValidAlbumPhoto(request.resource.data, photoId) &&
+          areImmutableFieldsUnchanged(['id', 'authorId', 'createdAt']);
+        allow delete: if isAuthenticated();
+      }
+
+      // 7. Real-time WebRTC call signaling invites
+      match /calls/{callId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() &&
+          isValidCall(request.resource.data, callId);
+        allow update: if isAuthenticated() &&
+          isValidCall(request.resource.data, callId) &&
+          areImmutableFieldsUnchanged(['id', 'roomCode', 'startedById', 'mode', 'scope', 'createdAt']) &&
+          isValidCallStatusTransition();
+        allow delete: if isAuthenticated();
+      }
+    }
+
+    // ===============================================================
+    // Default Deny — Everything Outside /families/los_nazco
+    // ===============================================================
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

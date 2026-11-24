@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { FamilyWelcomeAuthScreen } from './components/auth/FamilyWelcomeAuthScreen';
+import { IncomingCallModal } from './components/calls/IncomingCallModal';
 import { VideoCallOverlay } from './components/calls/VideoCallOverlay';
 import { YarnBallLoader } from './components/crochet/CrochetArt';
 import { FeedView } from './components/feed/FeedView';
@@ -35,7 +36,19 @@ const SectionLoader: React.FC = () => (
 );
 
 const CuadernoContent: React.FC = () => {
-  const { currentUser, activeSection, joyBursts } = useFamilyApp();
+  const {
+    snapshot,
+    currentUser,
+    activeSection,
+    joyBursts,
+    incomingCall,
+    acceptIncomingCall,
+    rejectIncomingCall,
+  } = useFamilyApp();
+
+  const incomingCaller = incomingCall
+    ? snapshot.members.find((m) => m.id === incomingCall.startedById) ?? null
+    : null;
 
   return (
     <AppearanceProvider userId={currentUser?.id}>
@@ -57,6 +70,12 @@ const CuadernoContent: React.FC = () => {
               {activeSection === 'ADMIN' && <AdminPanelView />}
             </Suspense>
             <VideoCallOverlay />
+            <IncomingCallModal
+              caller={incomingCaller}
+              mode={incomingCall?.mode ?? 'VIDEO'}
+              onAccept={acceptIncomingCall}
+              onReject={rejectIncomingCall}
+            />
           </AppShell>
           <JoyBurstLayer bursts={joyBursts} />
         </>

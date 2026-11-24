@@ -1,0 +1,33 @@
+{
+  "name": "Cuaderno los Nazco — Santuario Familiar Privado",
+  "short_name": "Los Nazco",
+  "description": "Red social privada familiar con muro, historias, mensajería, álbumes, videollamadas y estilo artesanal brasileño de crochet y macramé.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F5EBDD",
+  "theme_color": "#164D32",
+  "lang": "es",
+  "categories": ["social", "lifestyle", "communication"],
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Sin conexión · Cuaderno los Nazco</title>
+    <style>
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #F5EBDD;
+        color: #1F1813;
+        font-family: system-ui, -apple-system, sans-serif;
+        padding: 24px;
+      }
+      .card {
+        max-width: 400px;
+        width: 100%;
+        background: #FFFDF8;
+        border: 3px dashed #BA9254;
+        border-radius: 28px;
+        padding: 32px 24px;
+        text-align: center;
+        box-shadow: 0 20px 48px rgba(22, 77, 50, 0.16);
+      }
+      .badge {
+        display: inline-block;
+        background: #164D32;
+        color: #F2C443;
+        padding: 6px 16px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+        margin-bottom: 14px;
+      }
+      h1 {
+        margin: 0 0 10px;
+        font-family: Georgia, serif;
+        color: #164D32;
+        font-size: 26px;
+      }
+      p {
+        margin: 0 0 22px;
+        font-size: 14px;
+        line-height: 1.55;
+        color: #493B32;
+      }
+      button {
+        background: linear-gradient(135deg, #164D32, #398B4B);
+        color: #FFFDF8;
+        border: 2px dashed rgba(242, 196, 67, 0.7);
+        border-radius: 999px;
+        padding: 12px 26px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="badge">💛 Santuario Familiar Privado</div>
+      <h1>Sin conexión en este momento</h1>
+      <p>
+        Cuaderno los Nazco necesita conexión para sincronizar mensajes nuevos y videollamadas.
+        Tus recuerdos locales siguen protegidos en tu dispositivo.
+      </p>
+      <button onclick="window.location.reload()">Reintentar conexión</button>
+    </div>
+  </body>
+</html>

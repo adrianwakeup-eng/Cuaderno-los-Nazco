@@ -1,0 +1,530 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --forest: #164d32;
+  --brazil: #398b4b;
+  --solar: #f2c443;
+  --ocean: #16466c;
+  --cotton: #f5ebdd;
+  --artisanal: #ba9254;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@layer base {
+  html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: contain;
+  }
+
+  html[data-text-scale='large'] {
+    font-size: 18px;
+  }
+
+  html[data-text-scale='xlarge'] {
+    font-size: 20px;
+  }
+
+  body {
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    background-color: #f5ebdd;
+    background-image:
+      radial-gradient(circle at 12% 8%, rgba(255, 245, 214, 0.72), transparent 44%),
+      radial-gradient(circle at 88% 12%, rgba(242, 196, 67, 0.2), transparent 46%),
+      radial-gradient(circle at 50% 94%, rgba(57, 139, 75, 0.14), transparent 48%),
+      url('/crochet/cotton-cream-weave.webp');
+    background-size: 384px 384px;
+    background-repeat: repeat;
+    color: #231a12;
+    overflow-x: clip;
+  }
+}
+
+/* Light performance mode */
+html[data-mode='LIGHT'] body {
+  background-image: none;
+  background-color: #f5ebdd;
+}
+
+.font-editorial {
+  font-family: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  letter-spacing: -0.01em;
+}
+
+.font-crochet-script {
+  font-family: 'Dancing Script', 'Playfair Display', cursive;
+}
+
+/* ======================== TACTILE CROCHET & COTTON SURFACES ======================== */
+
+/* Natural artisanal cotton card with subtle stitched seam & 3D warmth */
+.card-warm,
+.card-crochet {
+  position: relative;
+  background-color: #fcf7ee;
+  background-image:
+    linear-gradient(160deg, rgba(255, 253, 248, 0.92) 0%, rgba(247, 238, 223, 0.86) 100%),
+    url('/crochet/cotton-cream-weave.webp');
+  background-size: 300px 300px;
+  border: 1.5px solid rgba(186, 146, 84, 0.45);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.95),
+    inset 0 -2px 0 rgba(186, 146, 84, 0.18),
+    0 12px 28px -12px rgba(22, 77, 50, 0.16),
+    0 3px 10px -4px rgba(102, 72, 34, 0.12);
+  transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease;
+}
+
+html[data-mode='IMMERSIVE_3D'][data-effects3d='on'] .card-warm:hover,
+html[data-mode='IMMERSIVE_3D'][data-effects3d='on'] .card-crochet:hover {
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.98),
+    inset 0 -2px 0 rgba(186, 146, 84, 0.22),
+    0 18px 36px -14px rgba(22, 77, 50, 0.22),
+    0 6px 14px -4px rgba(186, 146, 84, 0.18);
+}
+
+html[data-mode='LIGHT'] .card-warm,
+html[data-mode='LIGHT'] .card-crochet {
+  background-image: none;
+  background-color: #fffdf9;
+  box-shadow: 0 2px 8px rgba(35, 26, 18, 0.08);
+}
+
+/* Woven burlap/macrame stitched inner panel (Sala Familiar, Banner parchment, Plaque) */
+.crochet-parchment {
+  position: relative;
+  background-color: #f3e4c9;
+  background-image:
+    linear-gradient(155deg, rgba(255, 249, 236, 0.72), rgba(235, 212, 174, 0.78)),
+    url('/crochet/crochet-burlap-card.webp');
+  background-size: 170px 170px;
+  border: 2px solid #cfa96d;
+  box-shadow:
+    inset 0 0 0 3px rgba(255, 250, 238, 0.78),
+    inset 0 2px 6px rgba(138, 97, 40, 0.16),
+    0 10px 24px -10px rgba(77, 52, 20, 0.28);
+}
+
+.crochet-parchment::after {
+  content: '';
+  position: absolute;
+  inset: 5px;
+  border-radius: inherit;
+  border: 1.5px dashed rgba(154, 116, 59, 0.65);
+  pointer-events: none;
+}
+
+/* 3D Forest & Brazil Green Knitted Surface (Publicar, Bottom Nav, Call CTA, Header Ribbon) */
+.crochet-green-3d {
+  position: relative;
+  background-color: #164d32;
+  background-image:
+    linear-gradient(180deg, rgba(57, 139, 75, 0.56) 0%, rgba(22, 77, 50, 0.88) 100%),
+    url('/crochet/crochet-green-knit.webp');
+  background-size: 132px 132px;
+  border: 2px solid #103a25;
+  box-shadow:
+    inset 0 2px 2px rgba(172, 232, 185, 0.36),
+    inset 0 -3px 5px rgba(8, 32, 19, 0.62),
+    0 6px 0 #0f3823,
+    0 12px 22px -6px rgba(14, 52, 32, 0.45);
+}
+
+.crochet-green-3d::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  border: 1.5px dashed rgba(242, 196, 67, 0.55);
+  pointer-events: none;
+}
+
+/* Flat green knit bar for mobile bottom nav (without tall 3D drop offset) */
+.crochet-nav-bar {
+  position: relative;
+  background-color: #164d32;
+  background-image:
+    linear-gradient(180deg, rgba(44, 118, 63, 0.76) 0%, rgba(16, 58, 37, 0.94) 100%),
+    url('/crochet/crochet-green-knit.webp');
+  background-size: 120px 120px;
+  border-top: 2px solid #398b4b;
+  box-shadow:
+    inset 0 2px 0 rgba(242, 196, 67, 0.42),
+    0 -8px 26px rgba(12, 42, 26, 0.28);
+}
+
+.crochet-nav-bar::before {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 10px;
+  right: 10px;
+  border-top: 1.5px dashed rgba(242, 196, 67, 0.52);
+  pointer-events: none;
+}
+
+/* 3D Brazilian Solar Yellow Knitted Pill (Active Nav Tab, Active Filter "Todo") */
+.crochet-gold-3d {
+  position: relative;
+  background-color: #f2c443;
+  background-image:
+    linear-gradient(180deg, rgba(255, 232, 134, 0.65) 0%, rgba(219, 166, 33, 0.78) 100%),
+    url('/crochet/crochet-gold-knit.webp');
+  background-size: 120px 120px;
+  border: 2px solid #c68c16;
+  box-shadow:
+    inset 0 2px 2px rgba(255, 252, 232, 0.78),
+    inset 0 -3px 4px rgba(154, 102, 10, 0.42),
+    0 4px 0 #b27b11,
+    0 8px 16px -4px rgba(178, 123, 17, 0.38);
+}
+
+.crochet-gold-3d::after {
+  content: '';
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  border: 1.5px dashed rgba(138, 86, 8, 0.42);
+  pointer-events: none;
+}
+
+/* 3D Ocean Blue Crochet Surface */
+.crochet-blue-3d {
+  position: relative;
+  background-color: #16466c;
+  background-image:
+    linear-gradient(180deg, rgba(46, 112, 164, 0.55) 0%, rgba(15, 51, 80, 0.9) 100%),
+    url('/crochet/crochet-blue-knit.webp');
+  background-size: 128px 128px;
+  border: 2px solid #0f3350;
+  box-shadow:
+    inset 0 2px 2px rgba(186, 224, 255, 0.32),
+    0 5px 0 #0d2b44,
+    0 10px 20px -6px rgba(15, 51, 80, 0.42);
+}
+
+/* Tactile wool squish press physics on buttons */
+.btn-yarn-press {
+  transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s ease, filter 0.16s ease;
+}
+
+.btn-yarn-press:active:not(:disabled) {
+  transform: translateY(3px) scale(0.96);
+  filter: brightness(0.97);
+}
+
+/* Artisanal cotton stationery surface for Messenger thread */
+.stationery-surface {
+  background-color: #f6ede0;
+  background-image:
+    linear-gradient(180deg, rgba(252, 247, 238, 0.88), rgba(245, 235, 221, 0.94)),
+    url('/crochet/cotton-cream-weave.webp');
+  background-size: 320px 320px;
+}
+
+/* Artisanal header capsule */
+.header-crochet-shell {
+  background-color: rgba(252, 247, 238, 0.94);
+  background-image:
+    linear-gradient(180deg, rgba(255, 252, 244, 0.94), rgba(245, 235, 221, 0.92)),
+    url('/crochet/cotton-cream-weave.webp');
+  background-size: 280px 280px;
+  backdrop-filter: blur(14px);
+  border-bottom: 1.5px solid rgba(186, 146, 84, 0.42);
+  box-shadow: 0 8px 24px -14px rgba(22, 77, 50, 0.22);
+}
+
+/* Warm stitched ribbon / subtle legacy utility alias */
+.celestial-silk {
+  position: relative;
+  background-color: #f3e4c9;
+  background-image:
+    linear-gradient(135deg, rgba(245, 235, 221, 0.72), rgba(242, 196, 67, 0.24), rgba(57, 139, 75, 0.18)),
+    url('/crochet/crochet-burlap-card.webp');
+  background-size: 180px 180px;
+}
+
+.bg-warm-love-gradient {
+  background: linear-gradient(125deg, #164d32 0%, #398b4b 54%, #256f3f 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 6px 16px -4px rgba(22, 77, 50, 0.42);
+}
+
+/* Crochet scalloped ring halo for avatars */
+.angelic-halo,
+.crochet-avatar-ring {
+  box-shadow:
+    0 0 0 2.5px #fcf7ee,
+    0 0 0 5px #398b4b,
+    0 0 0 6.5px rgba(242, 196, 67, 0.85),
+    0 6px 14px rgba(22, 77, 50, 0.25);
+}
+
+/* Woven heirloom photo frame */
+.photo-heirloom-frame {
+  border: 4px solid #fffdf7;
+  box-shadow:
+    0 0 0 1.5px rgba(186, 146, 84, 0.65),
+    0 12px 24px -10px rgba(35, 26, 18, 0.28);
+}
+
+/* Safe area padding helpers */
+.pt-safe {
+  padding-top: var(--safe-top);
+}
+.pb-safe {
+  padding-bottom: max(var(--safe-bottom), 8px);
+}
+
+/* ======================== ANIMATIONS (GPU-ACCELERATED) ======================== */
+
+@keyframes leafSway {
+  0%, 100% {
+    transform: rotate(-2.5deg) translateY(0px);
+  }
+  50% {
+    transform: rotate(3deg) translateY(2px);
+  }
+}
+
+@keyframes fairyTwinkle {
+  0%, 100% {
+    opacity: 0.65;
+    transform: scale(0.92);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.18);
+  }
+}
+
+@keyframes floatGentle {
+  0%, 100% {
+    transform: translateY(0px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(-6px) rotate(2deg);
+  }
+}
+
+@keyframes butterflyFlutter {
+  0%, 100% {
+    transform: translate(0px, 0px) rotate(-4deg);
+  }
+  33% {
+    transform: translate(10px, -8px) rotate(5deg);
+  }
+  66% {
+    transform: translate(-6px, -4px) rotate(-2deg);
+  }
+}
+
+@keyframes heartbeatWarm {
+  0%, 100% {
+    transform: scale(1);
+  }
+  18% {
+    transform: scale(1.16);
+  }
+  34% {
+    transform: scale(0.97);
+  }
+  52% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes wiggleHappy {
+  0%, 100% {
+    transform: rotate(-4deg) scale(1);
+  }
+  50% {
+    transform: rotate(4deg) scale(1.06);
+  }
+}
+
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.95) translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes slideUpSheet {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDrawer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@keyframes burstRise3D {
+  0% {
+    opacity: 0;
+    transform: translateY(24px) scale(0.45) rotateY(0deg) rotateZ(-14deg);
+  }
+  18% {
+    opacity: 1;
+    transform: translateY(-16px) scale(1.25) rotateY(140deg) rotateZ(8deg);
+  }
+  65% {
+    opacity: 0.95;
+    transform: translateY(-110px) scale(1.05) rotateY(290deg) rotateZ(-8deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translateY(-210px) scale(0.75) rotateY(360deg) rotateZ(12deg);
+  }
+}
+
+@keyframes yarnSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes wavePulse {
+  0%, 100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes phoneRingAmigurumi {
+  0%, 100% {
+    transform: rotate(0deg) scale(1);
+  }
+  15% {
+    transform: rotate(-14deg) scale(1.08);
+  }
+  30% {
+    transform: rotate(14deg) scale(1.08);
+  }
+  45% {
+    transform: rotate(-10deg) scale(1.06);
+  }
+  60% {
+    transform: rotate(10deg) scale(1.04);
+  }
+  75% {
+    transform: rotate(0deg) scale(1);
+  }
+}
+
+.animate-leaf-sway {
+  animation: leafSway 5.5s ease-in-out infinite;
+  transform-origin: top center;
+}
+
+.animate-fairy-twinkle {
+  animation: fairyTwinkle 3.2s ease-in-out infinite;
+}
+
+.animate-float-gentle {
+  animation: floatGentle 4.6s ease-in-out infinite;
+}
+
+.animate-butterfly {
+  animation: butterflyFlutter 6.5s ease-in-out infinite;
+}
+
+.animate-heartbeat {
+  animation: heartbeatWarm 2.2s ease-in-out infinite;
+}
+
+.animate-wiggle {
+  animation: wiggleHappy 2.8s ease-in-out infinite;
+}
+
+.animate-pop-in {
+  animation: popIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-sheet-up {
+  animation: slideUpSheet 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-drawer-in {
+  animation: slideInDrawer 0.28s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-burst-rise {
+  animation: burstRise3D 1.85s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-yarn-spin {
+  animation: yarnSpin 1.8s linear infinite;
+}
+
+.animate-phone-ring {
+  animation: phoneRingAmigurumi 1.25s ease-in-out infinite;
+}
+
+/* Respect user preference & appearance toggle */
+html[data-animations='off'] *,
+html[data-mode='LIGHT'] * {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.05s !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.05s !important;
+  }
+}
+
+/* Hide scrollbars nicely on horizontal touch strips */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Custom artisanal scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(186, 146, 84, 0.6);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #398b4b;
+}

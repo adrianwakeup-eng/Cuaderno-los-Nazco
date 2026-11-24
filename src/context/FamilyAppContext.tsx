@@ -204,55 +204,66 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Real-time Firebase Cloud Firestore subscription across ALL family phones
   useEffect(() => {
-    void firebaseSyncService.ensureCloudSeeded(familyRepository.loadSnapshot());
+    let active = true;
+    let unsubscribe: (() => void) | null = null;
 
-    const unsubscribe = firebaseSyncService.subscribeAll({
-      onStatus: setCloudStatus,
-      onMeta: (meta) => {
-        setSnapshot((prev) => {
-          const next: FamilyAppSnapshot = {
-            ...prev,
-            familyName: meta.familyName || prev.familyName,
-            cloudOwnerEmail: meta.cloudOwnerEmail || prev.cloudOwnerEmail,
-            adminPassword: meta.adminPassword || prev.adminPassword,
-            invites: Array.isArray(meta.invites) ? meta.invites : prev.invites,
-            featureFlags: meta.featureFlags || prev.featureFlags,
-          };
-          familyRepository.saveSnapshot(next);
-          return next;
-        });
-      },
-      onMembers: (members) => {
-        setSnapshot((prev) => {
-          const normalized = members.map((m) => ({
-            ...m,
-            role: (m.id === 'nazco_adrian' ? 'ADMIN' : 'MEMBER') as FamilyMember['role'],
-          }));
-          const next = { ...prev, members: normalized };
-          familyRepository.saveSnapshot(next);
-          return next;
-        });
-      },
-      onPosts: (posts) => {
-        setSnapshot((prev) => {
-          const next = { ...prev, posts };
-          familyRepository.saveSnapshot(next);
-          return next;
-        });
-      },
-      onChats: (chats) => {
-        setSnapshot((prev) => {
-          const next = { ...prev, chats };
-          familyRepository.saveSnapshot(next);
-          return next;
-        });
-      },
-      onStories: setCloudStories,
-      onAlbums: setCloudAlbumPhotos,
-      onCalls: setLiveCalls,
-    });
+    const connectCloud = async () => {
+      await firebaseSyncService.ensureCloudSeeded(familyRepository.loadSnapshot());
+      if (!active) return;
 
-    return () => unsubscribe();
+      unsubscribe = firebaseSyncService.subscribeAll({
+        onStatus: setCloudStatus,
+        onMeta: (meta) => {
+          setSnapshot((prev) => {
+            const next: FamilyAppSnapshot = {
+              ...prev,
+              familyName: meta.familyName || prev.familyName,
+              cloudOwnerEmail: meta.cloudOwnerEmail || prev.cloudOwnerEmail,
+              adminPassword: meta.adminPassword || prev.adminPassword,
+              invites: Array.isArray(meta.invites) ? meta.invites : prev.invites,
+              featureFlags: meta.featureFlags || prev.featureFlags,
+            };
+            familyRepository.saveSnapshot(next);
+            return next;
+          });
+        },
+        onMembers: (members) => {
+          setSnapshot((prev) => {
+            const normalized = members.map((m) => ({
+              ...m,
+              role: (m.id === 'nazco_adrian' ? 'ADMIN' : 'MEMBER') as FamilyMember['role'],
+            }));
+            const next = { ...prev, members: normalized };
+            familyRepository.saveSnapshot(next);
+            return next;
+          });
+        },
+        onPosts: (posts) => {
+          setSnapshot((prev) => {
+            const next = { ...prev, posts };
+            familyRepository.saveSnapshot(next);
+            return next;
+          });
+        },
+        onChats: (chats) => {
+          setSnapshot((prev) => {
+            const next = { ...prev, chats };
+            familyRepository.saveSnapshot(next);
+            return next;
+          });
+        },
+        onStories: setCloudStories,
+        onAlbums: setCloudAlbumPhotos,
+        onCalls: setLiveCalls,
+      });
+    };
+
+    void connectCloud();
+
+    return () => {
+      active = false;
+      unsubscribe?.();
+    };
   }, []);
 
   // Same-device cross-tab fallback sync
@@ -652,7 +663,10 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ...prev,
         posts: [post, ...prev.posts],
       }));
-      void firebaseSyncService.savePost(post).catch(() => {});
+      void firebaseSyncService.savePost(post).catch((err) => {
+        console.error('Firestore savePost failed:', err);
+        notify('Guardado local — activa Acceso Anónimo en Firebase Auth para sincronizar en la nube.', 'warning');
+      });
       triggerJoyBurst(input.category === 'ANNOUNCEMENT' ? '🎉' : '❤️', 8);
       notify(
         post.pinned

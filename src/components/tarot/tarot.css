@@ -226,9 +226,10 @@
 .tarot-detail::backdrop {
   background: rgba(8, 19, 15, .36);
   opacity: 0;
-  transition: opacity var(--tarot-fade) var(--tarot-ease);
+  transition: opacity 810ms cubic-bezier(.38, 0, .2, 1);
 }
 
+.tarot-detail[data-returning='true']::backdrop { transition-duration: 650ms; }
 .tarot-detail[data-visible='true']::backdrop { opacity: 1; }
 
 .tarot-detail-content {

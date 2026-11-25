@@ -1,5 +1,5 @@
 .tarot-room {
-  overflow: hidden;
+  overflow: visible;
   border: 2px solid #b99049;
   border-radius: 1.55rem;
   color: #fff5df;
@@ -390,7 +390,7 @@
 
 .tarot-room-wing { display: none; }
 
-@media (min-width: 961px) {
+@media (min-width: 760px) {
   .tarot-room-wing {
     display: block;
     position: absolute;

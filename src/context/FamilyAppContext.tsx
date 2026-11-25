@@ -156,6 +156,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const [cloudStories, setCloudStories] = useState<FamilyStory[]>([]);
   const [cloudAlbumPhotos, setCloudAlbumPhotos] = useState<AlbumPhotoItem[]>([]);
   const [liveCalls, setLiveCalls] = useState<LiveCallSignal[]>([]);
+  const [deepLinkIncomingCall, setDeepLinkIncomingCall] = useState<LiveCallSignal | null>(null);
   const [dismissedCallIds, setDismissedCallIds] = useState<string[]>([]);
 
   const [activeUserId, setActiveUserId] = useState<string | null>(() => {
@@ -355,30 +356,51 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, [currentUser?.id]);
 
-  // Deep-link auto-join when user taps an incoming call Push Notification (?joinCall=...)
+  // Deep-link when user taps an incoming call Push Notification (?incomingCall=... or ?joinCall=...)
   useEffect(() => {
     if (!currentUser) return;
     const params = new URLSearchParams(window.location.search);
-    const joinRoom = params.get('joinCall');
-    if (!joinRoom) return;
-    const modeParam = params.get('mode') === 'AUDIO' ? 'AUDIO' : 'VIDEO';
-    const titleParam = params.get('title') || `Sala Familiar #${joinRoom}`;
+    const incomingRoom = params.get('incomingCall') || params.get('joinCall');
+    if (!incomingRoom) return;
 
-    // Clean query params so reloading later won't re-join automatically
+    const modeParam = params.get('mode') === 'AUDIO' ? 'AUDIO' : 'VIDEO';
+    const titleParam = params.get('title') || `Llamada familiar #${incomingRoom}`;
+    const callIdParam = params.get('callId') || `call_push_${Date.now()}`;
+    const callerIdParam = params.get('callerId') || '';
+    const callerNameParam = params.get('callerName') || titleParam.replace(/^[^a-zA-ZÀ-ÿ]+/, '');
+    const autoAnswer = params.get('autoAnswer') === '1' || Boolean(params.get('joinCall'));
+
+    // Clean query params so reloading later won't re-trigger
     const cleanUrl = `${window.location.origin}${window.location.pathname}`;
     window.history.replaceState({}, '', cleanUrl);
 
-    setActiveCall({
-      id: `call_join_${Date.now()}`,
-      roomCode: joinRoom,
-      title: titleParam,
-      mode: modeParam,
-      scope: 'FAMILY_ROOM',
-      participantIds: [currentUser.id],
-      startedById: currentUser.id,
-      startedAt: new Date().toISOString(),
-      isHost: false,
-    });
+    if (autoAnswer) {
+      setActiveCall({
+        id: callIdParam,
+        roomCode: incomingRoom,
+        title: titleParam,
+        mode: modeParam,
+        scope: 'FAMILY_ROOM',
+        participantIds: [currentUser.id],
+        startedById: callerIdParam || currentUser.id,
+        startedAt: new Date().toISOString(),
+        isHost: false,
+      });
+    } else {
+      // Show Contestar / Colgar screen first instead of jumping straight into the call!
+      setDeepLinkIncomingCall({
+        id: callIdParam,
+        roomCode: incomingRoom,
+        title: titleParam,
+        mode: modeParam,
+        scope: 'DIRECT',
+        participantIds: [currentUser.id],
+        startedById: callerIdParam,
+        callerName: callerNameParam || 'Familiar Nazco',
+        status: 'RINGING',
+        createdAt: new Date().toISOString(),
+      });
+    }
   }, [currentUser?.id]);
 
   const enablePushNotifications = useCallback(async (): Promise<boolean> => {
@@ -403,9 +425,15 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     }
   }, [currentUser, notify]);
 
-  // Live incoming call detected from Firestore (ringing within last 90s for this relative)
+  // Live incoming call detected from Push Notification deep-link OR Firestore real-time ringing
   const incomingCall = useMemo(() => {
     if (!currentUser || activeCall) return null;
+    if (deepLinkIncomingCall && !dismissedCallIds.includes(deepLinkIncomingCall.id)) {
+      // If Firestore already marked this exact call as ENDED, clear it automatically
+      const liveMatch = liveCalls.find((c) => c.id === deepLinkIncomingCall.id);
+      if (liveMatch && liveMatch.status === 'ENDED') return null;
+      return liveMatch ?? deepLinkIncomingCall;
+    }
     const cutoff = Date.now() - 90_000;
     return (
       liveCalls.find(
@@ -417,7 +445,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           new Date(c.createdAt).getTime() >= cutoff
       ) ?? null
     );
-  }, [liveCalls, currentUser, activeCall, dismissedCallIds]);
+  }, [deepLinkIncomingCall, liveCalls, currentUser, activeCall, dismissedCallIds]);
 
   const unreadMessageCount = useMemo(() => {
     if (!currentUser) return 0;
@@ -1096,10 +1124,13 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             params.mode === 'VIDEO'
               ? `📹 Videollamada de ${currentUser.name}`
               : `📞 Llamada de ${currentUser.name}`,
-          body: `Toca para contestar ahora en Cuaderno los Nazco (Sala #${roomCode})`,
+          body: 'Toca para contestar o colgar en Cuaderno los Nazco',
           kind: 'CALL',
           roomCode,
           callMode: params.mode,
+          callId,
+          callerId: currentUser.id,
+          callerName: currentUser.name,
         });
       }
     },
@@ -1108,6 +1139,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const acceptIncomingCall = useCallback(() => {
     if (!incomingCall || !currentUser) return;
+    setDeepLinkIncomingCall(null);
     setDismissedCallIds((prev) => [...prev, incomingCall.id]);
     void firebaseSyncService.updateCallSignalStatus(incomingCall.id, 'ACCEPTED').catch(() => {});
     setActiveCall({
@@ -1126,11 +1158,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const rejectIncomingCall = useCallback(() => {
     if (!incomingCall) return;
+    setDeepLinkIncomingCall(null);
     setDismissedCallIds((prev) => [...prev, incomingCall.id]);
     if (incomingCall.scope === 'DIRECT') {
       void firebaseSyncService.updateCallSignalStatus(incomingCall.id, 'ENDED').catch(() => {});
     }
-    notify('Llamada rechazada.', 'info');
+    notify('Llamada colgada.', 'info');
   }, [incomingCall, notify]);
 
   const endCall = useCallback(() => {

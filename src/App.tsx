@@ -47,7 +47,22 @@ const CuadernoContent: React.FC = () => {
   } = useFamilyApp();
 
   const incomingCaller = incomingCall
-    ? snapshot.members.find((m) => m.id === incomingCall.startedById) ?? null
+    ? snapshot.members.find((m) => m.id === incomingCall.startedById) ?? {
+        id: incomingCall.startedById || 'caller_unknown',
+        username: 'familiar',
+        name: incomingCall.callerName || 'Familiar Nazco',
+        email: '',
+        password: '',
+        relationship: 'Familia Nazco',
+        location: '',
+        bio: '',
+        role: 'MEMBER' as const,
+        status: 'ACTIVE' as const,
+        presence: 'ONLINE' as const,
+        avatarColor: '#164D32',
+        joinedAt: incomingCall.createdAt,
+        lastActiveAt: incomingCall.createdAt,
+      }
     : null;
 
   return (

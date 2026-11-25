@@ -72,7 +72,7 @@ export const IncomingCallModal: React.FC<IncomingCallModalProps> = ({
             className="btn-yarn-press flex min-h-[60px] flex-col items-center justify-center gap-1 rounded-3xl bg-rose-600 text-white shadow-lg hover:bg-rose-700"
           >
             <PhoneOff className="h-6 w-6" />
-            <span className="text-sm font-bold">Rechazar</span>
+            <span className="text-sm font-bold">Colgar</span>
           </button>
 
           <button
@@ -88,7 +88,7 @@ export const IncomingCallModal: React.FC<IncomingCallModalProps> = ({
             ) : (
               <Phone className="h-6 w-6 text-solar-300" />
             )}
-            <span className="text-sm font-bold">Aceptar</span>
+            <span className="text-sm font-bold">Contestar</span>
           </button>
         </div>
       </div>

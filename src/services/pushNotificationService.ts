@@ -182,6 +182,9 @@ export async function dispatchPushNotification(params: {
   kind: 'CALL' | 'MESSAGE' | 'TEST';
   roomCode?: string;
   callMode?: CallMode;
+  callId?: string;
+  callerId?: string;
+  callerName?: string;
 }): Promise<{ sent: number; total: number }> {
   try {
     await ensureFirebaseSession();
@@ -218,6 +221,9 @@ export async function dispatchPushNotification(params: {
         kind: params.kind,
         roomCode: params.roomCode,
         callMode: params.callMode,
+        callId: params.callId,
+        callerId: params.callerId,
+        callerName: params.callerName,
         tag:
           params.kind === 'CALL' && params.roomCode
             ? `nazco-call-${params.roomCode}`

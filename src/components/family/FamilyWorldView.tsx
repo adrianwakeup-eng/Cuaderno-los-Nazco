@@ -126,6 +126,17 @@ function getSafeRegionCoords(location: string): GeoCoords {
 
 const FOV_F = 1.55;
 const BASE_CAM_DIST = 2.42;
+const MIN_ZOOM = 0.76;
+const MAX_ZOOM = 8;
+const ZOOM_STEP = 1.3;
+
+const MARINE_LIFE = [
+  { kind: 'dolphin', radius: 1.12, phase: 0.1, speed: 0.24, length: 0.15 },
+  { kind: 'dolphin', radius: 1.19, phase: 0.27, speed: 0.24, length: 0.13 },
+  { kind: 'dolphin', radius: 1.26, phase: 0.44, speed: 0.24, length: 0.14 },
+  { kind: 'whale', radius: 1.23, phase: 2.4, speed: -0.12, length: 0.30 },
+  { kind: 'whale', radius: 1.35, phase: 5.0, speed: -0.10, length: 0.26 },
+] as const;
 const ORBIT_RADIUS = 0.51;
 const ORBIT_ALTITUDE = 0.35;
 const ORBIT_SPEED = 0.24; // radians/sec (~26s full day-night cycle)
@@ -146,7 +157,8 @@ function projectFlat3D(
   pitchDeg: number,
   camDist: number,
   w: number,
-  h: number
+  h: number,
+  magnification: number
 ) {
   const yaw = (yawDeg * Math.PI) / 180;
   const pitch = (pitchDeg * Math.PI) / 180;
@@ -170,7 +182,7 @@ function projectFlat3D(
   const cyCam = ry * cosP - rz * sinP;
   const czCam = -ry * sinP - rz * cosP;
 
-  const scale = 0.5 * Math.min(w, h);
+  const scale = 0.5 * Math.min(w, h) * magnification;
   const safeZ = Math.max(0.08, czCam);
   const ndcX = (cxCam / safeZ) * FOV_F;
   const ndcY = (cyCam / safeZ) * FOV_F;
@@ -181,6 +193,41 @@ function projectFlat3D(
     depth: czCam,
     visible: czCam > 0.15,
   };
+}
+
+function drawMarineAnimal(ctx: CanvasRenderingContext2D, whale: boolean, tailMotion: number) {
+  // The animal faces right in canvas coordinates. The caller projects its heading onto the water.
+  ctx.fillStyle = 'rgba(199, 247, 255, 0.55)';
+  ctx.beginPath();
+  ctx.ellipse(-0.43, 0.15, 0.29, 0.065, -0.06, 0, Math.PI * 2);
+  ctx.fill();
+
+  const back = ctx.createLinearGradient(0, -0.24, 0, 0.15);
+  back.addColorStop(0, whale ? '#4389a2' : '#7cc4d6');
+  back.addColorStop(0.58, whale ? '#23536d' : '#376e87');
+  back.addColorStop(1, whale ? '#9ac8cf' : '#d4eef1');
+  ctx.fillStyle = back;
+  ctx.beginPath();
+  ctx.moveTo(-0.40, -0.01);
+  ctx.bezierCurveTo(-0.23, -0.03, -0.16, -0.13, -0.06, -0.13);
+  ctx.quadraticCurveTo(-0.11, -0.25, whale ? -0.15 : -0.03, whale ? -0.21 : -0.25);
+  ctx.quadraticCurveTo(0.03, -0.23, 0.07, -0.14);
+  ctx.bezierCurveTo(0.38, -0.18, 0.52, -0.08, whale ? 0.52 : 0.47, 0.01);
+  if (!whale) ctx.quadraticCurveTo(0.60, 0.04, 0.49, 0.07);
+  ctx.bezierCurveTo(0.30, 0.14, 0.13, 0.15, 0.03, 0.10);
+  ctx.quadraticCurveTo(-0.18, 0.28, -0.16, 0.14);
+  ctx.lineTo(-0.10, 0.07);
+  ctx.quadraticCurveTo(-0.31, 0.05, -0.40, -0.01);
+  ctx.fill();
+
+  ctx.fillStyle = whale ? '#376e87' : '#5795ab';
+  ctx.beginPath();
+  ctx.moveTo(-0.38, -0.01);
+  ctx.quadraticCurveTo(-0.49, -0.14 + tailMotion, -0.65, -0.14 + tailMotion);
+  ctx.quadraticCurveTo(-0.60, -0.02, -0.52, 0.01);
+  ctx.quadraticCurveTo(-0.63, 0.07, -0.64, 0.13 + tailMotion);
+  ctx.quadraticCurveTo(-0.49, 0.12 + tailMotion, -0.38, -0.01);
+  ctx.fill();
 }
 
 /* ======================== HARDWARE-ACCELERATED WebGL FLAT EARTH + OCEAN + SUN & MOON SHADER ======================== */
@@ -202,6 +249,7 @@ uniform vec2 uRes;
 uniform float uYaw;
 uniform float uPitch;
 uniform float uCamDist;
+uniform float uMagnification;
 uniform float uTime;
 uniform float uCloudOffset;
 uniform float uSunAngle;
@@ -283,7 +331,7 @@ void main() {
   vec3 camRight = vec3(1.0, 0.0, 0.0);
   vec3 camUp = vec3(0.0, cosP, -sinP);
   vec3 camFwd = vec3(0.0, -sinP, -cosP);
-  vec3 rd = normalize(camRight * ndc.x + camUp * ndc.y + camFwd * FOV_F);
+  vec3 rd = normalize(camRight * ndc.x + camUp * ndc.y + camFwd * (FOV_F * uMagnification));
 
   // Orbiting 3D Sun & Moon in disc-local space, then rotated into camera-world space by +uYaw
   float sunBob = sin(uSunAngle * 0.5) * 0.045;
@@ -552,6 +600,11 @@ export const FamilyWorldView: React.FC = () => {
 
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
+  const zoomRef = useRef(zoom);
+
+  useEffect(() => {
+    zoomRef.current = zoom;
+  }, [zoom]);
   const [topDownMode, setTopDownMode] = useState(false);
   const [webglReady, setWebglReady] = useState(true);
 
@@ -632,6 +685,7 @@ export const FamilyWorldView: React.FC = () => {
     let uYaw: WebGLUniformLocation | null = null;
     let uPitch: WebGLUniformLocation | null = null;
     let uCamDist: WebGLUniformLocation | null = null;
+    let uMagnification: WebGLUniformLocation | null = null;
     let uTime: WebGLUniformLocation | null = null;
     let uCloudOffset: WebGLUniformLocation | null = null;
     let uSunAngle: WebGLUniformLocation | null = null;
@@ -702,6 +756,7 @@ export const FamilyWorldView: React.FC = () => {
             uYaw = gl.getUniformLocation(prog, 'uYaw');
             uPitch = gl.getUniformLocation(prog, 'uPitch');
             uCamDist = gl.getUniformLocation(prog, 'uCamDist');
+            uMagnification = gl.getUniformLocation(prog, 'uMagnification');
             uTime = gl.getUniformLocation(prog, 'uTime');
             uCloudOffset = gl.getUniformLocation(prog, 'uCloudOffset');
             uSunAngle = gl.getUniformLocation(prog, 'uSunAngle');
@@ -764,7 +819,12 @@ export const FamilyWorldView: React.FC = () => {
         }
       }
 
-      const camDist = BASE_CAM_DIST / zoom;
+      const zoomLevel = zoomRef.current;
+      const cameraZoom = Math.min(zoomLevel, 1.4);
+      const camDist = BASE_CAM_DIST / cameraZoom;
+      const magnification = zoomLevel / cameraZoom;
+      const project = (x: number, y: number, z: number) =>
+        projectFlat3D(x, y, z, cam.yaw, cam.pitch, camDist, w, h, magnification);
       const animActive = prefs.animationsEnabled && prefs.mode !== 'LIGHT';
       const sunAngle = animActive ? 0.55 + elapsedSec * ORBIT_SPEED : 0.95;
 
@@ -775,6 +835,7 @@ export const FamilyWorldView: React.FC = () => {
         gl.uniform1f(uYaw, (cam.yaw * Math.PI) / 180);
         gl.uniform1f(uPitch, (cam.pitch * Math.PI) / 180);
         gl.uniform1f(uCamDist, camDist);
+        gl.uniform1f(uMagnification, magnification);
         gl.uniform1f(uTime, animActive ? elapsedSec : 1.0);
         gl.uniform1f(uCloudOffset, animActive ? (elapsedSec * 0.0045) % 1.0 : 0.0);
         gl.uniform1f(uSunAngle, sunAngle);
@@ -786,22 +847,46 @@ export const FamilyWorldView: React.FC = () => {
       ovCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ovCtx.clearRect(0, 0, w, h);
 
+      if (gl && prog) {
+        const time = animActive ? elapsedSec : 0;
+        for (const animal of MARINE_LIFE) {
+          const whale = animal.kind === 'whale';
+          const angle = animal.phase + time * animal.speed;
+          const stroke = time * (whale ? 2.1 : 4.2) + animal.phase;
+          const surface = Math.max(0, Math.sin(stroke));
+          const height = 0.016 + surface * (whale ? 0.012 : 0.045);
+          const x = animal.radius * Math.cos(angle);
+          const z = animal.radius * Math.sin(angle);
+          const heading = Math.sign(animal.speed);
+          const dx = -Math.sin(angle) * heading * animal.length / 2;
+          const dz = Math.cos(angle) * heading * animal.length / 2;
+          const nose = project(x + dx, height, z + dz);
+          const tail = project(x - dx, height, z - dz);
+          if (!nose.visible || !tail.visible) continue;
+
+          const centerX = (nose.x + tail.x) / 2;
+          const centerY = (nose.y + tail.y) / 2;
+          const size = Math.hypot(nose.x - tail.x, nose.y - tail.y);
+          if (size < 2 || centerX < -size || centerX > w + size ||
+              centerY < -size || centerY > h + size) continue;
+
+          ovCtx.save();
+          ovCtx.translate(centerX, centerY);
+          ovCtx.rotate(Math.atan2(nose.y - tail.y, nose.x - tail.x));
+          ovCtx.scale(size, size * (whale ? 1.22 : 0.93));
+          ovCtx.globalAlpha = 0.66 + surface * 0.34;
+          drawMarineAnimal(ovCtx, whale, Math.sin(stroke) * 0.051);
+          ovCtx.restore();
+        }
+      }
+
       // Draw graceful elevated 3D orbital track ring for the Sun & Moon above the Flat Earth
       const ringSteps = 72;
       ovCtx.save();
       ovCtx.beginPath();
       for (let i = 0; i <= ringSteps; i++) {
         const a = (i / ringSteps) * Math.PI * 2;
-        const p = projectFlat3D(
-          Math.sin(a) * ORBIT_RADIUS,
-          ORBIT_ALTITUDE,
-          Math.cos(a) * ORBIT_RADIUS,
-          cam.yaw,
-          cam.pitch,
-          camDist,
-          w,
-          h
-        );
+        const p = project(Math.sin(a) * ORBIT_RADIUS, ORBIT_ALTITUDE, Math.cos(a) * ORBIT_RADIUS);
         if (i === 0) ovCtx.moveTo(p.x, p.y);
         else ovCtx.lineTo(p.x, p.y);
       }
@@ -818,10 +903,10 @@ export const FamilyWorldView: React.FC = () => {
       const moonLX = Math.sin(sunAngle + Math.PI) * (ORBIT_RADIUS - sunBob);
       const moonLZ = Math.cos(sunAngle + Math.PI) * (ORBIT_RADIUS - sunBob);
 
-      const pSun = projectFlat3D(sunLX, ORBIT_ALTITUDE, sunLZ, cam.yaw, cam.pitch, camDist, w, h);
-      const pSunGround = projectFlat3D(sunLX, 0.005, sunLZ, cam.yaw, cam.pitch, camDist, w, h);
-      const pMoon = projectFlat3D(moonLX, ORBIT_ALTITUDE, moonLZ, cam.yaw, cam.pitch, camDist, w, h);
-      const pMoonGround = projectFlat3D(moonLX, 0.005, moonLZ, cam.yaw, cam.pitch, camDist, w, h);
+      const pSun = project(sunLX, ORBIT_ALTITUDE, sunLZ);
+      const pSunGround = project(sunLX, 0.005, sunLZ);
+      const pMoon = project(moonLX, ORBIT_ALTITUDE, moonLZ);
+      const pMoonGround = project(moonLX, 0.005, moonLZ);
 
       if (pSun.visible && pSunGround.visible) {
         ovCtx.save();
@@ -891,7 +976,7 @@ export const FamilyWorldView: React.FC = () => {
             const lx = ax + (bx - ax) * t;
             const lz = az + (bz - az) * t;
             const ly = Math.sin(t * Math.PI) * peakH;
-            pts.push(projectFlat3D(lx, ly, lz, cam.yaw, cam.pitch, camDist, w, h));
+            pts.push(project(lx, ly, lz));
           }
 
           ovCtx.save();
@@ -928,7 +1013,7 @@ export const FamilyWorldView: React.FC = () => {
       // Draw pulsing golden radar beacon rings on the Flat Earth & position ALL DOM pins smoothly (0 React re-renders!)
       memberGeos.forEach(({ member, geo }, idx) => {
         const [lx, lz] = latLonToFlatLocal(geo.lat, geo.lon);
-        const p = projectFlat3D(lx, 0.012, lz, cam.yaw, cam.pitch, camDist, w, h);
+        const p = project(lx, 0.012, lz);
         const el = pinElsRef.current.get(member.id);
 
         if (p.visible) {
@@ -967,7 +1052,7 @@ export const FamilyWorldView: React.FC = () => {
 
     rafId = window.requestAnimationFrame(render);
     return () => window.cancelAnimationFrame(rafId);
-  }, [memberGeos, zoom, prefs.animationsEnabled, prefs.mode]);
+  }, [memberGeos, prefs.animationsEnabled, prefs.mode]);
 
   if (!currentUser) return null;
 
@@ -998,7 +1083,7 @@ export const FamilyWorldView: React.FC = () => {
             </h2>
             <p className="mt-0.5 text-xs text-espresso-700 sm:text-sm">
               Visualiza todos los continentes al mismo tiempo con el Sol y la Luna girando sobre el
-              plano rodeado de océano. Arrastra para girar o inclinar y toca a cualquier familiar.
+              plano. Busca delfines y ballenas alrededor. Arrastra para girar y toca a un familiar.
             </p>
           </div>
 
@@ -1019,10 +1104,11 @@ export const FamilyWorldView: React.FC = () => {
               type="button"
               onClick={() => {
                 triggerFeedback('tap');
-                setZoom((z) => Math.max(0.76, Number((z - 0.15).toFixed(2))));
+                setZoom((z) => Math.max(MIN_ZOOM, z / ZOOM_STEP));
               }}
               className="liquid-glass-pill btn-yarn-press flex h-10 w-10 items-center justify-center rounded-xl text-forest-900"
               aria-label="Alejar mapa"
+              disabled={zoom <= MIN_ZOOM}
             >
               <ZoomOut className="h-4 w-4" />
             </button>
@@ -1030,12 +1116,25 @@ export const FamilyWorldView: React.FC = () => {
               type="button"
               onClick={() => {
                 triggerFeedback('tap');
-                setZoom((z) => Math.min(1.65, Number((z + 0.15).toFixed(2))));
+                setZoom((z) => Math.min(MAX_ZOOM, z * ZOOM_STEP));
               }}
               className="liquid-glass-pill btn-yarn-press flex h-10 w-10 items-center justify-center rounded-xl text-forest-900"
               aria-label="Acercar mapa"
+              disabled={zoom >= MAX_ZOOM}
             >
               <ZoomIn className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                triggerFeedback('tap');
+                setZoom(MAX_ZOOM);
+              }}
+              className="liquid-glass-pill btn-yarn-press h-10 rounded-xl px-2.5 text-xs font-bold text-forest-900"
+              aria-label="Zoom máximo, ocho aumentos"
+              disabled={zoom >= MAX_ZOOM}
+            >
+              8×
             </button>
             <button
               type="button"

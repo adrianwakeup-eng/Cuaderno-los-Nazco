@@ -906,6 +906,41 @@ html[data-mode='LIGHT'] .crochet-card {
   animation: beeWingBuzzBack 0.068s linear infinite 0.022s;
 }
 
+/* ======================== SILKY FEED SCROLL-REVEAL ANIMATIONS ======================== */
+
+.feed-scroll-reveal {
+  will-change: transform, opacity;
+  transition:
+    transform 0.62s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.54s cubic-bezier(0.22, 1, 0.36, 1),
+    filter 0.52s ease;
+}
+
+.feed-scroll-hidden-up {
+  opacity: 0;
+  transform: translate3d(0, 34px, 0) scale(0.968);
+  filter: blur(1.5px);
+}
+
+.feed-scroll-hidden-down {
+  opacity: 0;
+  transform: translate3d(0, -26px, 0) scale(0.975);
+  filter: blur(1.5px);
+}
+
+.feed-scroll-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+  filter: blur(0);
+}
+
+html[data-animations='off'] .feed-scroll-reveal,
+html[data-mode='LIGHT'] .feed-scroll-reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  filter: none !important;
+}
+
 /* Respect user preference & appearance toggle */
 html[data-animations='off'] *,
 html[data-mode='LIGHT'] * {

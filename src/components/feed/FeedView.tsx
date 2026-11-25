@@ -4,6 +4,7 @@ import { useAppearance } from '../../context/AppearanceContext';
 import { useFamilyApp } from '../../context/FamilyAppContext';
 import type { PostFilter } from '../../types';
 import { YarnBallLoader } from '../crochet/CrochetArt';
+import { ScrollRevealCard } from '../shared/ScrollRevealCard';
 import { ArtisanalWelcomeBanner } from './ArtisanalWelcomeBanner';
 import { PostCard } from './PostCard';
 import { PostComposer } from './PostComposer';
@@ -84,34 +85,38 @@ export const FeedView: React.FC = () => {
       )}
 
       {/* Desktop: Banner then Stories (matches desktop reference). Mobile: Stories first then compact Banner */}
-      <div className="flex flex-col-reverse gap-3.5 lg:flex-col">
-        <ArtisanalWelcomeBanner />
-        <StoriesBar />
-      </div>
+      <ScrollRevealCard index={0}>
+        <div className="flex flex-col-reverse gap-3.5 lg:flex-col">
+          <ArtisanalWelcomeBanner />
+          <StoriesBar />
+        </div>
+      </ScrollRevealCard>
 
       {/* Tactile Crochet Post Composer (Regular members) OR Ghost Admin Moderation Strip */}
-      {isAdmin ? (
-        <div className="card-crochet flex flex-wrap items-center justify-between gap-3 rounded-3xl px-4 py-3.5 sm:px-5">
-          <div className="min-w-0 flex-1">
-            <p className="text-sm font-extrabold text-forest-900">
-              👻 Modo Administrador Fantasma activo
-            </p>
-            <p className="text-xs text-espresso-700">
-              Nadie sabe que estás aquí. Puedes revisar, editar, fijar, ocultar o eliminar cualquier
-              publicación, comentario, mensaje o perfil en total silencio.
-            </p>
+      <ScrollRevealCard index={1}>
+        {isAdmin ? (
+          <div className="card-crochet flex flex-wrap items-center justify-between gap-3 rounded-3xl px-4 py-3.5 sm:px-5">
+            <div className="min-w-0 flex-1">
+              <p className="text-sm font-extrabold text-forest-900">
+                👻 Modo Administrador Fantasma activo
+              </p>
+              <p className="text-xs text-espresso-700">
+                Nadie sabe que estás aquí. Puedes revisar, editar, fijar, ocultar o eliminar cualquier
+                publicación, comentario, mensaje o perfil en total silencio.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setActiveSection('ADMIN')}
+              className="crochet-green-3d btn-yarn-press shrink-0 rounded-full px-4 py-2 text-xs font-extrabold text-white"
+            >
+              Abrir Panel Admin
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={() => setActiveSection('ADMIN')}
-            className="crochet-green-3d btn-yarn-press shrink-0 rounded-full px-4 py-2 text-xs font-extrabold text-white"
-          >
-            Abrir Panel Admin
-          </button>
-        </div>
-      ) : (
-        <PostComposer />
-      )}
+        ) : (
+          <PostComposer />
+        )}
+      </ScrollRevealCard>
 
       {/* Reference-Fidelity Crochet Filter Bar (Active = Solar Yellow 3D, Inactive = Forest Green) */}
       <div className="no-scrollbar flex items-center gap-2 overflow-x-auto py-1">
@@ -149,20 +154,24 @@ export const FeedView: React.FC = () => {
         </button>
       </div>
 
-      {/* Posts Feed */}
+      {/* Posts Feed with Smooth Scroll-Reveal Animations */}
       {visiblePosts.length === 0 ? (
-        <div className="card-crochet rounded-3xl p-10 text-center">
-          <p className="font-editorial text-2xl font-bold text-forest-900">
-            No hay publicaciones en esta categoría todavía
-          </p>
-          <p className="mt-1 text-sm text-espresso-600">
-            Publica el primer recuerdo arriba o cambia el filtro para ver todo el cuaderno familiar.
-          </p>
-        </div>
+        <ScrollRevealCard index={0}>
+          <div className="card-crochet rounded-3xl p-10 text-center">
+            <p className="font-editorial text-2xl font-bold text-forest-900">
+              No hay publicaciones en esta categoría todavía
+            </p>
+            <p className="mt-1 text-sm text-espresso-600">
+              Publica el primer recuerdo arriba o cambia el filtro para ver todo el cuaderno familiar.
+            </p>
+          </div>
+        </ScrollRevealCard>
       ) : (
         <div className="space-y-4">
-          {visiblePosts.map((post) => (
-            <PostCard key={post.id} post={post} />
+          {visiblePosts.map((post, idx) => (
+            <ScrollRevealCard key={`${filter}-${post.id}`} index={idx}>
+              <PostCard post={post} />
+            </ScrollRevealCard>
           ))}
         </div>
       )}

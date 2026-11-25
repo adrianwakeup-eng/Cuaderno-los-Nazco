@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Bell,
   ChevronDown,
@@ -93,10 +93,21 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     setShowAppearanceModal,
   ]);
 
-  // Smoothly compact top header height on mobile scroll down
+  const progressBarRef = useRef<HTMLDivElement | null>(null);
+
+  // Smoothly compact top header height + drive zero-rerender golden scroll progress filament
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 28);
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 28);
+      if (progressBarRef.current) {
+        const maxScroll = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+        const ratio = Math.max(0, Math.min(1, y / maxScroll));
+        progressBarRef.current.style.transform = `scaleX(${ratio})`;
+      }
+    };
     window.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
@@ -349,19 +360,26 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             </button>
           </div>
         </div>
+        {/* Live Emerald-Gold Scroll Progress Filament */}
+        <div
+          ref={progressBarRef}
+          className="pointer-events-none absolute bottom-0 left-0 right-0 h-[2.5px] origin-left bg-gradient-to-r from-emerald-500 via-solar-300 to-amber-400 shadow-[0_0_8px_rgba(255,214,78,0.75)] transition-transform duration-150 ease-out"
+          style={{ transform: 'scaleX(0)' }}
+          aria-hidden="true"
+        />
       </header>
 
-      {/* ================= MAIN ADAPTIVE LAYOUT (PHONE / TABLET / WIDE DESKTOP 2-COL) ================= */}
+      {/* ================= MAIN ADAPTIVE LAYOUT (FIXED LEFT SIDEBAR + SCROLLING ANIMATED RIGHT FEED) ================= */}
       <div
         className={`relative z-20 mx-auto max-w-[1520px] px-2.5 pt-3.5 sm:px-5 sm:pt-5 ${
-          showSidebars ? 'grid grid-cols-1 gap-5 md:grid-cols-12' : ''
+          showSidebars ? 'grid grid-cols-1 gap-5 md:grid-cols-12 md:items-start' : ''
         }`}
       >
-        {/* LEFT COLUMN (Desktop + Tablet Landscape on Feed) */}
+        {/* LEFT COLUMN — FIXED / STICKY on Desktop while ONLY the right-side Muro scrolls */}
         {showSidebars && (
-          <aside className="hidden space-y-4 md:col-span-4 md:block lg:col-span-3">
+          <aside className="no-scrollbar hidden space-y-3 md:sticky md:top-[82px] md:col-span-4 md:block md:max-h-[calc(100dvh-96px)] md:self-start md:overflow-y-auto md:pb-6 lg:col-span-3">
             {/* Profile & Love Burst Card (Matches Desktop Reference) */}
-            <div className="card-crochet rounded-3xl p-4 sm:p-5">
+            <div className="card-crochet rounded-3xl p-4">
               <button
                 type="button"
                 onClick={() => handleSelectSection('PROFILE')}
@@ -425,17 +443,17 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               )}
             </div>
 
-            {/* Stitched Sala Familiar Nazco Card (Matches Desktop Reference) */}
-            <div className="crochet-parchment rounded-3xl p-4 sm:p-5">
+            {/* Stitched Sala Familiar Card */}
+            <div className="crochet-parchment rounded-3xl p-4">
               <div className="mb-2 flex items-center gap-2.5">
-                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-forest-700 text-solar-300 shadow">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-forest-700 text-solar-300 shadow">
                   <Video className="h-4 w-4 animate-wiggle" />
                 </span>
                 <h2 className="font-editorial text-lg font-bold text-forest-900">
                   Sala Familiar
                 </h2>
               </div>
-              <p className="mb-4 text-xs leading-relaxed text-espresso-800">
+              <p className="mb-3 text-xs leading-relaxed text-espresso-800">
                 Reúne a toda la familia en una videollamada privada llena de sonrisas y calidez.
               </p>
               <button
@@ -454,16 +472,16 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                   });
                 }}
                 disabled={!snapshot.featureFlags.videoCallsEnabled}
-                className="crochet-green-3d btn-yarn-press flex min-h-[46px] w-full items-center justify-center gap-2 rounded-full px-4 text-xs font-extrabold text-white disabled:opacity-50"
+                className="crochet-green-3d btn-yarn-press flex min-h-[44px] w-full items-center justify-center gap-2 rounded-full px-4 text-xs font-extrabold text-white disabled:opacity-50"
               >
                 <Video className="h-4 w-4 text-solar-300" />
                 Entrar a videollamada
               </button>
             </div>
 
-            {/* Familia conectada (placed cleanly in Left Sidebar so Muro posts expand wide on PC) */}
-            <div className="card-crochet rounded-3xl p-4 sm:p-5">
-              <div className="mb-3 flex items-center justify-between">
+            {/* Familia conectada (stays pinned inside Fixed Left Sidebar) */}
+            <div className="card-crochet rounded-3xl p-4">
+              <div className="mb-2.5 flex items-center justify-between">
                 <h2 className="flex items-center gap-2 text-sm font-extrabold text-forest-900">
                   <Users className="h-4 w-4 text-brazil-500" />
                   Familia conectada
@@ -472,13 +490,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                   {onlineMembers.length} aquí
                 </span>
               </div>
-              <div className="space-y-1.5">
+              <div className="no-scrollbar max-h-[220px] space-y-1.5 overflow-y-auto">
                 {snapshot.members
                   .filter((m) => m.status === 'ACTIVE' && m.role !== 'ADMIN' && m.id !== currentUser.id)
                   .map((member) => (
                     <div
                       key={member.id}
-                      className="flex items-center justify-between gap-2 rounded-2xl p-2 transition hover:bg-cotton-200/60"
+                      className="flex items-center justify-between gap-2 rounded-2xl p-1.5 transition hover:bg-cotton-200/60"
                     >
                       <button
                         type="button"
@@ -488,7 +506,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                         }}
                         className="flex min-w-0 items-center gap-2.5 text-left"
                       >
-                        <div className="rounded-full border border-dashed border-brazil-500 p-0.5">
+                        <div className="shrink-0 rounded-full border border-dashed border-brazil-500 p-0.5">
                           <MemberAvatar member={member} size="sm" showPresence />
                         </div>
                         <div className="min-w-0">

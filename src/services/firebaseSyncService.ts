@@ -4,6 +4,8 @@ import {
   doc,
   getDoc,
   getDocs,
+  getDocsFromServer,
+  runTransaction,
   onSnapshot,
   setDoc,
   updateDoc,
@@ -353,11 +355,17 @@ export const firebaseSyncService = {
   }): () => void {
     const unsubs: Unsubscribe[] = [];
     let cancelled = false;
+    let authRetry: number | undefined;
 
     handlers.onStatus('CONNECTING');
 
-    void ensureFirebaseSession().then(() => {
+    const connect = (uid: string | null) => {
       if (cancelled) return;
+      if (!uid) {
+        handlers.onStatus(navigator.onLine ? 'ERROR' : 'OFFLINE');
+        authRetry = window.setTimeout(() => void ensureFirebaseSession().then(connect), 5000);
+        return;
+      }
 
       const onErr = () => {
         handlers.onStatus(navigator.onLine ? 'ERROR' : 'OFFLINE');
@@ -379,7 +387,9 @@ export const firebaseSyncService = {
       unsubs.push(
         onSnapshot(
           collection(firestoreDb, `${FAMILY_ROOT}/members`),
+          { includeMetadataChanges: true },
           (qs) => {
+            if (qs.metadata.fromCache || qs.metadata.hasPendingWrites) return;
             handlers.onStatus('CONNECTED');
             const list = qs.docs.map((d) => d.data() as FamilyMember);
             if (list.length > 0) handlers.onMembers(list);
@@ -454,10 +464,12 @@ export const firebaseSyncService = {
           onErr
         )
       );
-    });
+    };
+    void ensureFirebaseSession().then(connect);
 
     return () => {
       cancelled = true;
+      window.clearTimeout(authRetry);
       unsubs.forEach((u) => {
         try {
           u();
@@ -479,6 +491,48 @@ export const firebaseSyncService = {
       updatedAt: new Date().toISOString(),
     };
     await setDoc(doc(firestoreDb, `${FAMILY_ROOT}/meta/config`), stripUndefined(meta));
+  },
+
+  async refreshMembers(): Promise<FamilyMember[]> {
+    if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
+    const members = await getDocsFromServer(collection(firestoreDb, `${FAMILY_ROOT}/members`));
+    return members.docs.map((entry) => entry.data() as FamilyMember);
+  },
+
+  async confirmMemberRegistration(member: FamilyMember): Promise<FamilyMember> {
+    if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
+    const memberRef = doc(firestoreDb, `${FAMILY_ROOT}/members`, member.id);
+    return runTransaction(firestoreDb, async (tx) => {
+      const existing = await tx.get(memberRef);
+      if (existing.exists()) {
+        const account = existing.data() as FamilyMember;
+        if (account.status !== 'ACTIVE' || account.password !== member.password) {
+          throw new Error('family-account-unavailable');
+        }
+        return account;
+      }
+      tx.set(memberRef, stripUndefined(member));
+      return member;
+    });
+  },
+
+  async updateMemberFields(
+    memberId: string,
+    fields: Partial<Pick<FamilyMember, 'presence' | 'lastActiveAt' | 'name' | 'username' | 'email' | 'password' |
+      'relationship' | 'location' | 'bio' | 'avatarUrl' | 'coverUrl'>>
+  ): Promise<void> {
+    if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
+    await updateDoc(doc(firestoreDb, `${FAMILY_ROOT}/members`, memberId), fields);
+  },
+
+  async setMemberAccess(memberId: string, status: FamilyMember['status']): Promise<void> {
+    if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
+    const memberRef = doc(firestoreDb, `${FAMILY_ROOT}/members`, memberId);
+    await runTransaction(firestoreDb, async (tx) => {
+      const account = await tx.get(memberRef);
+      if (!account.exists() || account.data().role === 'ADMIN') throw new Error('invalid-member');
+      tx.update(memberRef, { status, presence: 'OFFLINE' });
+    });
   },
 
   async saveMember(member: FamilyMember): Promise<void> {

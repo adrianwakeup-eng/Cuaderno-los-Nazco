@@ -10,6 +10,8 @@ import {
   KeyRound,
   Pin,
   RotateCcw,
+  RefreshCw,
+  Search,
   Shield,
   Sliders,
   Sparkles,
@@ -31,6 +33,7 @@ export const AdminPanelView: React.FC = () => {
     createInvite,
     toggleInviteActive,
     setMemberStatus,
+    refreshMembers,
     togglePinPost,
     toggleFeaturePost,
     toggleHidePost,
@@ -44,6 +47,10 @@ export const AdminPanelView: React.FC = () => {
     notify,
   } = useFamilyApp();
 
+  const [memberQuery, setMemberQuery] = useState('');
+  const [showRemoved, setShowRemoved] = useState(false);
+  const [refreshingMembers, setRefreshingMembers] = useState(false);
+  const [savingMemberId, setSavingMemberId] = useState<string | null>(null);
   const [tab, setTab] = useState<AdminTab>('MEMBERS');
   const [inviteLabel, setInviteLabel] = useState('');
   const [inviteMaxUses, setInviteMaxUses] = useState(5);
@@ -70,6 +77,39 @@ export const AdminPanelView: React.FC = () => {
 
   const flags = snapshot.featureFlags;
   const membersById = new Map(snapshot.members.map((m) => [m.id, m]));
+  const memberList = snapshot.members.filter((member) =>
+    member.role !== 'ADMIN' && member.status === (showRemoved ? 'DISABLED' : 'ACTIVE') &&
+    [member.name, member.username, member.email].some((field) =>
+      field.toLocaleLowerCase().includes(memberQuery.trim().toLocaleLowerCase())
+    )
+  );
+
+  const reloadMembers = async () => {
+    setRefreshingMembers(true);
+    try {
+      await refreshMembers();
+      notify('Lista actualizada desde la nube.', 'success');
+    } catch {
+      notify('No se pudo conectar con la nube para actualizar las cuentas.', 'warning');
+    } finally {
+      setRefreshingMembers(false);
+    }
+  };
+
+  const changeMemberAccess = async (member: (typeof snapshot.members)[number]) => {
+    const removing = member.status === 'ACTIVE';
+    if (removing && !window.confirm(`¿Quitar el acceso a ${member.name}? Podrás restaurarlo desde Retirados.`)) return;
+    setSavingMemberId(member.id);
+    try {
+      await setMemberStatus(member.id, removing ? 'DISABLED' : 'ACTIVE');
+      notify(removing ? 'Acceso eliminado.' : 'Acceso restaurado.', 'success');
+    } catch {
+      notify('La nube no confirmó el cambio. Actualiza la lista e inténtalo de nuevo.', 'warning');
+    } finally {
+      setSavingMemberId(null);
+    }
+  };
+
   const quotaPct = Math.min(
     100,
     Math.round((storageUsage.totalBytes / Math.max(1, storageUsage.quotaBytes)) * 100)
@@ -358,13 +398,47 @@ export const AdminPanelView: React.FC = () => {
             <h3 className="font-editorial text-lg font-bold text-espresso-900">
               Cuentas de la familia
             </h3>
-            <p className="mt-0.5 text-xs text-espresso-500">
-              Asigna permisos de Administrador o activa/desactiva el acceso de cualquier cuenta.
-            </p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <label className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-linen-200 bg-white px-3 py-2">
+                <Search className="h-4 w-4 shrink-0 text-espresso-500" />
+                <input
+                  value={memberQuery}
+                  onChange={(event) => setMemberQuery(event.target.value)}
+                  placeholder="Buscar familiar"
+                  aria-label="Buscar familiar por nombre, usuario o correo"
+                  className="min-w-0 flex-1 bg-transparent text-sm"
+                />
+              </label>
+              <button
+                type="button"
+                onClick={() => void reloadMembers()}
+                disabled={refreshingMembers || savingMemberId !== null}
+                className="flex items-center gap-1 rounded-xl bg-olive-100 px-3 py-2 text-xs font-bold text-olive-700 disabled:opacity-50"
+              >
+                <RefreshCw className={`h-4 w-4 ${refreshingMembers ? 'animate-spin' : ''}`} />
+                {refreshingMembers ? 'Actualizando…' : 'Actualizar lista'}
+              </button>
+            </div>
+            <div className="mt-3 flex gap-2">
+              {[false, true].map((removed) => (
+                <button
+                  key={String(removed)}
+                  type="button"
+                  onClick={() => setShowRemoved(removed)}
+                  aria-pressed={showRemoved === removed}
+                  className={`rounded-full px-3 py-1.5 text-xs font-bold ${showRemoved === removed ? 'bg-forest-700 text-white' : 'bg-white text-espresso-700'}`}
+                >
+                  {removed ? 'Retirados' : 'Activos'}
+                </button>
+              ))}
+            </div>
             <div className="mt-4 space-y-2.5">
-              {snapshot.members
-                .filter((m) => m.role !== 'ADMIN')
-                .map((member) => (
+              {memberList.length === 0 && (
+                <p className="text-sm text-espresso-500">
+                  {memberQuery.trim() ? 'No hay coincidencias.' : showRemoved ? 'No hay familiares retirados.' : 'No hay familiares activos.'}
+                </p>
+              )}
+              {memberList.map((member) => (
                 <div
                   key={member.id}
                   className={`flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-3.5 ${
@@ -392,23 +466,16 @@ export const AdminPanelView: React.FC = () => {
                     >
                       {member.role === 'ADMIN' ? '👑 Administrador único' : `Miembro (@${member.username})`}
                     </span>
-                    {member.role !== 'ADMIN' && (
-                      <button
-                        onClick={() =>
-                          setMemberStatus(
-                            member.id,
-                            member.status === 'ACTIVE' ? 'DISABLED' : 'ACTIVE'
-                          )
-                        }
-                        className={`rounded-xl px-3 py-1.5 text-xs font-semibold transition ${
-                          member.status === 'ACTIVE'
-                            ? 'bg-olive-100 text-olive-700 hover:bg-red-100 hover:text-red-700'
-                            : 'bg-stone-200 text-stone-700 hover:bg-olive-100 hover:text-olive-700'
-                        }`}
-                      >
-                        {member.status === 'ACTIVE' ? 'Activa' : 'Desactivada'}
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => void changeMemberAccess(member)}
+                      disabled={savingMemberId !== null || refreshingMembers}
+                      className={`flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-semibold disabled:opacity-50 ${showRemoved ? 'bg-olive-100 text-olive-700' : 'bg-red-100 text-red-800'}`}
+                      aria-label={`${showRemoved ? 'Restaurar' : 'Eliminar'} acceso de ${member.name}`}
+                    >
+                      {showRemoved ? <RotateCcw className="h-3.5 w-3.5" /> : <Trash2 className="h-3.5 w-3.5" />}
+                      {savingMemberId === member.id ? 'Guardando…' : showRemoved ? 'Restaurar acceso' : 'Eliminar acceso'}
+                    </button>
                   </div>
                 </div>
               ))}

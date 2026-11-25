@@ -104,7 +104,7 @@ interface FamilyAppContextValue {
     bio: string;
     avatarUrl?: string;
     inviteCode?: string;
-  }) => { ok: boolean; error?: string; member?: FamilyMember };
+  }) => Promise<{ ok: boolean; error?: string; member?: FamilyMember }>;
   updateMemberProfile: (
     memberId: string,
     patch: Partial<
@@ -143,7 +143,8 @@ interface FamilyAppContextValue {
   // Admin
   createInvite: (label: string, maxUses: number) => FamilyInvite;
   toggleInviteActive: (code: string) => void;
-  setMemberStatus: (memberId: string, status: AccountStatus) => void;
+  setMemberStatus: (memberId: string, status: AccountStatus) => Promise<void>;
+  refreshMembers: () => Promise<void>;
   updateFeatureFlags: (patch: Partial<FeatureFlags>) => void;
   exportBackupJson: () => void;
   importBackupJson: (rawJson: string) => void;
@@ -256,12 +257,10 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Real-time Firebase Cloud Firestore subscription across ALL family phones
   useEffect(() => {
-    let active = true;
     let unsubscribe: (() => void) | null = null;
 
-    const connectCloud = async () => {
-      await firebaseSyncService.ensureCloudSeeded(familyRepository.loadSnapshot());
-      if (!active) return;
+    const connectCloud = () => {
+      void firebaseSyncService.ensureCloudSeeded(familyRepository.loadSnapshot());
 
       unsubscribe = firebaseSyncService.subscribeAll({
         onStatus: setCloudStatus,
@@ -325,10 +324,9 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       });
     };
 
-    void connectCloud();
+    connectCloud();
 
     return () => {
-      active = false;
       unsubscribe?.();
     };
   }, []);
@@ -670,7 +668,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       );
 
       if (!target) {
-        return { ok: false, error: 'No encontramos ese usuario familiar. Verifica o crea tu cuenta.' };
+        return {
+          ok: false,
+          error: cloudStatus === 'CONNECTED'
+            ? 'No encontramos ese usuario familiar. Comprueba que el registro se confirmó en la nube.'
+            : 'Aún no pudimos consultar las cuentas de la familia. Revisa tu conexión e inténtalo de nuevo.',
+        };
       }
       if (target.role === 'ADMIN') {
         return {
@@ -698,12 +701,15 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ...prev,
         members: prev.members.map((m) => (m.id === target.id ? updated : m)),
       }));
-      void firebaseSyncService.saveMember(updated).catch(() => {});
+      void firebaseSyncService.updateMemberFields(target.id, {
+        presence: updated.presence,
+        lastActiveAt: updated.lastActiveAt,
+      }).catch(() => {});
       triggerJoyBurst('💛', 8);
       notify(`¡Bienvenido a casa, ${target.name.split(' ')[0]}!`, 'success');
       return { ok: true };
     },
-    [snapshot.members, commitSnapshot, triggerJoyBurst, notify]
+    [snapshot.members, cloudStatus, commitSnapshot, triggerJoyBurst, notify]
   );
 
   // --- Auth: Sole Administrator login (PASSWORD ONLY — NO USERNAME) ---
@@ -751,7 +757,10 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         presence: 'OFFLINE',
         lastActiveAt: new Date().toISOString(),
       };
-      void firebaseSyncService.saveMember(offlineMember).catch(() => {});
+      void firebaseSyncService.updateMemberFields(offlineMember.id, {
+        presence: offlineMember.presence,
+        lastActiveAt: offlineMember.lastActiveAt,
+      }).catch(() => {});
     }
     setActiveCall(null);
     setActiveUserId(null);
@@ -761,7 +770,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [currentUser, notify]);
 
   const registerMember = useCallback(
-    (input: {
+    async (input: {
       name: string;
       username: string;
       email: string;
@@ -771,7 +780,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       bio: string;
       avatarUrl?: string;
       inviteCode?: string;
-    }): { ok: boolean; error?: string; member?: FamilyMember } => {
+    }): Promise<{ ok: boolean; error?: string; member?: FamilyMember }> => {
       const cleanName = input.name.trim();
       const cleanUsername = input.username.trim().toLowerCase().replace(/\s+/g, '');
       const cleanEmail =
@@ -785,23 +794,20 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       if (cleanPassword.length < 4) {
         return { ok: false, error: 'Crea una contraseña de al menos 4 caracteres.' };
       }
-      if (
-        snapshot.members.some(
-          (m) => m.username.toLowerCase() === cleanUsername || m.email.toLowerCase() === cleanEmail
-        )
-      ) {
-        return {
-          ok: false,
-          error: 'Ese usuario o correo ya existe en Cuaderno Social de la familia.',
-        };
-      }
+      const matchesAccount = (m: FamilyMember) =>
+        m.username.toLowerCase() === cleanUsername || m.email.toLowerCase() === cleanEmail;
+      const localAccount = snapshot.members.find((m) =>
+        matchesAccount(m) && m.role === 'MEMBER' && m.status === 'ACTIVE' &&
+        m.username.toLowerCase() === cleanUsername && m.email.toLowerCase() === cleanEmail &&
+        m.password === cleanPassword
+      );
 
       const cleanCode = input.inviteCode?.trim().toUpperCase();
       const matchedInvite = cleanCode
         ? snapshot.invites.find((inv) => inv.code === cleanCode && inv.active && inv.uses < inv.maxUses)
         : undefined;
 
-      const member: FamilyMember = {
+      const candidate: FamilyMember = {
         id: `nazco_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         username: cleanUsername,
         name: cleanName,
@@ -819,6 +825,26 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         lastActiveAt: new Date().toISOString(),
       };
 
+      let member: FamilyMember;
+      try {
+        const cloudMembers = await firebaseSyncService.refreshMembers();
+        if (cloudMembers.some(matchesAccount)) {
+          return { ok: false, error: 'Ese usuario o correo ya existe en la nube. Inicia sesión con esa cuenta.' };
+        }
+        if (snapshot.members.some(matchesAccount) && !localAccount) {
+          return { ok: false, error: 'Ese usuario o correo ya existe en este dispositivo.' };
+        }
+        member = await firebaseSyncService.confirmMemberRegistration(localAccount ?? candidate);
+      } catch (error) {
+        const code = (error as { code?: string }).code;
+        return {
+          ok: false,
+          error: code === 'permission-denied'
+            ? 'La nube rechazó el registro. Prueba sin foto de perfil o avisa al administrador.'
+            : 'No pudimos confirmar la cuenta en la nube. Tus datos siguen en el formulario. Revisa tu conexión y reintenta.',
+        };
+      }
+
       const generalChat = snapshot.chats.find((c) => c.id === 'chat_familia_general');
       const updatedGeneralChat = generalChat
         ? {
@@ -830,7 +856,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       commitSnapshot((prev) => {
         const next: FamilyAppSnapshot = {
           ...prev,
-          members: [...prev.members, member],
+          members: [...prev.members.filter((item) => item.id !== member.id), member],
           invites: matchedInvite
             ? prev.invites.map((inv) =>
                 inv.code === matchedInvite.code
@@ -846,7 +872,6 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return next;
       });
 
-      void firebaseSyncService.saveMember(member).catch(() => {});
       if (updatedGeneralChat) void firebaseSyncService.saveChat(updatedGeneralChat).catch(() => {});
 
       setActiveUserId(member.id);
@@ -872,11 +897,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     ) => {
       commitSnapshot((prev) => {
         const nextMembers = prev.members.map((m) => (m.id === memberId ? { ...m, ...patch } : m));
-        const updated = nextMembers.find((m) => m.id === memberId);
-        if (updated) void firebaseSyncService.saveMember(updated).catch(() => {});
         return { ...prev, members: nextMembers };
       });
-      notify('Perfil actualizado en todos los teléfonos ✨', 'success');
+      void firebaseSyncService.updateMemberFields(memberId, patch).then(
+        () => notify('Perfil actualizado en la nube.', 'success'),
+        () => notify('El perfil cambió en este dispositivo. La nube no confirmó el cambio.', 'warning')
+      );
     },
     [commitSnapshot, notify]
   );
@@ -1526,25 +1552,24 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     [commitSnapshot]
   );
 
+  const refreshMembers = useCallback(async () => {
+    if (currentUser?.role !== 'ADMIN') return;
+    const members = await firebaseSyncService.refreshMembers();
+    commitSnapshot((prev) => ({ ...prev, members }));
+  }, [currentUser?.role, commitSnapshot]);
+
   const setMemberStatus = useCallback(
-    (memberId: string, status: AccountStatus) => {
-      if (memberId === 'nazco_adrian' && status === 'DISABLED') {
-        notify('La cuenta de Administrador no puede desactivarse.', 'warning');
-        return;
-      }
-      commitSnapshot((prev) => {
-        const nextMembers = prev.members.map((m) =>
-          m.id === memberId
-            ? { ...m, status, presence: status === 'DISABLED' ? 'OFFLINE' : m.presence }
-            : m
-        );
-        const updated = nextMembers.find((m) => m.id === memberId);
-        if (updated) void firebaseSyncService.saveMember(updated).catch(() => {});
-        return { ...prev, members: nextMembers };
-      });
-      notify(status === 'ACTIVE' ? 'Cuenta reactivada.' : 'Cuenta desactivada.', 'info');
+    async (memberId: string, status: AccountStatus) => {
+      if (currentUser?.role !== 'ADMIN' || memberId === 'nazco_adrian') return;
+      await firebaseSyncService.setMemberAccess(memberId, status);
+      commitSnapshot((prev) => ({
+        ...prev,
+        members: prev.members.map((member) =>
+          member.id === memberId ? { ...member, status, presence: 'OFFLINE' } : member
+        ),
+      }));
     },
-    [commitSnapshot, notify]
+    [currentUser?.role, commitSnapshot]
   );
 
   const updateFeatureFlags = useCallback(
@@ -1659,6 +1684,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     createInvite,
     toggleInviteActive,
     setMemberStatus,
+    refreshMembers,
     updateFeatureFlags,
     exportBackupJson,
     importBackupJson,

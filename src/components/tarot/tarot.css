@@ -386,8 +386,11 @@
   animation: tarot-mist-drift 18s ease-in-out infinite alternate;
 }
 
-.tarot-scene {
+.tarot-room {
   --tarot-feather: clamp(12px, (100vw - 700px) * .1, 42px);
+}
+
+.tarot-scene {
   position: relative;
   isolation: isolate;
 }
@@ -403,6 +406,35 @@
 .tarot-room-wing { display: none; }
 
 @media (min-width: 760px) {
+  .tarot-heading { position: relative; }
+
+  .tarot-heading::before, .tarot-heading::after {
+    content: '';
+    position: absolute;
+    inset-block: -21px -1px;
+    width: max(0px, calc((100vw - 100%) / 2 - 9px));
+    pointer-events: none;
+    background-image:
+      linear-gradient(to top, #fff9e36e, #faebcc80),
+      url('./habitacion-laterales.webp');
+    background-size: 100% 100%, 200% 500%;
+    transform: scaleY(-1);
+  }
+
+  .tarot-heading::before {
+    right: 100%;
+    background-position: center, left top;
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%);
+    mask-image: linear-gradient(to right, transparent, #000 12%);
+  }
+
+  .tarot-heading::after {
+    left: 100%;
+    background-position: center, right top;
+    -webkit-mask-image: linear-gradient(to left, transparent, #000 12%);
+    mask-image: linear-gradient(to left, transparent, #000 12%);
+  }
+
   .tarot-table {
     background: transparent;
   }
@@ -440,7 +472,7 @@
     inset: 0;
     background:
       linear-gradient(var(--tarot-wing-light), #fff7df46, transparent 58%),
-      linear-gradient(180deg, #faebccd9, #fff5db28 14%, transparent 62%, #1e130943 87%, #1e1309c4);
+      linear-gradient(180deg, #faebcc80, #fff5db28 14%, transparent 62%, #1e130943 87%, #1e1309c4);
   }
 
   .tarot-room-wing-west { --tarot-wing-light: 90deg; }

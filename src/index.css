@@ -9,6 +9,10 @@
   --ocean: #16466c;
   --cotton: #f5ebdd;
   --artisanal: #ba9254;
+  --gold-thread: rgba(255, 224, 118, 0.94);
+  --gold-thread-bright: rgba(255, 245, 188, 0.96);
+  --gold-glow-outer: 0 0 11px rgba(255, 212, 74, 0.42), 0 0 2px rgba(255, 246, 194, 0.85);
+  --gold-glow-inner: inset 0 0 7px rgba(255, 232, 142, 0.34), inset 0 1px 0.5px rgba(255, 250, 224, 0.94);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -72,7 +76,7 @@ html[data-mode='LIGHT'] body {
 
 /* ======================== iOS LIQUID GLASS + ARTISANAL GOLD SURFACES ======================== */
 
-/* Translucent iOS Liquid Glass card preserving warm ivory & artisanal gold edges */
+/* Translucent iOS Liquid Glass card with luminous gold thread border */
 .card-warm,
 .card-crochet,
 .crochet-card {
@@ -86,12 +90,11 @@ html[data-mode='LIGHT'] body {
   );
   backdrop-filter: blur(22px) saturate(185%) brightness(1.06);
   -webkit-backdrop-filter: blur(22px) saturate(185%) brightness(1.06);
-  border: 1.5px solid rgba(255, 255, 255, 0.68);
+  border: 1.5px solid var(--gold-thread);
   box-shadow:
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.92),
-    inset 0 -1.5px 2px rgba(176, 126, 36, 0.22),
-    0 16px 38px -12px rgba(58, 38, 6, 0.30),
-    0 4px 12px -2px rgba(96, 66, 14, 0.14);
+    var(--gold-glow-inner),
+    var(--gold-glow-outer),
+    0 16px 38px -12px rgba(58, 38, 6, 0.30);
   transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease;
 }
 
@@ -99,11 +102,13 @@ html[data-mode='IMMERSIVE_3D'][data-effects3d='on'] .card-warm:hover,
 html[data-mode='IMMERSIVE_3D'][data-effects3d='on'] .card-crochet:hover,
 html[data-mode='IMMERSIVE_3D'][data-effects3d='on'] .crochet-card:hover {
   transform: translateY(-2px);
+  border-color: var(--gold-thread-bright);
   box-shadow:
-    inset 0 2px 1.5px rgba(255, 255, 255, 0.96),
-    inset 0 -1.5px 2px rgba(186, 138, 42, 0.28),
-    0 22px 44px -14px rgba(58, 38, 6, 0.36),
-    0 6px 16px -4px rgba(140, 96, 20, 0.20);
+    inset 0 0 10px rgba(255, 236, 152, 0.46),
+    inset 0 1.5px 1px rgba(255, 252, 230, 0.98),
+    0 0 16px rgba(255, 214, 78, 0.56),
+    0 0 3px rgba(255, 248, 204, 0.95),
+    0 22px 44px -14px rgba(58, 38, 6, 0.36);
 }
 
 html[data-mode='LIGHT'] .card-warm,
@@ -113,10 +118,11 @@ html[data-mode='LIGHT'] .crochet-card {
   -webkit-backdrop-filter: none;
   background-image: none;
   background-color: rgba(255, 252, 245, 0.92);
-  box-shadow: 0 4px 12px rgba(58, 38, 6, 0.14);
+  border: 1.5px solid var(--gold-thread);
+  box-shadow: 0 0 8px rgba(255, 212, 74, 0.35), 0 4px 12px rgba(58, 38, 6, 0.14);
 }
 
-/* Warm Champagne Liquid Glass Panel (Sala Familiar, Welcome Banner, Incoming Call, Plaques) */
+/* Warm Champagne Liquid Glass Panel with gleaming spun-gold double thread */
 .crochet-parchment {
   position: relative;
   background-color: rgba(255, 248, 228, 0.48);
@@ -128,10 +134,11 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(24px) saturate(195%) brightness(1.06);
   -webkit-backdrop-filter: blur(24px) saturate(195%) brightness(1.06);
-  border: 1.5px solid rgba(255, 252, 238, 0.76);
+  border: 1.5px solid var(--gold-thread-bright);
   box-shadow:
-    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.92),
-    inset 0 -2px 4px rgba(164, 114, 28, 0.20),
+    var(--gold-glow-inner),
+    0 0 14px rgba(255, 214, 78, 0.48),
+    0 0 2px rgba(255, 248, 206, 0.92),
     0 14px 32px -10px rgba(68, 44, 8, 0.30);
 }
 
@@ -140,11 +147,12 @@ html[data-mode='LIGHT'] .crochet-card {
   position: absolute;
   inset: 5px;
   border-radius: inherit;
-  border: 1.5px dashed rgba(176, 130, 46, 0.48);
+  border: 1px dashed rgba(255, 226, 122, 0.85);
+  box-shadow: 0 0 6px rgba(255, 214, 78, 0.42);
   pointer-events: none;
 }
 
-/* Liquid Emerald Jewel Glass (Publicar, Call CTA, Primary Green Buttons) */
+/* Liquid Emerald Jewel Glass with luminous gold thread rim */
 .crochet-green-3d {
   position: relative;
   background-color: rgba(18, 86, 52, 0.78);
@@ -156,10 +164,12 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(16px) saturate(185%);
   -webkit-backdrop-filter: blur(16px) saturate(185%);
-  border: 1.5px solid rgba(190, 245, 206, 0.44);
+  border: 1.5px solid var(--gold-thread);
   box-shadow:
-    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.48),
+    inset 0 1.5px 1.5px rgba(255, 248, 204, 0.58),
     inset 0 -3px 6px rgba(6, 30, 17, 0.55),
+    0 0 10px rgba(255, 214, 78, 0.44),
+    0 0 2px rgba(255, 246, 192, 0.85),
     0 4px 0 rgba(11, 50, 30, 0.85),
     0 12px 24px -6px rgba(10, 44, 26, 0.46);
 }
@@ -169,11 +179,12 @@ html[data-mode='LIGHT'] .crochet-card {
   position: absolute;
   inset: 3px;
   border-radius: inherit;
-  border: 1px dashed rgba(248, 214, 108, 0.48);
+  border: 1px dashed rgba(255, 232, 136, 0.78);
+  box-shadow: 0 0 5px rgba(255, 214, 78, 0.40);
   pointer-events: none;
 }
 
-/* Liquid Emerald Crystal Mobile Bottom Navigation Bar (pinned fixed to bottom viewport) */
+/* Liquid Emerald Crystal Mobile Bottom Navigation Bar with luminous top gold filament */
 .crochet-nav-bar {
   position: fixed;
   bottom: 0;
@@ -193,9 +204,10 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(26px) saturate(195%);
   -webkit-backdrop-filter: blur(26px) saturate(195%);
-  border-top: 1.5px solid rgba(255, 246, 202, 0.62);
+  border-top: 1.5px solid var(--gold-thread-bright);
   box-shadow:
-    inset 0 1.5px 1px rgba(255, 255, 255, 0.42),
+    inset 0 1.5px 2px rgba(255, 248, 206, 0.72),
+    0 -2px 14px rgba(255, 214, 78, 0.48),
     0 -10px 30px rgba(26, 22, 8, 0.34);
 }
 
@@ -205,11 +217,12 @@ html[data-mode='LIGHT'] .crochet-card {
   top: 4px;
   left: 12px;
   right: 12px;
-  border-top: 1px dashed rgba(252, 224, 122, 0.48);
+  border-top: 1px dashed rgba(255, 234, 140, 0.80);
+  box-shadow: 0 0 6px rgba(255, 216, 82, 0.55);
   pointer-events: none;
 }
 
-/* Liquid Solar Gold Jewel Glass Pill (Active Nav Tab, Active Filter "Todo") */
+/* Liquid Solar Gold Jewel Glass Pill with bright luminous gold rim */
 .crochet-gold-3d {
   position: relative;
   background-color: rgba(244, 198, 68, 0.82);
@@ -221,10 +234,12 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(14px) saturate(190%);
   -webkit-backdrop-filter: blur(14px) saturate(190%);
-  border: 1.5px solid rgba(255, 252, 226, 0.78);
+  border: 1.5px solid var(--gold-thread-bright);
   box-shadow:
-    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.88),
+    inset 0 1.5px 2px rgba(255, 255, 240, 0.95),
     inset 0 -3px 5px rgba(148, 96, 8, 0.36),
+    0 0 12px rgba(255, 222, 96, 0.62),
+    0 0 2px rgba(255, 252, 222, 0.95),
     0 3px 0 rgba(164, 110, 12, 0.82),
     0 10px 20px -4px rgba(132, 88, 10, 0.40);
 }
@@ -234,11 +249,12 @@ html[data-mode='LIGHT'] .crochet-card {
   position: absolute;
   inset: 3px;
   border-radius: inherit;
-  border: 1px dashed rgba(138, 86, 8, 0.38);
+  border: 1px dashed rgba(255, 250, 212, 0.82);
+  box-shadow: 0 0 5px rgba(255, 232, 128, 0.55);
   pointer-events: none;
 }
 
-/* Liquid Ocean Sapphire Glass Surface */
+/* Liquid Ocean Sapphire Glass Surface with gleaming gold thread */
 .crochet-blue-3d {
   position: relative;
   background-color: rgba(22, 70, 108, 0.78);
@@ -249,9 +265,10 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(16px) saturate(185%);
   -webkit-backdrop-filter: blur(16px) saturate(185%);
-  border: 1.5px solid rgba(196, 232, 255, 0.45);
+  border: 1.5px solid var(--gold-thread);
   box-shadow:
-    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.44),
+    inset 0 1.5px 1.5px rgba(255, 246, 200, 0.56),
+    0 0 10px rgba(255, 214, 78, 0.42),
     0 4px 0 rgba(12, 42, 68, 0.82),
     0 10px 22px -6px rgba(12, 44, 70, 0.44);
 }
@@ -268,7 +285,7 @@ html[data-mode='LIGHT'] .crochet-card {
 
 /* ======================== iOS LIQUID GLASS MESSENGER CHATS ======================== */
 
-/* Outer chat shell: crystalline frosted frame letting metallic gold shine softly through */
+/* Outer chat shell: crystalline frosted frame with luminous gold thread */
 .liquid-chat-shell {
   position: relative;
   background: linear-gradient(
@@ -279,10 +296,11 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(18px) saturate(185%) brightness(1.04);
   -webkit-backdrop-filter: blur(18px) saturate(185%) brightness(1.04);
-  border: 1.5px solid rgba(255, 255, 255, 0.70);
+  border: 1.5px solid var(--gold-thread-bright);
   box-shadow:
-    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.88),
-    inset 0 -1.5px 2px rgba(176, 126, 36, 0.20),
+    var(--gold-glow-inner),
+    0 0 14px rgba(255, 214, 78, 0.46),
+    0 0 2px rgba(255, 248, 204, 0.92),
     0 20px 44px -14px rgba(56, 36, 6, 0.34);
 }
 
@@ -316,26 +334,33 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(24px) saturate(195%) brightness(1.05);
   -webkit-backdrop-filter: blur(24px) saturate(195%) brightness(1.05);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 248, 206, 0.85),
+    0 0 10px rgba(255, 214, 78, 0.24);
 }
 
-/* Translucent iOS Liquid Glass input pill */
+/* Translucent iOS Liquid Glass input pill with luminous gold thread */
 .liquid-chat-input {
   background: rgba(255, 254, 250, 0.50);
   backdrop-filter: blur(18px) saturate(180%);
   -webkit-backdrop-filter: blur(18px) saturate(180%);
-  border: 1.5px solid rgba(255, 255, 255, 0.76);
+  border: 1.5px solid var(--gold-thread);
   box-shadow:
     inset 0 1px 3px rgba(68, 44, 8, 0.08),
-    0 2px 8px rgba(68, 44, 8, 0.08);
+    0 0 8px rgba(255, 214, 78, 0.36),
+    0 0 1.5px rgba(255, 248, 204, 0.85);
 }
 
 .liquid-chat-input:focus {
   background: rgba(255, 255, 255, 0.72);
-  border-color: rgba(22, 77, 50, 0.65);
+  border-color: var(--gold-thread-bright);
+  box-shadow:
+    inset 0 0 6px rgba(255, 232, 138, 0.36),
+    0 0 14px rgba(255, 216, 82, 0.62),
+    0 0 2px rgba(255, 250, 216, 0.95);
 }
 
-/* Sent message bubble: Translucent Emerald iOS Liquid Glass */
+/* Sent message bubble: Translucent Emerald iOS Liquid Glass with luminous gold thread */
 .liquid-bubble-mine {
   background: linear-gradient(
     145deg,
@@ -344,14 +369,16 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(20px) saturate(190%);
   -webkit-backdrop-filter: blur(20px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.44);
+  border: 1.25px solid var(--gold-thread);
   box-shadow:
-    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.48),
+    inset 0 1.5px 1.5px rgba(255, 248, 206, 0.55),
     inset 0 -1px 1px rgba(8, 34, 18, 0.32),
+    0 0 10px rgba(255, 214, 78, 0.42),
+    0 0 1.5px rgba(255, 248, 204, 0.82),
     0 8px 22px -6px rgba(10, 44, 24, 0.36);
 }
 
-/* Received message bubble: Pure Clear Frosted iOS Liquid Crystal */
+/* Received message bubble: Pure Clear Frosted iOS Liquid Crystal with luminous gold thread */
 .liquid-bubble-other {
   background: linear-gradient(
     145deg,
@@ -360,25 +387,29 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(22px) saturate(195%) brightness(1.06);
   -webkit-backdrop-filter: blur(22px) saturate(195%) brightness(1.06);
-  border: 1px solid rgba(255, 255, 255, 0.80);
+  border: 1.25px solid var(--gold-thread-bright);
   box-shadow:
-    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.94),
+    inset 0 1.5px 1.5px rgba(255, 252, 230, 0.94),
     inset 0 -1px 1px rgba(176, 126, 36, 0.16),
+    0 0 10px rgba(255, 214, 78, 0.40),
+    0 0 1.5px rgba(255, 248, 204, 0.88),
     0 8px 22px -6px rgba(58, 38, 6, 0.24);
 }
 
-/* Reusable translucent liquid glass pill (badges, inputs, sub-cards) */
+/* Reusable translucent liquid glass pill with luminous gold thread */
 .liquid-glass-pill {
   background: rgba(255, 253, 246, 0.46);
   backdrop-filter: blur(18px) saturate(185%);
   -webkit-backdrop-filter: blur(18px) saturate(185%);
-  border: 1px solid rgba(255, 255, 255, 0.72);
+  border: 1.25px solid var(--gold-thread);
   box-shadow:
-    inset 0 1px 1px rgba(255, 255, 255, 0.88),
+    inset 0 1px 1px rgba(255, 250, 224, 0.90),
+    0 0 9px rgba(255, 214, 78, 0.38),
+    0 0 1.5px rgba(255, 248, 204, 0.85),
     0 4px 14px -4px rgba(58, 38, 6, 0.20);
 }
 
-/* Liquid Glass Top Header Bar */
+/* Liquid Glass Top Header Bar with gleaming bottom gold thread */
 .header-crochet-shell {
   background-color: rgba(255, 252, 244, 0.46);
   background-image: linear-gradient(
@@ -388,9 +419,10 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(26px) saturate(195%) brightness(1.05);
   -webkit-backdrop-filter: blur(26px) saturate(195%) brightness(1.05);
-  border-bottom: 1.5px solid rgba(255, 255, 255, 0.68);
+  border-bottom: 1.5px solid var(--gold-thread-bright);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.90),
+    inset 0 1px 0 rgba(255, 252, 230, 0.92),
+    0 2px 14px rgba(255, 214, 78, 0.44),
     0 10px 28px -10px rgba(64, 42, 6, 0.28);
 }
 
@@ -406,31 +438,53 @@ html[data-mode='LIGHT'] .crochet-card {
   );
   backdrop-filter: blur(18px) saturate(185%);
   -webkit-backdrop-filter: blur(18px) saturate(185%);
+  border: 1.25px solid var(--gold-thread);
+  box-shadow: var(--gold-glow-outer);
 }
 
 .bg-warm-love-gradient {
   background: linear-gradient(125deg, #164d32 0%, #398b4b 54%, #256f3f 100%);
+  border: 1.25px solid var(--gold-thread);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 1px 0 rgba(255, 248, 210, 0.50),
+    0 0 10px rgba(255, 214, 78, 0.42),
     0 6px 16px -4px rgba(22, 77, 50, 0.42);
 }
 
-/* Crochet scalloped ring halo for avatars */
+/* Radiant gold filament halo for avatars */
 .angelic-halo,
 .crochet-avatar-ring {
   box-shadow:
-    0 0 0 2.5px #fcf7ee,
-    0 0 0 5px #398b4b,
-    0 0 0 6.5px rgba(242, 196, 67, 0.85),
+    0 0 0 2px #fffdf4,
+    0 0 0 4px #398b4b,
+    0 0 0 5.5px rgba(255, 224, 118, 0.96),
+    0 0 12px rgba(255, 214, 78, 0.65),
     0 6px 14px rgba(22, 77, 50, 0.25);
 }
 
-/* Woven heirloom photo frame */
+/* Luminous golden heirloom photo frame */
 .photo-heirloom-frame {
-  border: 4px solid #fffdf7;
+  border: 2.5px solid var(--gold-thread-bright);
   box-shadow:
-    0 0 0 1.5px rgba(186, 146, 84, 0.65),
-    0 12px 24px -10px rgba(35, 26, 18, 0.28);
+    inset 0 0 6px rgba(255, 244, 188, 0.55),
+    0 0 14px rgba(255, 214, 78, 0.50),
+    0 0 2px rgba(255, 250, 218, 0.95),
+    0 12px 24px -10px rgba(35, 26, 18, 0.30);
+}
+
+/* ======================== UNIVERSAL LUMINOUS GOLD THREAD ON ALL BORDERS ======================== */
+/* Ensures every bordered element across the entire web gleams with a bright luminous golden thread */
+[class*='border']:not(.border-0):not(.border-none):not(.border-transparent) {
+  border-color: var(--gold-thread) !important;
+}
+
+.border:not(.border-0):not(.border-none):not(.border-transparent):not(.card-crochet):not(.card-warm):not(.crochet-card):not(.crochet-parchment):not(.crochet-green-3d):not(.crochet-gold-3d):not(.crochet-blue-3d):not(.liquid-chat-shell):not(.liquid-chat-input):not(.liquid-bubble-mine):not(.liquid-bubble-other):not(.liquid-glass-pill),
+.border-2:not(.card-crochet):not(.card-warm):not(.crochet-card):not(.crochet-parchment):not(.crochet-green-3d):not(.crochet-gold-3d):not(.crochet-blue-3d):not(.liquid-chat-shell):not(.liquid-chat-input):not(.liquid-bubble-mine):not(.liquid-bubble-other):not(.liquid-glass-pill),
+[class*='border-[1.5px]']:not(.card-crochet):not(.card-warm):not(.crochet-card) {
+  box-shadow:
+    0 0 8px rgba(255, 214, 78, 0.34),
+    0 0 1.5px rgba(255, 248, 206, 0.80),
+    inset 0 0 5px rgba(255, 236, 152, 0.24);
 }
 
 /* Safe area padding helpers */

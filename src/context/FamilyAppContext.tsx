@@ -446,7 +446,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         scope: 'DIRECT',
         participantIds: [currentUser.id],
         startedById: callerIdParam,
-        callerName: callerNameParam || 'Familiar Nazco',
+        callerName: callerNameParam || 'Familiar',
         status: 'RINGING',
         createdAt: new Date().toISOString(),
       });
@@ -786,7 +786,10 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           (m) => m.username.toLowerCase() === cleanUsername || m.email.toLowerCase() === cleanEmail
         )
       ) {
-        return { ok: false, error: 'Ese usuario o correo ya existe en Cuaderno los Nazco.' };
+        return {
+          ok: false,
+          error: 'Ese usuario o correo ya existe en Cuaderno Social de la familia.',
+        };
       }
 
       const cleanCode = input.inviteCode?.trim().toUpperCase();
@@ -802,7 +805,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         password: cleanPassword,
         relationship: input.relationship.trim() || 'Familiar',
         location: input.location.trim() || 'Brasil',
-        bio: input.bio.trim() || 'Feliz de estar en Cuaderno los Nazco 💛',
+        bio: input.bio.trim() || 'Feliz de estar en Cuaderno Social de la familia 💛',
         role: 'MEMBER',
         status: 'ACTIVE',
         presence: 'ONLINE',
@@ -1357,7 +1360,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             params.mode === 'VIDEO'
               ? `📹 Videollamada de ${currentUser.name}`
               : `📞 Llamada de ${currentUser.name}`,
-          body: 'Toca para contestar o colgar en Cuaderno los Nazco',
+          body: 'Toca para contestar o colgar en Cuaderno Social de la familia',
           kind: 'CALL',
           roomCode,
           callMode: params.mode,
@@ -1449,7 +1452,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           ...pendingRing.payload,
           kind: 'CALL_CANCEL',
           title: `📵 Llamada perdida de ${currentUser.name}`,
-          body: 'Intentó llamarte en Cuaderno los Nazco',
+          body: 'Intentó llamarte en Cuaderno Social de la familia',
         });
       }
     }
@@ -1539,7 +1542,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `cuaderno-los-nazco-respaldo-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `cuaderno-social-familia-respaldo-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     notify('Respaldo JSON descargado.', 'success');

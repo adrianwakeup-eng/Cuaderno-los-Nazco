@@ -64,7 +64,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ open, onClose, onOpenIns
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="Menú lateral de Cuaderno los Nazco"
+      aria-label="Menú lateral de Cuaderno Social de la familia"
     >
       <aside
         onClick={(e) => e.stopPropagation()}
@@ -103,7 +103,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ open, onClose, onOpenIns
                 {currentUser.relationship}
               </p>
               <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-forest-700 px-2.5 py-0.5 text-[10px] font-bold text-solar-300">
-                {isAdmin ? '⭐ Administrador único' : '💛 Familia Nazco'}
+                {isAdmin ? '⭐ Administrador único' : '💛 Miembro familiar'}
               </span>
             </div>
           </div>

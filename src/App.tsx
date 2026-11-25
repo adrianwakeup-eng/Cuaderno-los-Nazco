@@ -92,10 +92,10 @@ const CuadernoContent: React.FC = () => {
     ? snapshot.members.find((m) => m.id === incomingCall.startedById) ?? {
         id: incomingCall.startedById || 'caller_unknown',
         username: 'familiar',
-        name: incomingCall.callerName || 'Familiar Nazco',
+        name: incomingCall.callerName || 'Familiar',
         email: '',
         password: '',
-        relationship: 'Familia Nazco',
+        relationship: 'Familia',
         location: '',
         bio: '',
         role: 'MEMBER' as const,

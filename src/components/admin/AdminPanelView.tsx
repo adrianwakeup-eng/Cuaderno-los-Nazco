@@ -61,7 +61,7 @@ export const AdminPanelView: React.FC = () => {
           Acceso exclusivo del Administrador
         </h2>
         <p className="mt-2 text-sm text-espresso-500">
-          Solo el dueño de Cuaderno los Nazco puede ingresar al Panel de Administración con su
+          Solo el dueño de Cuaderno Social de la familia puede ingresar al Panel de Administración con su
           contraseña maestra.
         </p>
       </div>
@@ -93,7 +93,7 @@ export const AdminPanelView: React.FC = () => {
                 <Shield className="h-3.5 w-3.5" /> Panel Centralizado de Administración
               </span>
               <h2 className="mt-2 font-editorial text-3xl font-bold text-espresso-900">
-                Control de Cuaderno los Nazco
+                Control de Cuaderno Social de la familia
               </h2>
               <p className="mt-0.5 text-sm text-espresso-800">
                 Administra cuentas familiares, modera publicaciones y comentarios, controla el
@@ -129,7 +129,7 @@ export const AdminPanelView: React.FC = () => {
               </button>
               <button
                 onClick={() => {
-                  if (window.confirm('¿Restaurar los datos de demostración iniciales de la familia Nazco?')) {
+                  if (window.confirm('¿Restaurar los datos de demostración iniciales de la familia?')) {
                     resetDemoData();
                   }
                 }}
@@ -342,7 +342,7 @@ export const AdminPanelView: React.FC = () => {
           {/* Family Members Role & Account Control */}
           <div className="card-warm rounded-3xl p-5 lg:col-span-7">
             <h3 className="font-editorial text-lg font-bold text-espresso-900">
-              Cuentas de la familia Nazco
+              Cuentas de la familia
             </h3>
             <p className="mt-0.5 text-xs text-espresso-500">
               Asigna permisos de Administrador o activa/desactiva el acceso de cualquier cuenta.

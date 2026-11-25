@@ -135,7 +135,7 @@ export const CallsHubView: React.FC = () => {
             <Users className="h-3.5 w-3.5" /> Sala Familiar Permanente
           </div>
           <h2 className="font-editorial text-3xl font-bold text-forest-900">
-            Sala Familiar Nazco
+            Sala Familiar
           </h2>
           <p className="mt-1.5 text-sm leading-relaxed text-espresso-800">
             Botones grandes y claros para reunirse en familia por WebRTC con cámara, micrófono y
@@ -150,7 +150,7 @@ export const CallsHubView: React.FC = () => {
                 launchAndLogCall({
                   mode: 'VIDEO',
                   scope: 'FAMILY_ROOM',
-                  title: 'Sala Familiar · Los Nazco',
+                  title: 'Sala Familiar · Cuaderno Social',
                   participantIds: snapshot.members
                     .filter((m) => m.status === 'ACTIVE')
                     .map((m) => m.id),
@@ -171,7 +171,7 @@ export const CallsHubView: React.FC = () => {
                 launchAndLogCall({
                   mode: 'AUDIO',
                   scope: 'FAMILY_ROOM',
-                  title: 'Sala de Audio · Los Nazco',
+                  title: 'Sala de Audio · Cuaderno Social',
                   participantIds: snapshot.members
                     .filter((m) => m.status === 'ACTIVE')
                     .map((m) => m.id),

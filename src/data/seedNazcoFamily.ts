@@ -7,7 +7,7 @@ const daysAgo = (d: number) => new Date(now - d * 86_400_000).toISOString();
 export function createSeedNazcoSnapshot(): FamilyAppSnapshot {
   return {
     version: 3,
-    familyName: 'Cuaderno los Nazco',
+    familyName: 'Cuaderno Social de la familia',
     cloudOwnerEmail: 'adrianwakeup@gmail.com',
     adminPassword: 'nazco2026',
     members: [
@@ -19,7 +19,7 @@ export function createSeedNazcoSnapshot(): FamilyAppSnapshot {
         password: 'nazco2026',
         relationship: 'Fundador · Administrador',
         location: 'Brasil',
-        bio: 'Creador de Cuaderno los Nazco. Nuestro rincón privado lleno de cariño, fotos, videos, notas de voz y videollamadas en familia.',
+        bio: 'Creador de Cuaderno Social de la familia. Nuestro rincón privado lleno de cariño, fotos, videos, notas de voz y videollamadas en familia.',
         role: 'ADMIN',
         status: 'ACTIVE',
         presence: 'ONLINE',
@@ -33,8 +33,8 @@ export function createSeedNazcoSnapshot(): FamilyAppSnapshot {
       {
         id: 'chat_familia_general',
         kind: 'GROUP',
-        title: 'Familia Nazco · Sala General',
-        description: 'Conversación grupal privada de todos los Nazco',
+        title: 'Sala General · Familia',
+        description: 'Conversación grupal privada de toda la familia',
         participantIds: ['nazco_adrian'],
         typingUserIds: [],
         updatedAt: minsAgo(1),

@@ -54,7 +54,7 @@ export const StickerGifBadge: React.FC<{
         <span className={`block font-bold text-espresso-900 ${compact ? 'text-xs' : 'text-sm'}`}>
           {item.label}
         </span>
-        {!compact && <span className="text-[10px] font-semibold text-terracotta-600">Sticker Los Nazco</span>}
+        {!compact && <span className="text-[10px] font-semibold text-terracotta-600">Sticker Familiar</span>}
       </div>
     </div>
   );

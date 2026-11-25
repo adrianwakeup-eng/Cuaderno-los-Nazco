@@ -2,7 +2,7 @@
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Handles Web Push notifications for incoming calls & messages even when app is closed.
  */
-const CACHE_NAME = 'los-nazco-shell-v12';
+const CACHE_NAME = 'los-nazco-shell-v13';
 const PUSH_ENDPOINT_URL = 'https://yqhcyjrmkibhoorziqvg.supabase.co/functions/v1/nazco-push-notify';
 const dismissedCallIds = new Set();
 const STATIC_ASSETS = [
@@ -90,7 +90,7 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('push', (event) => {
   let payload = {
-    title: 'Cuaderno los Nazco',
+    title: 'Cuaderno Social de la familia',
     body: 'Tienes una notificación familiar 💛',
     url: './',
     tag: 'nazco-general',
@@ -130,7 +130,7 @@ self.addEventListener('push', (event) => {
       self.registration.getNotifications({ tag: callTag }).then((list) => {
         list.forEach((n) => n.close());
         return self.registration.showNotification(payload.title || '📵 Llamada perdida', {
-          body: payload.body || 'Te llamaron en Cuaderno los Nazco',
+          body: payload.body || 'Te llamaron en Cuaderno Social de la familia',
           icon: resolvedIcon,
           badge: badgeUrl,
           tag: `nazco-missed-${payload.callId || payload.roomCode || Date.now()}`,

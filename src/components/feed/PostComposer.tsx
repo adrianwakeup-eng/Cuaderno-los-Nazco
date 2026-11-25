@@ -189,9 +189,9 @@ export const PostComposer: React.FC = () => {
       text:
         text.trim() ||
         (selectedStickerId
-          ? '¡Un mensajito con cariño para toda la familia Nazco! 💛'
+          ? '¡Un mensajito con cariño para toda la familia! 💛'
           : category === 'PHOTO'
-            ? 'Foto compartida en Cuaderno los Nazco'
+            ? 'Foto compartida en Cuaderno Social de la familia'
             : category === 'VIDEO'
               ? 'Video familiar compartido'
               : 'Nota de voz familiar'),
@@ -221,7 +221,7 @@ export const PostComposer: React.FC = () => {
               rows={2}
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder={`¿Qué alegría quieres compartir hoy con los Nazco, ${currentUser.name.split(' ')[0]}? 💛`}
+              placeholder={`¿Qué alegría quieres compartir hoy con la familia, ${currentUser.name.split(' ')[0]}? 💛`}
               className="liquid-chat-input w-full resize-none rounded-2xl px-3.5 py-2.5 text-[15px] text-espresso-900 placeholder:text-espresso-600 focus:outline-none"
             />
           </div>
@@ -500,7 +500,7 @@ export const PostComposer: React.FC = () => {
       {/* Mobile-First Animated Bottom Sheet for Stickers & GIFs */}
       <BottomSheet
         open={pickerSheetOpen}
-        title="Stickers y GIFs de la Familia Nazco"
+        title="Stickers y GIFs de la Familia"
         onClose={() => setPickerSheetOpen(false)}
       >
         <StickerGifPicker

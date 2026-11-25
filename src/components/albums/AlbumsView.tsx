@@ -208,7 +208,7 @@ export const AlbumsView: React.FC = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Cuaderno los Nazco · ${photo.title}`,
+          title: `Cuaderno Social de la familia · ${photo.title}`,
           text: photo.title,
         });
         return;
@@ -230,7 +230,7 @@ export const AlbumsView: React.FC = () => {
           <h2 className="mt-1.5 font-editorial text-2xl font-bold text-forest-900 sm:text-3xl">
             {selectedAlbum
               ? `Álbum: ${ALBUM_META.find((a) => a.id === selectedAlbum)?.title}`
-              : 'Álbumes de la Familia Nazco'}
+              : 'Álbumes de la Familia'}
           </h2>
           <p className="text-xs text-espresso-600 sm:text-sm">
             {selectedAlbum
@@ -417,7 +417,7 @@ export const AlbumsView: React.FC = () => {
               </button>
               <a
                 href={activeLightbox.imageUrl}
-                download={`${activeLightbox.title || 'recuerdo-nazco'}.jpg`}
+                download={`${activeLightbox.title || 'recuerdo-familiar'}.jpg`}
                 className="flex h-10 w-10 items-center justify-center rounded-full bg-white/15"
                 aria-label="Guardar fotografía"
               >

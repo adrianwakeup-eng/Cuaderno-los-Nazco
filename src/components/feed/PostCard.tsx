@@ -283,7 +283,7 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Cuaderno los Nazco · ${author?.name ?? 'Familia'}`,
+          title: `Cuaderno Social de la familia · ${author?.name ?? 'Familia'}`,
           text: post.text,
         });
         return;
@@ -354,7 +354,7 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
                 <span className="truncate font-bold text-espresso-900 hover:underline">
-                  {author?.name ?? 'Integrante Nazco'}
+                  {author?.name ?? 'Familiar'}
                 </span>
                 {author?.role === 'ADMIN' && (
                   <ShieldCheck className="h-4 w-4 shrink-0 text-brazil-500" />

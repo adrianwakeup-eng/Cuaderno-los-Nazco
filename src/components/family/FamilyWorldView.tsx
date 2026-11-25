@@ -43,7 +43,7 @@ function getSafeRegionCoords(location: string): GeoCoords {
   if (loc.includes('buenos aires') || loc.includes('argentina')) {
     return { lat: -34.6, lon: -58.4, regionLabel: 'Argentina', flag: '🇦🇷' };
   }
-  return { lat: -10.0, lon: -52.0, regionLabel: location || 'Familia Nazco', flag: '💛' };
+  return { lat: -10.0, lon: -52.0, regionLabel: location || 'Nuestra Familia', flag: '💛' };
 }
 
 // Simplified lightweight continent polygons (lat, lon) rendered with woven crochet stitching
@@ -308,7 +308,7 @@ export const FamilyWorldView: React.FC = () => {
               <Globe2 className="h-3.5 w-3.5" /> Nuestros hilos por el mundo
             </span>
             <h2 className="mt-1.5 font-editorial text-2xl font-bold text-forest-900 sm:text-3xl">
-              Familia Nazco conectada en el planeta 🇧🇷✨
+              Nuestra familia conectada en el planeta 🇧🇷✨
             </h2>
             <p className="mt-0.5 text-xs text-espresso-600 sm:text-sm">
               Arrastra el globo tejido para girarlo y toca cualquier fotografía familiar para saludar.
@@ -508,7 +508,7 @@ export const FamilyWorldView: React.FC = () => {
       {/* Accessible Full Family Directory Grid */}
       <div className="card-crochet rounded-3xl p-5">
         <h3 className="font-editorial text-xl font-bold text-forest-900">
-          Toda la familia Nazco ({activeMembers.length})
+          Toda la familia ({activeMembers.length})
         </h3>
         <div className="mt-3.5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {activeMembers.map((member) => {

@@ -249,7 +249,7 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
                 Crear cuenta familiar 💛
               </h2>
               <p className="mt-1 text-center text-xs text-[#726E82]">
-                Cada integrante de los Nazco crea su perfil con contraseña propia.
+                Cada integrante de la familia crea su perfil con contraseña propia.
               </p>
 
               {error && (
@@ -332,7 +332,7 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
                   type="email"
                   value={regEmail}
                   onChange={(e) => setRegEmail(e.target.value)}
-                  placeholder="Correo familiar (ej. lucas@losnazco.fam)"
+                  placeholder="Correo familiar (ej. lucas@familia.com)"
                   className="w-full rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2.5 text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none"
                 />
 

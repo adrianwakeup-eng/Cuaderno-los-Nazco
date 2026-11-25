@@ -230,10 +230,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               >
                 <span
                   className={`font-crochet-script font-bold leading-none text-espresso-900 transition-all ${
-                    scrolled ? 'text-xl sm:text-2xl' : 'text-2xl sm:text-[28px]'
+                    scrolled ? 'text-base sm:text-xl' : 'text-[19px] sm:text-[25px]'
                   }`}
                 >
-                  Cuaderno los Nazco
+                  Cuaderno Social de la familia
                 </span>
                 <CrochetSunflower className="h-6 w-6 shrink-0 transition group-hover:rotate-12" />
               </div>
@@ -371,7 +371,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                   </div>
                   <span
                     className="absolute -bottom-1 -right-1 rounded-full bg-white px-1 text-xs shadow"
-                    title="Familia Nazco Brasil"
+                    title="Nuestra Familia"
                   >
                     🇧🇷
                   </span>
@@ -384,7 +384,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                     {currentUser.relationship}
                   </p>
                   <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-brazil-100 px-2.5 py-0.5 text-[11px] font-bold text-forest-800 ring-1 ring-brazil-400/60">
-                    ⭐ {isAdmin ? 'Administrador único' : 'Familia Nazco'}
+                    ⭐ {isAdmin ? 'Administrador único' : 'Miembro familiar'}
                   </span>
                 </div>
               </button>
@@ -424,7 +424,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                   <Video className="h-4 w-4 animate-wiggle" />
                 </span>
                 <h2 className="font-editorial text-lg font-bold text-forest-900">
-                  Sala Familiar Nazco
+                  Sala Familiar
                 </h2>
               </div>
               <p className="mb-4 text-xs leading-relaxed text-espresso-800">
@@ -437,7 +437,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                   startCall({
                     mode: 'VIDEO',
                     scope: 'FAMILY_ROOM',
-                    title: 'Sala Familiar · Los Nazco',
+                    title: 'Sala Familiar · Cuaderno Social',
                     participantIds: snapshot.members
                       .filter((m) => m.status === 'ACTIVE')
                       .map((m) => m.id),
@@ -643,7 +643,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             <div className="rounded-2xl border border-solar-400 bg-solar-50 p-3.5 text-xs leading-relaxed text-espresso-800">
               <strong>Requisito en iPhone (iOS):</strong> primero toca{' '}
               <strong>Compartir → Añadir a pantalla de inicio</strong> en Safari, abre{' '}
-              <strong>Los Nazco</strong> desde el ícono en tu pantalla y luego toca el botón verde de
+              <strong>Cuaderno Social</strong> desde el ícono en tu pantalla y luego toca el botón verde de
               abajo.
             </div>
           )}

@@ -94,7 +94,7 @@ export const FAMILY_GIFS: FamilyStickerItem[] = [
     id: 'gif_hola_nazco',
     kind: 'GIF',
     category: 'SALUDOS',
-    label: '¡Hola Los Nazco!',
+    label: '¡Hola Familia!',
     emoji: '👋',
     subEmoji: '😄💛',
     gradient: 'from-emerald-400 via-teal-500 to-amber-400',
@@ -173,7 +173,7 @@ export const FAMILY_GIFS: FamilyStickerItem[] = [
 ];
 
 export const FAMILY_STICKERS: FamilyStickerItem[] = [
-  { id: 'stk_corazon_familia', kind: 'STICKER', category: 'AMOR', label: 'Familia Nazco', emoji: '❤️‍🔥', gradient: 'from-rose-100 to-orange-100', animationClass: '' },
+  { id: 'stk_corazon_familia', kind: 'STICKER', category: 'AMOR', label: 'Nuestra Familia', emoji: '❤️‍🔥', gradient: 'from-rose-100 to-orange-100', animationClass: '' },
   { id: 'stk_te_extrano', kind: 'STICKER', category: 'AMOR', label: 'Te extraño', emoji: '🥹', gradient: 'from-pink-100 to-rose-100', animationClass: '' },
   { id: 'stk_amor_eterno', kind: 'STICKER', category: 'AMOR', label: 'Con amor', emoji: '🥰', gradient: 'from-rose-100 to-amber-100', animationClass: '' },
   { id: 'stk_abrazote', kind: 'STICKER', category: 'AMOR', label: 'Abrazote', emoji: '🫂', gradient: 'from-amber-100 to-orange-100', animationClass: '' },

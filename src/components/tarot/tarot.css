@@ -35,7 +35,7 @@
 .tarot-table {
   position: relative;
   isolation: isolate;
-  min-height: clamp(350px, 113vw, 710px);
+  aspect-ratio: 928 / 1152;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -61,7 +61,59 @@
   object-position: center 24%;
 }
 
+.tarot-reader-hands {
+  opacity: 0;
+  transition: opacity 640ms ease-in-out;
+}
+
+.tarot-table[data-revealing='true'] .tarot-reader-hands { opacity: 1; }
+
+.tarot-light-show {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  animation: tarot-light-reveal 1.35s ease-out both;
+}
+
+.tarot-light-rays {
+  position: absolute;
+  inset: 0;
+
+  filter: blur(7px);
+  mix-blend-mode: screen;
+}
+
+.tarot-light-rays::before, .tarot-light-rays::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent 69%, #fff1adcc 79%, #f3ba4d48 100%);
+}
+
+.tarot-light-rays::before { clip-path: polygon(23% 76%, 27% 76%, 62% 100%, 19% 100%); }
+.tarot-light-rays::after { clip-path: polygon(74% 76%, 78% 76%, 81% 100%, 36% 100%); }
+
+.tarot-palm-glow {
+  position: absolute;
+  top: 73%;
+  width: 14%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(ellipse, #fff8d4 1%, #ffda75a6 25%, #ffb52c39 54%, transparent 72%);
+  mix-blend-mode: screen;
+}
+
+.tarot-palm-glow-left { left: 17%; }
+.tarot-palm-glow-right { right: 16%; }
+
+@keyframes tarot-light-reveal {
+  0% { opacity: 0; }
+  38% { opacity: 1; }
+  100% { opacity: .55; }
+}
+
 .tarot-deck {
+  position: relative;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -88,7 +140,11 @@
   transition: transform 620ms cubic-bezier(.2,.75,.22,1);
 }
 
-.tarot-card-flip[data-revealed='true'] { transform: rotateY(180deg); }
+.tarot-card-flip[data-revealed='true'] {
+  transform: rotateY(180deg);
+  box-shadow: 0 0 17px #ffdb7b9c;
+  border-radius: .7rem;
+}
 
 .tarot-card-face {
   position: absolute;
@@ -144,6 +200,8 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tarot-room, .tarot-card { animation: none; }
+  .tarot-room, .tarot-card, .tarot-light-show { animation: none; }
+  .tarot-light-show { opacity: .55; }
+  .tarot-reader-hands { transition: none; }
   .tarot-card-flip { transition: none; }
 }

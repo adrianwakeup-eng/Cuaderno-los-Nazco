@@ -2,6 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { ArrowLeft, MoonStar, Sparkles } from 'lucide-react';
 import classicCards from './cartas-clasicas.webp';
 import reader from './lector.webp';
+import readerHands from './lector-manos.webp';
 import './tarot.css';
 
 const deck = [
@@ -46,9 +47,18 @@ export function TarotView({ onBack }: { onBack: () => void }) {
         <h1 id="tarot-title" className="font-editorial"><MoonStar aria-hidden="true" /> Tarot del día</h1>
         <p>Toca las tres cartas para descubrir tu lectura simbólica de hoy.</p>
       </div>
-      <div className="tarot-table">
+      <div className="tarot-table" data-revealing={revealed.length > 0}>
         <img className="tarot-reader" src={reader} alt="El lector de tarot detrás de su mesa de cartas"
           width={928} height={1152} fetchPriority="high" />
+        <img className="tarot-reader tarot-reader-hands" src={readerHands} alt=""
+          width={928} height={1152} decoding="async" aria-hidden="true" />
+        {revealed.length > 0 && (
+          <div className="tarot-light-show" key={revealed.length} aria-hidden="true">
+            <span className="tarot-light-rays" />
+            <span className="tarot-palm-glow tarot-palm-glow-left" />
+            <span className="tarot-palm-glow tarot-palm-glow-right" />
+          </div>
+        )}
         <div className="tarot-deck">
           {cards.map((card, index) => {
             const isRevealed = revealed.includes(index);

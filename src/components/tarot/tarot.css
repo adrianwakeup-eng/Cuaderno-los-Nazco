@@ -386,52 +386,55 @@
   animation: tarot-mist-drift 18s ease-in-out infinite alternate;
 }
 
-.tarot-sanctuary-arch {
-  position: absolute;
-  top: clamp(8rem, 23vh, 18rem);
-  bottom: 6%;
-  width: min(17vw, 300px);
-  color: #9a6d2b;
-  border: 1px solid #b88a427d;
-  border-radius: 50% 50% 12% 12% / 24% 24% 4% 4%;
-  background: linear-gradient(180deg, #fffdf397, transparent 78%);
-  box-shadow: inset 0 0 30px #ffffffb0, 0 0 36px #fffcf699;
-}
+.tarot-scene { position: relative; }
 
-.tarot-sanctuary-arch::before {
-  content: '';
-  position: absolute;
-  inset: 10px;
-  border: 1px solid #b88a4250;
-  border-radius: inherit;
-}
+.tarot-room-wing { display: none; }
 
-.tarot-sanctuary-arch-west { right: calc(50% + 22rem); }
-.tarot-sanctuary-arch-east { left: calc(50% + 22rem); }
+@media (min-width: 961px) {
+  .tarot-room-wing {
+    display: block;
+    position: absolute;
+    inset-block: 0;
+    width: max(0px, calc((100vw - 100%) / 2 - 9px));
+    pointer-events: none;
+    overflow: hidden;
+    background-image: url('./habitacion-laterales.webp');
+    background-size: 200% 103%;
+    background-position-y: bottom;
+  }
 
-.tarot-sanctuary-moon {
-  position: absolute;
-  top: 13%;
-  left: 33%;
-  width: 34%;
-  height: auto;
-  stroke-width: .8;
-  filter: drop-shadow(0 0 12px #fff9d7);
-  animation: tarot-spirit-float 9s ease-in-out infinite alternate;
+  .tarot-room-wing-west {
+    right: 100%;
+    background-position-x: left;
+  }
+
+  .tarot-room-wing-east {
+    left: 100%;
+    background-position-x: right;
+  }
+
+  .tarot-room-wing::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, #faebcc 0%, transparent 9% 88%, #e1e6d2 100%);
+  }
 }
 
 .tarot-sanctuary-spirit {
   position: absolute;
-  top: 45%;
-  left: 22%;
-  width: 56%;
-  height: 43%;
+  top: 44%;
+  left: 34%;
+  width: 32%;
+  height: 29%;
+  opacity: .4;
+  mix-blend-mode: screen;
   background: linear-gradient(158deg, #fffef3 2%, #f7d891d6 28%, #b1874d59 75%, transparent);
   clip-path: polygon(49% 0%, 60% 4%, 67% 14%, 67% 23%, 59% 30%, 72% 35%, 83% 48%, 99% 91%, 75% 83%, 58% 100%, 34% 89%, 7% 99%, 18% 59%, 28% 37%, 41% 29%, 34% 22%, 34% 13%, 41% 5%);
   animation: tarot-spirit-float 11s ease-in-out infinite alternate;
 }
 
-.tarot-sanctuary-arch-east .tarot-sanctuary-spirit {
+.tarot-room-wing-east .tarot-sanctuary-spirit {
   background: linear-gradient(168deg, #fffef4, #99c7b0df 36%, transparent);
   animation-delay: -5s;
 }
@@ -442,16 +445,12 @@
 }
 
 @keyframes tarot-spirit-float {
-  from { transform: translate3d(-4%, 5%, 0) rotate(-4deg); opacity: .62; }
-  to { transform: translate3d(5%, -9%, 0) rotate(3deg); opacity: .95; }
-}
-
-@media (max-width: 960px), (max-height: 520px) {
-  .tarot-sanctuary-arch { display: none; }
+  from { transform: translate3d(-4%, 5%, 0) rotate(-4deg); opacity: .27; }
+  to { transform: translate3d(5%, -9%, 0) rotate(3deg); opacity: .53; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tarot-sanctuary-mist, .tarot-sanctuary-moon, .tarot-sanctuary-spirit { animation: none; }
+  .tarot-sanctuary-mist, .tarot-sanctuary-spirit { animation: none; }
 }
 
 .tarot-sanctuary::after {

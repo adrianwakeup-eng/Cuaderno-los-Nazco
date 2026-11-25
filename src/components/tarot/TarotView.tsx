@@ -168,14 +168,6 @@ export function TarotView({ onBack }: { onBack: () => void }) {
     <>
       <div className="tarot-sanctuary" aria-hidden="true">
         <div className="tarot-sanctuary-mist" />
-        <div className="tarot-sanctuary-arch tarot-sanctuary-arch-west">
-          <MoonStar className="tarot-sanctuary-moon" />
-          <span className="tarot-sanctuary-spirit" />
-        </div>
-        <div className="tarot-sanctuary-arch tarot-sanctuary-arch-east">
-          <Sparkles className="tarot-sanctuary-moon" />
-          <span className="tarot-sanctuary-spirit" />
-        </div>
       </div>
       <section className="tarot-room mx-auto max-w-2xl" aria-labelledby="tarot-title">
         <div className="tarot-heading">
@@ -185,42 +177,50 @@ export function TarotView({ onBack }: { onBack: () => void }) {
           <h1 id="tarot-title" className="font-editorial"><MoonStar aria-hidden="true" /> Tarot del día</h1>
           <p>Toca las tres cartas para descubrir tu lectura simbólica de hoy.</p>
         </div>
-        <div className="tarot-table" data-revealing={revealed.length > 0} data-motion-video={readerPlaying}>
-          <img className="tarot-reader" src={reader} alt="El lector de tarot detrás de su mesa de cartas"
-            width={928} height={1152} fetchPriority="high" />
-          <img className="tarot-reader tarot-reader-hands" src={readerHands} alt=""
-            width={928} height={1152} decoding="async" aria-hidden="true" />
-          {!reducedMotion && (
-            <video ref={readerRef} className="tarot-reader tarot-reader-motion" data-playing={readerPlaying}
-              src={readerMotion} poster={readerHands} autoPlay muted loop playsInline preload="metadata"
-              onPlaying={() => setReaderPlaying(true)} onError={() => setReaderPlaying(false)}
-              aria-hidden="true" />
-          )}
-          {readerPlaying && !reducedMotion && <TarotPalmLights videoRef={readerRef} burst={lightBurst} />}
-          {!readerPlaying && revealed.length > 0 && (
-            <div className="tarot-light-show" key={revealed.length} aria-hidden="true">
-              <span className="tarot-light-rays" />
-              <span className="tarot-palm-glow tarot-palm-glow-left" />
-              <span className="tarot-palm-glow tarot-palm-glow-right" />
-            </div>
-          )}
-          <div className="tarot-deck">
-            {cards.map((card, index) => {
-              const isRevealed = revealed.includes(index);
-              return (
-                <button key={card.name} type="button" className="tarot-card" data-lifted={selectedIndex === index}
-                  aria-label={isRevealed ? `${positions[index]}: ${card.name}. ${card.reading}` : `Revelar carta: ${positions[index]}`}
-                  onClick={() => openCard(index)}>
-                  <span className="tarot-card-flip" data-revealed={isRevealed} aria-hidden="true"
-                    ref={(node) => { tableCards.current[index] = node; }}>
-                    <span className="tarot-card-face tarot-card-back"><Sparkles /><span>Destino</span></span>
-                    <span className="tarot-card-face tarot-card-front">
-                      {isRevealed && <img src={getArtwork(card)} alt="" />}
+        <div className="tarot-scene">
+          <div className="tarot-room-wing tarot-room-wing-west" aria-hidden="true">
+            <span className="tarot-sanctuary-spirit" />
+          </div>
+          <div className="tarot-room-wing tarot-room-wing-east" aria-hidden="true">
+            <span className="tarot-sanctuary-spirit" />
+          </div>
+          <div className="tarot-table" data-revealing={revealed.length > 0} data-motion-video={readerPlaying}>
+            <img className="tarot-reader" src={reader} alt="El lector de tarot detrás de su mesa de cartas"
+              width={928} height={1152} fetchPriority="high" />
+            <img className="tarot-reader tarot-reader-hands" src={readerHands} alt=""
+              width={928} height={1152} decoding="async" aria-hidden="true" />
+            {!reducedMotion && (
+              <video ref={readerRef} className="tarot-reader tarot-reader-motion" data-playing={readerPlaying}
+                src={readerMotion} poster={readerHands} autoPlay muted loop playsInline preload="metadata"
+                onPlaying={() => setReaderPlaying(true)} onError={() => setReaderPlaying(false)}
+                aria-hidden="true" />
+            )}
+            {readerPlaying && !reducedMotion && <TarotPalmLights videoRef={readerRef} burst={lightBurst} />}
+            {!readerPlaying && revealed.length > 0 && (
+              <div className="tarot-light-show" key={revealed.length} aria-hidden="true">
+                <span className="tarot-light-rays" />
+                <span className="tarot-palm-glow tarot-palm-glow-left" />
+                <span className="tarot-palm-glow tarot-palm-glow-right" />
+              </div>
+            )}
+            <div className="tarot-deck">
+              {cards.map((card, index) => {
+                const isRevealed = revealed.includes(index);
+                return (
+                  <button key={card.name} type="button" className="tarot-card" data-lifted={selectedIndex === index}
+                    aria-label={isRevealed ? `${positions[index]}: ${card.name}. ${card.reading}` : `Revelar carta: ${positions[index]}`}
+                    onClick={() => openCard(index)}>
+                    <span className="tarot-card-flip" data-revealed={isRevealed} aria-hidden="true"
+                      ref={(node) => { tableCards.current[index] = node; }}>
+                      <span className="tarot-card-face tarot-card-back"><Sparkles /><span>Destino</span></span>
+                      <span className="tarot-card-face tarot-card-front">
+                        {isRevealed && <img src={getArtwork(card)} alt="" />}
+                      </span>
                     </span>
-                  </span>
-                </button>
-              );
-            })}
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
         <div className="tarot-reading" aria-live="polite">

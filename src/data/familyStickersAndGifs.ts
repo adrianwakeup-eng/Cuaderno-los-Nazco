@@ -2,11 +2,13 @@ export interface FamilyStickerItem {
   id: string;
   kind: 'GIF' | 'STICKER';
   category: 'AMOR' | 'CELEBRACION' | 'SALUDOS' | 'HOGAR';
+  packCategory?: string;
   label: string;
   emoji: string;
   subEmoji?: string;
   gradient: string;
   animationClass: string;
+  assetUrl?: string;
 }
 
 export const FAMILY_GIFS: FamilyStickerItem[] = [

@@ -1,0 +1,6482 @@
+{
+  "name": "cuaderno-del-artista-stickers-gifs",
+  "exportedAt": "2026-11-25T11:31:54.409Z",
+  "target": "Antigravity",
+  "counts": {
+    "stickers": 378,
+    "gifs": 300,
+    "reactModuleIncluded": true
+  },
+  "stickers": [
+    {
+      "id": "flor-borgona",
+      "name": "Flor Borgoña con Perla",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-borgona.svg"
+    },
+    {
+      "id": "flor-rosa",
+      "name": "Roseta Artesanal",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-rosa.svg"
+    },
+    {
+      "id": "flor-margarita",
+      "name": "Margarita de Algodón",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-margarita.svg"
+    },
+    {
+      "id": "flor-lavanda",
+      "name": "Flor de Lavanda Tejida",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-lavanda.svg"
+    },
+    {
+      "id": "flor-girasol",
+      "name": "Girasol Amigurumi",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-girasol.svg"
+    },
+    {
+      "id": "flor-encaje-perla",
+      "name": "Flor Encaje y Perlas",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-encaje-perla.svg"
+    },
+    {
+      "id": "flor-cerezo",
+      "name": "Flor de Cerezo Crochet",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-cerezo.svg"
+    },
+    {
+      "id": "hoja-crochet",
+      "name": "Ramita de Hojas Tejidas",
+      "category": "Flores",
+      "svgFile": "stickers/flores/hoja-crochet.svg"
+    },
+    {
+      "id": "granny-square",
+      "name": "Granny Square Floral",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-square.svg"
+    },
+    {
+      "id": "perla-clasica",
+      "name": "Perla Nacarada Clásica",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-clasica.svg"
+    },
+    {
+      "id": "racimo-perlas",
+      "name": "Racimo de Perlas y Encaje",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas.svg"
+    },
+    {
+      "id": "tira-perlas",
+      "name": "Guirnalda de Perlas",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/tira-perlas.svg"
+    },
+    {
+      "id": "perla-rosa",
+      "name": "Perla Rosada Vintage",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-rosa.svg"
+    },
+    {
+      "id": "broche-perla",
+      "name": "Broche Dorado con Perla",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-perla.svg"
+    },
+    {
+      "id": "cuentas-arcoiris",
+      "name": "Cuentas de Madera Coloridas",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-arcoiris.svg"
+    },
+    {
+      "id": "cuentas-turquesa",
+      "name": "Cuentas Turquesa y Coral",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-turquesa.svg"
+    },
+    {
+      "id": "cuenta-cristal",
+      "name": "Cuentas Cristal Rubí y Ámbar",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuenta-cristal.svg"
+    },
+    {
+      "id": "cuentas-pastel",
+      "name": "Cuentas Pastel Dulces",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-pastel.svg"
+    },
+    {
+      "id": "cascabel-dorado",
+      "name": "Cuenta Dorada con Borla",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cascabel-dorado.svg"
+    },
+    {
+      "id": "marcapuntos-cuentas",
+      "name": "Marcapuntos con Cuentas",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-cuentas.svg"
+    },
+    {
+      "id": "ovillo-crema",
+      "name": "Ovillo Crudo",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-crema.svg"
+    },
+    {
+      "id": "ovillo-terracota",
+      "name": "Ovillo Terracota",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-terracota.svg"
+    },
+    {
+      "id": "ovillo-salvia",
+      "name": "Ovillo Verde Salvia",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-salvia.svg"
+    },
+    {
+      "id": "ganchillo-madera",
+      "name": "Ganchillo de Madera",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-madera.svg"
+    },
+    {
+      "id": "tijeras-vintage",
+      "name": "Tijeras Doradas",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/tijeras-vintage.svg"
+    },
+    {
+      "id": "corazon-tejido",
+      "name": "Corazón Tejido Crochet",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-tejido.svg"
+    },
+    {
+      "id": "boton-madera",
+      "name": "Botón de Madera Cosido",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-madera.svg"
+    },
+    {
+      "id": "etiqueta-hecho-a-mano",
+      "name": "Hecho a Mano",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-hecho-a-mano.svg"
+    },
+    {
+      "id": "flor-roseta-inglesa",
+      "name": "Roseta Rosa Inglés",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-roseta-inglesa.svg"
+    },
+    {
+      "id": "flor-turquesa-antigua",
+      "name": "Flor Turquesa Antigua",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-turquesa-antigua.svg"
+    },
+    {
+      "id": "flor-ciruela-real",
+      "name": "Flor Ciruela Real",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-ciruela-real.svg"
+    },
+    {
+      "id": "flor-mostaza-sol",
+      "name": "Flor Mostaza de Otoño",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mostaza-sol.svg"
+    },
+    {
+      "id": "flor-coral-vivo",
+      "name": "Flor Coral Silvestre",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-coral-vivo.svg"
+    },
+    {
+      "id": "flor-cobalto-encaje",
+      "name": "Flor Azul Cobalto",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-cobalto-encaje.svg"
+    },
+    {
+      "id": "flor-musgo-bosque",
+      "name": "Flor Verde Musgo",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-musgo-bosque.svg"
+    },
+    {
+      "id": "flor-durazno-dulce",
+      "name": "Flor Durazno y Crema",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-durazno-dulce.svg"
+    },
+    {
+      "id": "flor-cacao-tostado",
+      "name": "Flor Cacao Vintage",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-cacao-tostado.svg"
+    },
+    {
+      "id": "flor-malva-polvo",
+      "name": "Flor Malva Polvo",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-malva-polvo.svg"
+    },
+    {
+      "id": "flor-esmeralda",
+      "name": "Flor Esmeralda Tejida",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-esmeralda.svg"
+    },
+    {
+      "id": "flor-terracota-calida",
+      "name": "Flor Terracota Artesanal",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-terracota-calida.svg"
+    },
+    {
+      "id": "flor-indigo-noche",
+      "name": "Flor Índigo Nocturna",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-indigo-noche.svg"
+    },
+    {
+      "id": "flor-ocre-miel",
+      "name": "Flor Ocre y Miel",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-ocre-miel.svg"
+    },
+    {
+      "id": "flor-lila-suave",
+      "name": "Flor Lila de Primavera",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-lila-suave.svg"
+    },
+    {
+      "id": "flor-frambuesa",
+      "name": "Flor Frambuesa Intensa",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-frambuesa.svg"
+    },
+    {
+      "id": "flor-vainilla-encaje",
+      "name": "Flor Vainilla y Oro",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-vainilla-encaje.svg"
+    },
+    {
+      "id": "flor-azul-hielo",
+      "name": "Flor Azul Niebla",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-azul-hielo.svg"
+    },
+    {
+      "id": "flor-mandala-carmesi",
+      "name": "Mandala Carmesí y Crema",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-carmesi.svg"
+    },
+    {
+      "id": "flor-mandala-zafiro",
+      "name": "Mandala Zafiro Real",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-zafiro.svg"
+    },
+    {
+      "id": "flor-mandala-salvia",
+      "name": "Mandala Salvia y Lino",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-salvia.svg"
+    },
+    {
+      "id": "flor-mandala-amatista",
+      "name": "Mandala Amatista Floral",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-amatista.svg"
+    },
+    {
+      "id": "flor-mandala-coral",
+      "name": "Mandala Coral y Arena",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-coral.svg"
+    },
+    {
+      "id": "flor-mandala-mostaza",
+      "name": "Mandala Mostaza Bohemia",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-mostaza.svg"
+    },
+    {
+      "id": "flor-mandala-turquesa",
+      "name": "Mandala Turquesa Mar",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-turquesa.svg"
+    },
+    {
+      "id": "flor-mandala-rosa",
+      "name": "Mandala Rosa EmPolvado",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-rosa.svg"
+    },
+    {
+      "id": "flor-mandala-bronce",
+      "name": "Mandala Bronce Barroco",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-bronce.svg"
+    },
+    {
+      "id": "flor-mandala-menta",
+      "name": "Mandala Menta Fresca",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-menta.svg"
+    },
+    {
+      "id": "flor-mandala-baya",
+      "name": "Mandala Frutos del Bosque",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-baya.svg"
+    },
+    {
+      "id": "flor-mandala-marfil",
+      "name": "Mandala Marfil Nupcial",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-marfil.svg"
+    },
+    {
+      "id": "flor-mandala-indigo",
+      "name": "Mandala Añil Tradicional",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-indigo.svg"
+    },
+    {
+      "id": "flor-mandala-oliva",
+      "name": "Mandala Oliva Dorada",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-oliva.svg"
+    },
+    {
+      "id": "flor-dalia-carmesi",
+      "name": "Dalia Carmesí Tejida",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-dalia-carmesi.svg"
+    },
+    {
+      "id": "flor-anemona-azul",
+      "name": "Anémona Azul Cielo",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-anemona-azul.svg"
+    },
+    {
+      "id": "flor-cosmos-rosa",
+      "name": "Cosmos Rosa Dulce",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-cosmos-rosa.svg"
+    },
+    {
+      "id": "flor-calendula-oro",
+      "name": "Caléndula Dorada",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-calendula-oro.svg"
+    },
+    {
+      "id": "flor-lino-azul",
+      "name": "Flor de Lino",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-lino-azul.svg"
+    },
+    {
+      "id": "flor-jazmin-marfil",
+      "name": "Jazmín de Algodón",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-jazmin-marfil.svg"
+    },
+    {
+      "id": "flor-peonia-antigua",
+      "name": "Peonía Antigua",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-peonia-antigua.svg"
+    },
+    {
+      "id": "flor-violeta-imperial",
+      "name": "Violeta Imperial",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-violeta-imperial.svg"
+    },
+    {
+      "id": "flor-camelia-crema",
+      "name": "Camelia de Encaje",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-camelia-crema.svg"
+    },
+    {
+      "id": "flor-amapola-roja",
+      "name": "Amapola de Campo",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-amapola-roja.svg"
+    },
+    {
+      "id": "flor-loto-rosa",
+      "name": "Flor de Loto Tejida",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-loto-rosa.svg"
+    },
+    {
+      "id": "flor-crisantemo-ocre",
+      "name": "Crisantemo Ocre",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-crisantemo-ocre.svg"
+    },
+    {
+      "id": "flor-silvestre-turquesa",
+      "name": "Flor Silvestre Turquesa",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-silvestre-turquesa.svg"
+    },
+    {
+      "id": "flor-estrella-alpina",
+      "name": "Estrella Alpina",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-estrella-alpina.svg"
+    },
+    {
+      "id": "granny-lavanda",
+      "name": "Granny Square Lavanda",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-lavanda.svg"
+    },
+    {
+      "id": "granny-bosque",
+      "name": "Granny Square Bosque",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-bosque.svg"
+    },
+    {
+      "id": "granny-marino",
+      "name": "Granny Square Marinero",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-marino.svg"
+    },
+    {
+      "id": "granny-atardecer",
+      "name": "Granny Square Atardecer",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-atardecer.svg"
+    },
+    {
+      "id": "granny-rombo-borgona",
+      "name": "Rombo Granny Borgoña",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-rombo-borgona.svg"
+    },
+    {
+      "id": "granny-menta-pastel",
+      "name": "Granny Square Menta",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-menta-pastel.svg"
+    },
+    {
+      "id": "granny-miel-cacao",
+      "name": "Granny Square Miel y Cacao",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-miel-cacao.svg"
+    },
+    {
+      "id": "granny-rosa-perla",
+      "name": "Granny Square Rosa y Perlas",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-rosa-perla.svg"
+    },
+    {
+      "id": "granny-turquesa-oro",
+      "name": "Granny Square Turquesa",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-turquesa-oro.svg"
+    },
+    {
+      "id": "granny-rombo-indigo",
+      "name": "Rombo Granny Añil",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-rombo-indigo.svg"
+    },
+    {
+      "id": "granny-girasol-retro",
+      "name": "Granny Square Girasol",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-girasol-retro.svg"
+    },
+    {
+      "id": "granny-ciruela-lino",
+      "name": "Granny Square Ciruela",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-ciruela-lino.svg"
+    },
+    {
+      "id": "granny-rombo-salvia",
+      "name": "Rombo Granny Salvia",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-rombo-salvia.svg"
+    },
+    {
+      "id": "granny-coral-vintage",
+      "name": "Granny Square Coral",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-coral-vintage.svg"
+    },
+    {
+      "id": "granny-vintage-marfil",
+      "name": "Granny Square Marfil",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-vintage-marfil.svg"
+    },
+    {
+      "id": "hoja-trebol-suerte",
+      "name": "Trébol Tejido de la Suerte",
+      "category": "Flores",
+      "svgFile": "stickers/flores/hoja-trebol-suerte.svg"
+    },
+    {
+      "id": "rama-lavanda-silvestre",
+      "name": "Espiga de Lavanda Crochet",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-lavanda-silvestre.svg"
+    },
+    {
+      "id": "rama-acebo-bayas",
+      "name": "Ramita con Bayas Borgoña",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-acebo-bayas.svg"
+    },
+    {
+      "id": "rama-eucalipto",
+      "name": "Eucalipto Plateado",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-eucalipto.svg"
+    },
+    {
+      "id": "rama-olivo-dorado",
+      "name": "Rama de Olivo y Perlas",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-olivo-dorado.svg"
+    },
+    {
+      "id": "rama-helecho-otono",
+      "name": "Hoja de Otoño Cobriza",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-helecho-otono.svg"
+    },
+    {
+      "id": "rama-bayas-azules",
+      "name": "Ramita con Arándanos",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-bayas-azules.svg"
+    },
+    {
+      "id": "rama-trebol-otono",
+      "name": "Trébol Dorado Tejido",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-trebol-otono.svg"
+    },
+    {
+      "id": "rama-espliego-azul",
+      "name": "Espiga Azul de Brezo",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-espliego-azul.svg"
+    },
+    {
+      "id": "rama-menta-fresca",
+      "name": "Rama de Menta y Flor",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-menta-fresca.svg"
+    },
+    {
+      "id": "rama-bayas-doradas",
+      "name": "Ramita de Espino Blanco",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-bayas-doradas.svg"
+    },
+    {
+      "id": "rama-cereza-silvestre",
+      "name": "Ramita de Flor Blanca",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-cereza-silvestre.svg"
+    },
+    {
+      "id": "rama-romero-jardin",
+      "name": "Ramita de Romero Tejida",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-romero-jardin.svg"
+    },
+    {
+      "id": "rama-musgo-rocio",
+      "name": "Hojas con Rocío de Perla",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-musgo-rocio.svg"
+    },
+    {
+      "id": "perla-gota-champan",
+      "name": "Perla Gota Champán",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-gota-champan.svg"
+    },
+    {
+      "id": "perla-gota-rosa",
+      "name": "Perla Gota Rosada",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-gota-rosa.svg"
+    },
+    {
+      "id": "perla-tahiti-gris",
+      "name": "Perla Negra de Tahití",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-tahiti-gris.svg"
+    },
+    {
+      "id": "perla-jade-suave",
+      "name": "Perla Verde Jade",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-jade-suave.svg"
+    },
+    {
+      "id": "perla-lavanda-nacar",
+      "name": "Perla Lavanda Nacarada",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-lavanda-nacar.svg"
+    },
+    {
+      "id": "perla-celeste-hielo",
+      "name": "Perla Azul Celeste",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-celeste-hielo.svg"
+    },
+    {
+      "id": "perla-melocoton",
+      "name": "Perla Melocotón",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-melocoton.svg"
+    },
+    {
+      "id": "perla-dorada-miel",
+      "name": "Perla Dorada de Mar",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-dorada-miel.svg"
+    },
+    {
+      "id": "perla-marfil-halo",
+      "name": "Perla Marfil con Encaje",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-marfil-halo.svg"
+    },
+    {
+      "id": "perla-menta-gota",
+      "name": "Perla Gota Menta",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-menta-gota.svg"
+    },
+    {
+      "id": "racimo-perlas-5-crema",
+      "name": "Flor de Cinco Perlas",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-5-crema.svg"
+    },
+    {
+      "id": "racimo-perlas-7-rosado",
+      "name": "Rosetón de Siete Perlas",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-7-rosado.svg"
+    },
+    {
+      "id": "racimo-perlas-3-borgona",
+      "name": "Trío Perlas sobre Borgoña",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-3-borgona.svg"
+    },
+    {
+      "id": "racimo-perlas-5-salvia",
+      "name": "Racimo Perlas y Salvia",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-5-salvia.svg"
+    },
+    {
+      "id": "racimo-perlas-7-celeste",
+      "name": "Racimo Perlas Celestes",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-7-celeste.svg"
+    },
+    {
+      "id": "racimo-perlas-3-lavanda",
+      "name": "Trío Perlas Lavanda",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-3-lavanda.svg"
+    },
+    {
+      "id": "racimo-perlas-5-oro",
+      "name": "Medallón Perlas y Oro",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-5-oro.svg"
+    },
+    {
+      "id": "racimo-perlas-7-tahiti",
+      "name": "Rosetón Perlas Ahumadas",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-7-tahiti.svg"
+    },
+    {
+      "id": "racimo-perlas-3-turquesa",
+      "name": "Trío Perlas Turquesa",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-3-turquesa.svg"
+    },
+    {
+      "id": "racimo-perlas-5-indigo",
+      "name": "Racimo Perlas Añil",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-5-indigo.svg"
+    },
+    {
+      "id": "racimo-perlas-7-durazno",
+      "name": "Rosetón Perlas Melocotón",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-7-durazno.svg"
+    },
+    {
+      "id": "racimo-perlas-3-encaje",
+      "name": "Trío Perlas Encaje Crudo",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-3-encaje.svg"
+    },
+    {
+      "id": "guirnalda-perlas-doble",
+      "name": "Collar Doble de Perlas",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-doble.svg"
+    },
+    {
+      "id": "guirnalda-perlas-rosa",
+      "name": "Guirnalda de Perlas Rosa",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-rosa.svg"
+    },
+    {
+      "id": "guirnalda-perlas-festone",
+      "name": "Festón Nacarado de Encaje",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-festone.svg"
+    },
+    {
+      "id": "guirnalda-perlas-lavanda",
+      "name": "Guirnalda Perlas Lavanda",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-lavanda.svg"
+    },
+    {
+      "id": "guirnalda-perlas-celeste",
+      "name": "Guirnalda Perlas Celeste",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-celeste.svg"
+    },
+    {
+      "id": "guirnalda-perlas-oro",
+      "name": "Guirnalda Perlas Doradas",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-oro.svg"
+    },
+    {
+      "id": "guirnalda-perlas-jade",
+      "name": "Guirnalda Perlas de Jade",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-jade.svg"
+    },
+    {
+      "id": "guirnalda-perlas-tahiti",
+      "name": "Collar Perlas Tahití",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-tahiti.svg"
+    },
+    {
+      "id": "guirnalda-perlas-marfil",
+      "name": "Arco Nupcial de Perlas",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-marfil.svg"
+    },
+    {
+      "id": "guirnalda-perlas-durazno",
+      "name": "Guirnalda Perlas Durazno",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-durazno.svg"
+    },
+    {
+      "id": "broche-camafeo-borgona",
+      "name": "Camafeo Borgoña y Perlas",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-camafeo-borgona.svg"
+    },
+    {
+      "id": "broche-camafeo-azul",
+      "name": "Camafeo Azul Real",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-camafeo-azul.svg"
+    },
+    {
+      "id": "broche-redondo-esmeralda",
+      "name": "Broche Esmeralda con Perlas",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-redondo-esmeralda.svg"
+    },
+    {
+      "id": "broche-octagonal-rosa",
+      "name": "Broche Vintage Rosa",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-octagonal-rosa.svg"
+    },
+    {
+      "id": "broche-oval-salvia",
+      "name": "Broche Oval Verde Salvia",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-oval-salvia.svg"
+    },
+    {
+      "id": "broche-redondo-amatista",
+      "name": "Broche Amatista y Perlas",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-redondo-amatista.svg"
+    },
+    {
+      "id": "broche-octagonal-marino",
+      "name": "Broche Octagonal Marino",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-octagonal-marino.svg"
+    },
+    {
+      "id": "broche-oval-coral",
+      "name": "Camafeo Coral Antiguo",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-oval-coral.svg"
+    },
+    {
+      "id": "broche-redondo-cacao",
+      "name": "Broche Bronce y Perla",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-redondo-cacao.svg"
+    },
+    {
+      "id": "broche-octagonal-turquesa",
+      "name": "Broche Turquesa Imperial",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-octagonal-turquesa.svg"
+    },
+    {
+      "id": "broche-oval-negro",
+      "name": "Camafeo Ónix y Perla",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-oval-negro.svg"
+    },
+    {
+      "id": "broche-redondo-lavanda",
+      "name": "Broche Lavanda Pastel",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-redondo-lavanda.svg"
+    },
+    {
+      "id": "broche-octagonal-crema",
+      "name": "Broche Filigrana Marfil",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-octagonal-crema.svg"
+    },
+    {
+      "id": "cuentas-bosque-otono",
+      "name": "Cuentas Bosque de Otoño",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-bosque-otono.svg"
+    },
+    {
+      "id": "cuentas-oceano",
+      "name": "Cuentas Océano Profundo",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-oceano.svg"
+    },
+    {
+      "id": "cuentas-atardecer-boho",
+      "name": "Cuentas Atardecer Boho",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-atardecer-boho.svg"
+    },
+    {
+      "id": "cuentas-provenza",
+      "name": "Cuentas Jardín de Provenza",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-provenza.svg"
+    },
+    {
+      "id": "cuentas-especias",
+      "name": "Cuentas Especias y Cobre",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-especias.svg"
+    },
+    {
+      "id": "cuentas-caramelo",
+      "name": "Cuentas Caramelo y Menta",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-caramelo.svg"
+    },
+    {
+      "id": "cuentas-nordico",
+      "name": "Cuentas Madera Nórdica",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-nordico.svg"
+    },
+    {
+      "id": "cuentas-vino-oro",
+      "name": "Cuentas Vino y Oro",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-vino-oro.svg"
+    },
+    {
+      "id": "cuentas-noche-estrellada",
+      "name": "Cuentas Noche Estrellada",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-noche-estrellada.svg"
+    },
+    {
+      "id": "cuentas-cafe-leche",
+      "name": "Cuentas Café y Avellana",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-cafe-leche.svg"
+    },
+    {
+      "id": "cuentas-jardin-primavera",
+      "name": "Cuentas Jardín Alegre",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-jardin-primavera.svg"
+    },
+    {
+      "id": "cuentas-terracota-lino",
+      "name": "Cuentas Terracota y Lino",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-terracota-lino.svg"
+    },
+    {
+      "id": "anillo-cuentas-borgona",
+      "name": "Rosario de Cuentas Borgoña",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-borgona.svg"
+    },
+    {
+      "id": "anillo-cuentas-zafiro",
+      "name": "Aro de Cuentas Zafiro",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-zafiro.svg"
+    },
+    {
+      "id": "anillo-cuentas-esmeralda",
+      "name": "Aro de Cuentas Esmeralda",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-esmeralda.svg"
+    },
+    {
+      "id": "anillo-cuentas-arcoiris",
+      "name": "Aro de Cuentas Arcoiris",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-arcoiris.svg"
+    },
+    {
+      "id": "anillo-cuentas-amatista",
+      "name": "Aro de Cuentas Amatista",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-amatista.svg"
+    },
+    {
+      "id": "anillo-cuentas-cobre",
+      "name": "Aro de Cuentas Cobrizas",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-cobre.svg"
+    },
+    {
+      "id": "anillo-cuentas-coral",
+      "name": "Aro de Cuentas Coral",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-coral.svg"
+    },
+    {
+      "id": "anillo-cuentas-bosque",
+      "name": "Aro de Cuentas Madera",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-bosque.svg"
+    },
+    {
+      "id": "anillo-cuentas-menta",
+      "name": "Aro de Cuentas Menta y Rosa",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-menta.svg"
+    },
+    {
+      "id": "anillo-cuentas-jade",
+      "name": "Aro de Cuentas Jade y Oro",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-jade.svg"
+    },
+    {
+      "id": "anillo-cuentas-indigo",
+      "name": "Aro de Cuentas Añil y Blanco",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-indigo.svg"
+    },
+    {
+      "id": "anillo-cuentas-cereza",
+      "name": "Aro de Cuentas Cereza",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-cereza.svg"
+    },
+    {
+      "id": "cristal-esmeralda",
+      "name": "Cristal Facetado Esmeralda",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-esmeralda.svg"
+    },
+    {
+      "id": "cristal-zafiro",
+      "name": "Cristal Facetado Zafiro",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-zafiro.svg"
+    },
+    {
+      "id": "cristal-amatista",
+      "name": "Cristal Facetado Amatista",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-amatista.svg"
+    },
+    {
+      "id": "cristal-citrino",
+      "name": "Cristal Facetado Citrino",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-citrino.svg"
+    },
+    {
+      "id": "cristal-cuarzo-rosa",
+      "name": "Cristal Cuarzo Rosa",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-cuarzo-rosa.svg"
+    },
+    {
+      "id": "cristal-aguamarina",
+      "name": "Cristal Aguamarina",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-aguamarina.svg"
+    },
+    {
+      "id": "cristal-turmalina",
+      "name": "Cristal Turmalina Fucsia",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-turmalina.svg"
+    },
+    {
+      "id": "cristal-ambar-miel",
+      "name": "Cristal Ámbar Dorado",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-ambar-miel.svg"
+    },
+    {
+      "id": "cristal-granate",
+      "name": "Cristal Granate Antiguo",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-granate.svg"
+    },
+    {
+      "id": "cristal-onice",
+      "name": "Cristal Ónice Nocturno",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-onice.svg"
+    },
+    {
+      "id": "cristal-olivino",
+      "name": "Cristal Peridoto Verde",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-olivino.svg"
+    },
+    {
+      "id": "cristal-morganita",
+      "name": "Cristal Morganita Melocotón",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-morganita.svg"
+    },
+    {
+      "id": "borla-terracota",
+      "name": "Borla Terracota con Cuenta",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-terracota.svg"
+    },
+    {
+      "id": "borla-marino",
+      "name": "Borla Azul Marino",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-marino.svg"
+    },
+    {
+      "id": "borla-rosa-antiguo",
+      "name": "Borla Rosa Antiguo",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-rosa-antiguo.svg"
+    },
+    {
+      "id": "borla-mostaza",
+      "name": "Borla Mostaza y Madera",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-mostaza.svg"
+    },
+    {
+      "id": "borla-lavanda",
+      "name": "Borla Lavanda Seda",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-lavanda.svg"
+    },
+    {
+      "id": "borla-esmeralda",
+      "name": "Borla Verde Esmeralda",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-esmeralda.svg"
+    },
+    {
+      "id": "borla-crudo-lino",
+      "name": "Borla Lino Natural",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-crudo-lino.svg"
+    },
+    {
+      "id": "borla-ciruela",
+      "name": "Borla Ciruela Real",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-ciruela.svg"
+    },
+    {
+      "id": "borla-turquesa",
+      "name": "Borla Turquesa Boho",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-turquesa.svg"
+    },
+    {
+      "id": "borla-coral",
+      "name": "Borla Coral Festiva",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-coral.svg"
+    },
+    {
+      "id": "marcapuntos-corazon-rosa",
+      "name": "Marcapuntos Corazón Rosa",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-corazon-rosa.svg"
+    },
+    {
+      "id": "marcapuntos-estrella-azul",
+      "name": "Marcapuntos Estrella Zafiro",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-estrella-azul.svg"
+    },
+    {
+      "id": "marcapuntos-perla-oro",
+      "name": "Marcapuntos Perla Dorada",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-perla-oro.svg"
+    },
+    {
+      "id": "marcapuntos-gema-verde",
+      "name": "Marcapuntos Cristal Verde",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-gema-verde.svg"
+    },
+    {
+      "id": "marcapuntos-lavanda",
+      "name": "Marcapuntos Amatista",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-lavanda.svg"
+    },
+    {
+      "id": "marcapuntos-coral-madera",
+      "name": "Marcapuntos Madera y Coral",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-coral-madera.svg"
+    },
+    {
+      "id": "marcapuntos-estrella-menta",
+      "name": "Marcapuntos Menta Dulce",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-estrella-menta.svg"
+    },
+    {
+      "id": "marcapuntos-rubi",
+      "name": "Marcapuntos Gema Rubí",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-rubi.svg"
+    },
+    {
+      "id": "marcapuntos-turquesa-sol",
+      "name": "Marcapuntos Turquesa y Sol",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-turquesa-sol.svg"
+    },
+    {
+      "id": "ovillo-indigo",
+      "name": "Ovillo Azul Índigo",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-indigo.svg"
+    },
+    {
+      "id": "ovillo-mostaza",
+      "name": "Ovillo Mostaza Dorado",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-mostaza.svg"
+    },
+    {
+      "id": "ovillo-borgona",
+      "name": "Ovillo Borgoña Intenso",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-borgona.svg"
+    },
+    {
+      "id": "ovillo-lavanda",
+      "name": "Ovillo Lavanda Suave",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-lavanda.svg"
+    },
+    {
+      "id": "ovillo-durazno",
+      "name": "Ovillo Melocotón",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-durazno.svg"
+    },
+    {
+      "id": "ovillo-esmeralda",
+      "name": "Ovillo Verde Esmeralda",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-esmeralda.svg"
+    },
+    {
+      "id": "ovillo-turquesa",
+      "name": "Ovillo Turquesa Caribe",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-turquesa.svg"
+    },
+    {
+      "id": "ovillo-ciruela",
+      "name": "Ovillo Ciruela",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-ciruela.svg"
+    },
+    {
+      "id": "ovillo-arena",
+      "name": "Ovillo Lino Arena",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-arena.svg"
+    },
+    {
+      "id": "ovillo-cacao",
+      "name": "Ovillo Cacao Oscuro",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-cacao.svg"
+    },
+    {
+      "id": "ovillo-coral",
+      "name": "Ovillo Coral Vivo",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-coral.svg"
+    },
+    {
+      "id": "ovillo-cielo",
+      "name": "Ovillo Azul Cielo",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-cielo.svg"
+    },
+    {
+      "id": "ovillo-musgo",
+      "name": "Ovillo Verde Musgo",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-musgo.svg"
+    },
+    {
+      "id": "ovillo-frambuesa",
+      "name": "Ovillo Frambuesa",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-frambuesa.svg"
+    },
+    {
+      "id": "ovillo-rosa-palo",
+      "name": "Ovillo Rosa Palo",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-rosa-palo.svg"
+    },
+    {
+      "id": "ovillo-gris-perla",
+      "name": "Ovillo Gris Perla",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-gris-perla.svg"
+    },
+    {
+      "id": "ovillo-menta",
+      "name": "Ovillo Verde Menta",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-menta.svg"
+    },
+    {
+      "id": "ovillo-oro-hilado",
+      "name": "Ovillo Lúrex Dorado",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-oro-hilado.svg"
+    },
+    {
+      "id": "madeja-algodon-crudo",
+      "name": "Madeja Algodón Crudo",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-algodon-crudo.svg"
+    },
+    {
+      "id": "madeja-merino-borgona",
+      "name": "Madeja Merino Borgoña",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-merino-borgona.svg"
+    },
+    {
+      "id": "madeja-lino-salvia",
+      "name": "Madeja Lino Salvia",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-lino-salvia.svg"
+    },
+    {
+      "id": "madeja-alpaca-cacao",
+      "name": "Madeja Alpaca Cacao",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-alpaca-cacao.svg"
+    },
+    {
+      "id": "madeja-seda-rosa",
+      "name": "Madeja Seda Rosa",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-seda-rosa.svg"
+    },
+    {
+      "id": "madeja-lana-mostaza",
+      "name": "Madeja Lana Mostaza",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-lana-mostaza.svg"
+    },
+    {
+      "id": "madeja-algodon-azul",
+      "name": "Madeja Azul Añil",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-algodon-azul.svg"
+    },
+    {
+      "id": "madeja-bambu-turquesa",
+      "name": "Madeja Bambú Turquesa",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-bambu-turquesa.svg"
+    },
+    {
+      "id": "madeja-lana-lavanda",
+      "name": "Madeja Lavanda Dulce",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-lana-lavanda.svg"
+    },
+    {
+      "id": "madeja-cachemir-gris",
+      "name": "Madeja Cachemir Gris",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-cachemir-gris.svg"
+    },
+    {
+      "id": "madeja-mohair-coral",
+      "name": "Madeja Mohair Coral",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-mohair-coral.svg"
+    },
+    {
+      "id": "madeja-perle-blanco",
+      "name": "Madeja Perlé Blanco",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-perle-blanco.svg"
+    },
+    {
+      "id": "madeja-merino-oliva",
+      "name": "Madeja Merino Oliva",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-merino-oliva.svg"
+    },
+    {
+      "id": "madeja-algodon-ciruela",
+      "name": "Madeja Algodón Ciruela",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-algodon-ciruela.svg"
+    },
+    {
+      "id": "madeja-lino-terracota",
+      "name": "Madeja Terracota Cálida",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-lino-terracota.svg"
+    },
+    {
+      "id": "carrete-hilo-marfil",
+      "name": "Carrete de Madera Marfil",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-marfil.svg"
+    },
+    {
+      "id": "carrete-hilo-carmesi",
+      "name": "Carrete de Hilo Carmesí",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-carmesi.svg"
+    },
+    {
+      "id": "carrete-hilo-oro",
+      "name": "Carrete de Hilo Dorado",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-oro.svg"
+    },
+    {
+      "id": "carrete-hilo-marino",
+      "name": "Carrete de Hilo Marino",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-marino.svg"
+    },
+    {
+      "id": "carrete-hilo-salvia",
+      "name": "Carrete de Hilo Salvia",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-salvia.svg"
+    },
+    {
+      "id": "carrete-hilo-rosa",
+      "name": "Carrete de Hilo Rosa",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-rosa.svg"
+    },
+    {
+      "id": "carrete-hilo-turquesa",
+      "name": "Carrete de Hilo Turquesa",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-turquesa.svg"
+    },
+    {
+      "id": "carrete-hilo-lavanda",
+      "name": "Carrete de Hilo Lavanda",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-lavanda.svg"
+    },
+    {
+      "id": "carrete-hilo-cobre",
+      "name": "Carrete de Hilo Cobre",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-cobre.svg"
+    },
+    {
+      "id": "carrete-hilo-negro",
+      "name": "Carrete de Hilo Ébano",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-negro.svg"
+    },
+    {
+      "id": "carrete-hilo-menta",
+      "name": "Carrete de Hilo Menta",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-menta.svg"
+    },
+    {
+      "id": "carrete-hilo-ciruela",
+      "name": "Carrete de Hilo Ciruela",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-ciruela.svg"
+    },
+    {
+      "id": "ganchillo-bambu-2",
+      "name": "Ganchillo de Bambú 2.5 mm",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-bambu-2.svg"
+    },
+    {
+      "id": "ganchillo-ebano",
+      "name": "Ganchillo Ébano y Latón",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-ebano.svg"
+    },
+    {
+      "id": "ganchillo-acero-encaje",
+      "name": "Ganchillo de Acero 1.25 mm",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-acero-encaje.svg"
+    },
+    {
+      "id": "ganchillo-ergo-rosa",
+      "name": "Ganchillo Ergonómico Rosa",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-ergo-rosa.svg"
+    },
+    {
+      "id": "ganchillo-ergo-turquesa",
+      "name": "Ganchillo Ergonómico Turquesa",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-ergo-turquesa.svg"
+    },
+    {
+      "id": "ganchillo-ergo-lavanda",
+      "name": "Ganchillo Ergonómico Lavanda",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-ergo-lavanda.svg"
+    },
+    {
+      "id": "ganchillo-ergo-mostaza",
+      "name": "Ganchillo Ergonómico Mostaza",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-ergo-mostaza.svg"
+    },
+    {
+      "id": "ganchillo-laton-dorado",
+      "name": "Ganchillo Dorado de Colección",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-laton-dorado.svg"
+    },
+    {
+      "id": "ganchillo-palisandro",
+      "name": "Ganchillo de Palisandro",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-palisandro.svg"
+    },
+    {
+      "id": "ganchillo-ergo-salvia",
+      "name": "Ganchillo Ergonómico Salvia",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-ergo-salvia.svg"
+    },
+    {
+      "id": "ganchillo-tunecino-cobre",
+      "name": "Aguja Tunecina Cobriza",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-tunecino-cobre.svg"
+    },
+    {
+      "id": "ganchillo-marfil-antiguo",
+      "name": "Ganchillo Marfil Tallado",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-marfil-antiguo.svg"
+    },
+    {
+      "id": "tijeras-ciguena-oro",
+      "name": "Tijeras Cigüeña Doradas",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/tijeras-ciguena-oro.svg"
+    },
+    {
+      "id": "tijeras-plata-antigua",
+      "name": "Tijeras Plata Antigua",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/tijeras-plata-antigua.svg"
+    },
+    {
+      "id": "tijeras-cobre-taller",
+      "name": "Tijeras de Cobre Vintage",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/tijeras-cobre-taller.svg"
+    },
+    {
+      "id": "tijeras-oro-rosa",
+      "name": "Tijeras Oro Rosa y Cinta",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/tijeras-oro-rosa.svg"
+    },
+    {
+      "id": "tijeras-pavinadas",
+      "name": "Tijeras Negras Pavonadas",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/tijeras-pavinadas.svg"
+    },
+    {
+      "id": "tijeras-esmalte-azul",
+      "name": "Tijeras Esmalte Añil",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/tijeras-esmalte-azul.svg"
+    },
+    {
+      "id": "tijeras-esmalte-verde",
+      "name": "Tijeras Esmalte Botánico",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/tijeras-esmalte-verde.svg"
+    },
+    {
+      "id": "tijeras-lazo-lino",
+      "name": "Tijeras de Bordado con Lazo",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/tijeras-lazo-lino.svg"
+    },
+    {
+      "id": "aguja-lanera-borgona",
+      "name": "Aguja Lanera Hilo Borgoña",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/aguja-lanera-borgona.svg"
+    },
+    {
+      "id": "aguja-lanera-turquesa",
+      "name": "Aguja Lanera Hilo Turquesa",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/aguja-lanera-turquesa.svg"
+    },
+    {
+      "id": "aguja-dorada-mostaza",
+      "name": "Aguja Dorada Hilo Mostaza",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/aguja-dorada-mostaza.svg"
+    },
+    {
+      "id": "aguja-lanera-salvia",
+      "name": "Aguja Lanera Hilo Salvia",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/aguja-lanera-salvia.svg"
+    },
+    {
+      "id": "alfiletero-tomate-clasico",
+      "name": "Alfiletero Rojo Clásico",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/alfiletero-tomate-clasico.svg"
+    },
+    {
+      "id": "alfiletero-tejido-rosa",
+      "name": "Alfiletero Crochet Rosa",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/alfiletero-tejido-rosa.svg"
+    },
+    {
+      "id": "alfiletero-madera-turquesa",
+      "name": "Alfiletero Madera y Turquesa",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/alfiletero-madera-turquesa.svg"
+    },
+    {
+      "id": "alfiletero-lavanda",
+      "name": "Alfiletero Lavanda con Perlas",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/alfiletero-lavanda.svg"
+    },
+    {
+      "id": "cinta-metrica-crema",
+      "name": "Cinta Métrica Vintage",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/cinta-metrica-crema.svg"
+    },
+    {
+      "id": "cinta-metrica-rosa",
+      "name": "Cinta Métrica Rosa Pastel",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/cinta-metrica-rosa.svg"
+    },
+    {
+      "id": "cinta-metrica-menta",
+      "name": "Cinta Métrica Menta",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/cinta-metrica-menta.svg"
+    },
+    {
+      "id": "regla-medidor-madera",
+      "name": "Medidor de Ganchillos Madera",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/regla-medidor-madera.svg"
+    },
+    {
+      "id": "regla-medidor-laton",
+      "name": "Calibrador de Puntos Latón",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/regla-medidor-laton.svg"
+    },
+    {
+      "id": "cuentavueltas-borgona",
+      "name": "Cuentavueltas Borgoña",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/cuentavueltas-borgona.svg"
+    },
+    {
+      "id": "cuentavueltas-turquesa",
+      "name": "Cuentavueltas Turquesa",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/cuentavueltas-turquesa.svg"
+    },
+    {
+      "id": "corazon-rosa-perla",
+      "name": "Corazón Rosa con Perla",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-rosa-perla.svg"
+    },
+    {
+      "id": "corazon-crema-encaje",
+      "name": "Corazón Encaje Crudo",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-crema-encaje.svg"
+    },
+    {
+      "id": "corazon-lavanda-cosido",
+      "name": "Corazón Lavanda Tejido",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-lavanda-cosido.svg"
+    },
+    {
+      "id": "corazon-salvia-cosido",
+      "name": "Corazón Verde Salvia",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-salvia-cosido.svg"
+    },
+    {
+      "id": "corazon-mostaza-cosido",
+      "name": "Corazón Mostaza Retro",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-mostaza-cosido.svg"
+    },
+    {
+      "id": "corazon-azul-anil",
+      "name": "Corazón Azul Añil",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-azul-anil.svg"
+    },
+    {
+      "id": "corazon-doble-taller",
+      "name": "Doble Corazón Artesanal",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-doble-taller.svg"
+    },
+    {
+      "id": "corazon-terracota",
+      "name": "Corazón Terracota Cálido",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-terracota.svg"
+    },
+    {
+      "id": "corazon-turquesa",
+      "name": "Corazón Turquesa Tejido",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-turquesa.svg"
+    },
+    {
+      "id": "corazon-lino-cacao",
+      "name": "Corazón Cacao y Lino",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-lino-cacao.svg"
+    },
+    {
+      "id": "boton-nacar-2-agujeros",
+      "name": "Botón Nácar Dos Agujeros",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-nacar-2-agujeros.svg"
+    },
+    {
+      "id": "boton-nacar-flor",
+      "name": "Botón Nácar Festoneado",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-nacar-flor.svg"
+    },
+    {
+      "id": "boton-roble-oscuro",
+      "name": "Botón Roble Tostado",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-roble-oscuro.svg"
+    },
+    {
+      "id": "boton-olivo-claro",
+      "name": "Botón Madera Clara",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-olivo-claro.svg"
+    },
+    {
+      "id": "boton-laton-medieval",
+      "name": "Botón Latón Labrado",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-laton-medieval.svg"
+    },
+    {
+      "id": "boton-ceramica-rosa",
+      "name": "Botón Cerámica Rosa",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-ceramica-rosa.svg"
+    },
+    {
+      "id": "boton-ceramica-turquesa",
+      "name": "Botón Cerámica Turquesa",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-ceramica-turquesa.svg"
+    },
+    {
+      "id": "boton-ceramica-azul",
+      "name": "Botón Porcelana Azul",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-ceramica-azul.svg"
+    },
+    {
+      "id": "boton-cuerno-miel",
+      "name": "Botón Cuerno y Miel",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-cuerno-miel.svg"
+    },
+    {
+      "id": "boton-ceramica-lavanda",
+      "name": "Botón Cerámica Lavanda",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-ceramica-lavanda.svg"
+    },
+    {
+      "id": "boton-cobre-antiguo",
+      "name": "Botón Cobre Antiguo",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-cobre-antiguo.svg"
+    },
+    {
+      "id": "boton-ceramica-salvia",
+      "name": "Botón Cerámica Salvia",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-ceramica-salvia.svg"
+    },
+    {
+      "id": "etiqueta-100-algodon",
+      "name": "Etiqueta 100% Algodón",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-100-algodon.svg"
+    },
+    {
+      "id": "etiqueta-tejido-amor",
+      "name": "Etiqueta Tejido con Amor",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-tejido-amor.svg"
+    },
+    {
+      "id": "etiqueta-edicion-taller",
+      "name": "Etiqueta Edición de Taller",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-edicion-taller.svg"
+    },
+    {
+      "id": "etiqueta-punto-a-punto",
+      "name": "Etiqueta Punto a Punto",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-punto-a-punto.svg"
+    },
+    {
+      "id": "etiqueta-crochet-artesanal",
+      "name": "Etiqueta Crochet Artesanal",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-crochet-artesanal.svg"
+    },
+    {
+      "id": "etiqueta-regalo-especial",
+      "name": "Etiqueta Regalo Especial",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-regalo-especial.svg"
+    },
+    {
+      "id": "etiqueta-merino-suave",
+      "name": "Etiqueta Merino Suave",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-merino-suave.svg"
+    },
+    {
+      "id": "etiqueta-pieza-unica",
+      "name": "Etiqueta Pieza Única",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-pieza-unica.svg"
+    },
+    {
+      "id": "etiqueta-hecho-despacio",
+      "name": "Etiqueta Hecho Despacio",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-hecho-despacio.svg"
+    },
+    {
+      "id": "etiqueta-lana-natural",
+      "name": "Etiqueta Lana Natural",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-lana-natural.svg"
+    },
+    {
+      "id": "etiqueta-diseno-propio",
+      "name": "Etiqueta Diseño Propio",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-diseno-propio.svg"
+    },
+    {
+      "id": "etiqueta-serie-limitada",
+      "name": "Etiqueta Serie Limitada",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-serie-limitada.svg"
+    },
+    {
+      "id": "lazo-tejido-borgona",
+      "name": "Lazo Crochet Borgoña",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/lazo-tejido-borgona.svg"
+    },
+    {
+      "id": "lazo-tejido-crema",
+      "name": "Lazo Encaje Marfil",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/lazo-tejido-crema.svg"
+    },
+    {
+      "id": "lazo-tejido-celeste",
+      "name": "Lazo Crochet Celeste",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/lazo-tejido-celeste.svg"
+    },
+    {
+      "id": "estrella-amigurumi-oro",
+      "name": "Estrella Tejida Dorada",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/estrella-amigurumi-oro.svg"
+    },
+    {
+      "id": "estrella-amigurumi-rosa",
+      "name": "Estrella Tejida Rosa",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/estrella-amigurumi-rosa.svg"
+    },
+    {
+      "id": "luna-crochet-noche",
+      "name": "Luna Creciente Tejida",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/luna-crochet-noche.svg"
+    },
+    {
+      "id": "mariposa-crochet-lavanda",
+      "name": "Mariposa Crochet Lavanda",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/mariposa-crochet-lavanda.svg"
+    },
+    {
+      "id": "mariposa-crochet-coral",
+      "name": "Mariposa Crochet Coral",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/mariposa-crochet-coral.svg"
+    },
+    {
+      "id": "corona-encaje-oro",
+      "name": "Corona de Encaje Dorada",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corona-encaje-oro.svg"
+    },
+    {
+      "id": "pompon-lana-rosa",
+      "name": "Pompón Mullido Rosa",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/pompon-lana-rosa.svg"
+    },
+    {
+      "id": "pompon-lana-mostaza",
+      "name": "Pompón Mullido Mostaza",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/pompon-lana-mostaza.svg"
+    },
+    {
+      "id": "flor-roseta-pavo-real",
+      "name": "Flor Pavo Real Tejida",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-roseta-pavo-real.svg"
+    },
+    {
+      "id": "flor-roseta-azafran",
+      "name": "Flor Azafrán Vivo",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-roseta-azafran.svg"
+    },
+    {
+      "id": "flor-roseta-petalo-blanco",
+      "name": "Flor Blanca Nupcial",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-roseta-petalo-blanco.svg"
+    },
+    {
+      "id": "flor-roseta-cereza",
+      "name": "Flor Cereza Intensa",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-roseta-cereza.svg"
+    },
+    {
+      "id": "flor-roseta-menta-dulce",
+      "name": "Flor Menta y Perla",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-roseta-menta-dulce.svg"
+    },
+    {
+      "id": "flor-mandala-cobre",
+      "name": "Mandala Cobre y Azul",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-cobre.svg"
+    },
+    {
+      "id": "flor-mandala-bosque",
+      "name": "Mandala Verde Bosque",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-bosque.svg"
+    },
+    {
+      "id": "flor-mandala-durazno",
+      "name": "Mandala Durazno Floral",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-mandala-durazno.svg"
+    },
+    {
+      "id": "flor-dalia-azul-mar",
+      "name": "Dalia Azul Marino",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-dalia-azul-mar.svg"
+    },
+    {
+      "id": "flor-dalia-terracota",
+      "name": "Dalia Terracota",
+      "category": "Flores",
+      "svgFile": "stickers/flores/flor-dalia-terracota.svg"
+    },
+    {
+      "id": "granny-primavera-pastel",
+      "name": "Granny Square Primavera",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-primavera-pastel.svg"
+    },
+    {
+      "id": "granny-nocturno-oro",
+      "name": "Granny Square Noche y Oro",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-nocturno-oro.svg"
+    },
+    {
+      "id": "granny-rombo-coral",
+      "name": "Rombo Granny Coral",
+      "category": "Flores",
+      "svgFile": "stickers/flores/granny-rombo-coral.svg"
+    },
+    {
+      "id": "rama-lavanda-rosa",
+      "name": "Espiga de Brezo Rosado",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-lavanda-rosa.svg"
+    },
+    {
+      "id": "rama-trebol-celeste",
+      "name": "Trébol Azul Celeste",
+      "category": "Flores",
+      "svgFile": "stickers/flores/rama-trebol-celeste.svg"
+    },
+    {
+      "id": "perla-gota-rubor",
+      "name": "Perla Rubor Vintage",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-gota-rubor.svg"
+    },
+    {
+      "id": "perla-gota-esmeralda",
+      "name": "Perla Gota Menta Real",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/perla-gota-esmeralda.svg"
+    },
+    {
+      "id": "broche-oval-esmeralda",
+      "name": "Camafeo Bosque y Perla",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/broche-oval-esmeralda.svg"
+    },
+    {
+      "id": "guirnalda-perlas-salvia",
+      "name": "Guirnalda Perlas y Salvia",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/guirnalda-perlas-salvia.svg"
+    },
+    {
+      "id": "racimo-perlas-5-cobre",
+      "name": "Flor de Perlas y Cobre",
+      "category": "Perlas",
+      "svgFile": "stickers/perlas/racimo-perlas-5-cobre.svg"
+    },
+    {
+      "id": "cuentas-mariposa",
+      "name": "Cuentas Jardín Violeta",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-mariposa.svg"
+    },
+    {
+      "id": "cuentas-mediterraneo",
+      "name": "Cuentas Mediterráneo",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cuentas-mediterraneo.svg"
+    },
+    {
+      "id": "anillo-cuentas-doradas",
+      "name": "Aro de Cuentas Doradas",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-doradas.svg"
+    },
+    {
+      "id": "anillo-cuentas-turquesa-oro",
+      "name": "Aro Turquesa y Ámbar",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/anillo-cuentas-turquesa-oro.svg"
+    },
+    {
+      "id": "cristal-topacio-azul",
+      "name": "Cristal Topacio Azul",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-topacio-azul.svg"
+    },
+    {
+      "id": "cristal-rosa-imperial",
+      "name": "Cristal Rubelita Imperial",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/cristal-rosa-imperial.svg"
+    },
+    {
+      "id": "borla-indigo",
+      "name": "Borla Añil con Cuenta",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-indigo.svg"
+    },
+    {
+      "id": "borla-salvia",
+      "name": "Borla Verde Salvia",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/borla-salvia.svg"
+    },
+    {
+      "id": "marcapuntos-ojo-turco",
+      "name": "Marcapuntos Azul Zafiro",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-ojo-turco.svg"
+    },
+    {
+      "id": "marcapuntos-corazon-oro",
+      "name": "Marcapuntos Corazón Dorado",
+      "category": "Cuentas",
+      "svgFile": "stickers/cuentas/marcapuntos-corazon-oro.svg"
+    },
+    {
+      "id": "ovillo-azul-noche",
+      "name": "Ovillo Azul Noche",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-azul-noche.svg"
+    },
+    {
+      "id": "ovillo-verde-pinar",
+      "name": "Ovillo Verde Pinar",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-verde-pinar.svg"
+    },
+    {
+      "id": "ovillo-lila-pastel",
+      "name": "Ovillo Lila Pastel",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-lila-pastel.svg"
+    },
+    {
+      "id": "ovillo-cobre-brillante",
+      "name": "Ovillo Hilo Cobre",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/ovillo-cobre-brillante.svg"
+    },
+    {
+      "id": "madeja-algodon-menta",
+      "name": "Madeja Algodón Menta",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-algodon-menta.svg"
+    },
+    {
+      "id": "madeja-lana-marino",
+      "name": "Madeja Lana Marino",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-lana-marino.svg"
+    },
+    {
+      "id": "madeja-algodon-durazno",
+      "name": "Madeja Algodón Durazno",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/madeja-algodon-durazno.svg"
+    },
+    {
+      "id": "carrete-hilo-verde",
+      "name": "Carrete de Hilo Pino",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-verde.svg"
+    },
+    {
+      "id": "carrete-hilo-mostaza",
+      "name": "Carrete de Hilo Mostaza",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-mostaza.svg"
+    },
+    {
+      "id": "carrete-hilo-coral",
+      "name": "Carrete de Hilo Coral",
+      "category": "Hilos",
+      "svgFile": "stickers/hilos/carrete-hilo-coral.svg"
+    },
+    {
+      "id": "ganchillo-ergo-azul",
+      "name": "Ganchillo Ergonómico Azul",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-ergo-azul.svg"
+    },
+    {
+      "id": "ganchillo-madera-nogal",
+      "name": "Ganchillo Nogal Oscuro",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/ganchillo-madera-nogal.svg"
+    },
+    {
+      "id": "tijeras-doradas-encaje",
+      "name": "Tijeras Filigrana Doradas",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/tijeras-doradas-encaje.svg"
+    },
+    {
+      "id": "alfiletero-azul-marino",
+      "name": "Alfiletero Azul y Encaje",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/alfiletero-azul-marino.svg"
+    },
+    {
+      "id": "cuentavueltas-rosa",
+      "name": "Cuentavueltas Rosa Vintage",
+      "category": "Herramientas",
+      "svgFile": "stickers/herramientas/cuentavueltas-rosa.svg"
+    },
+    {
+      "id": "corazon-dorado-encaje",
+      "name": "Corazón Dorado Cosido",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/corazon-dorado-encaje.svg"
+    },
+    {
+      "id": "boton-ceramica-mostaza",
+      "name": "Botón Cerámica Mostaza",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/boton-ceramica-mostaza.svg"
+    },
+    {
+      "id": "etiqueta-taller-nazco",
+      "name": "Etiqueta Sello del Taller",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/etiqueta-taller-nazco.svg"
+    },
+    {
+      "id": "estrella-amigurumi-azul",
+      "name": "Estrella Tejida Celeste",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/estrella-amigurumi-azul.svg"
+    },
+    {
+      "id": "mariposa-crochet-turquesa",
+      "name": "Mariposa Turquesa Tejida",
+      "category": "Etiquetas",
+      "svgFile": "stickers/etiquetas/mariposa-crochet-turquesa.svg"
+    }
+  ],
+  "gifs": [
+    {
+      "id": "gif-chain-hook",
+      "name": "Cadeneta Tejiéndose",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Ganchillo formando cadenetas",
+      "scene": "chain-hook",
+      "colors": [
+        "#C9184A",
+        "#F4A261",
+        "#D4AF37",
+        "#5C3016"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-chain-hook.gif"
+    },
+    {
+      "id": "gif-dc-stitch",
+      "name": "Punto Alto en Acción",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Lazada y punto vareta animado",
+      "scene": "dc-stitch",
+      "colors": [
+        "#1D70A2",
+        "#2EC4B6",
+        "#D4AF37",
+        "#4E2712"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-dc-stitch.gif"
+    },
+    {
+      "id": "gif-magic-ring",
+      "name": "Anillo Mágico",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Aro ajustable con puntos bajos",
+      "scene": "magic-ring",
+      "colors": [
+        "#9D4EDD",
+        "#FF70A6",
+        "#F4C95D",
+        "#4A220D"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-magic-ring.gif"
+    },
+    {
+      "id": "gif-golden-hook",
+      "name": "Ganchillo Dorado",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Aguja brillante con destellos",
+      "scene": "golden-hook",
+      "colors": [
+        "#D97706",
+        "#FBBF24",
+        "#7A202A",
+        "#FFF3D1"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-golden-hook.gif"
+    },
+    {
+      "id": "gif-scissors-snip",
+      "name": "Tijeras de Taller",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Tijeras cigüeña cortando hebra",
+      "scene": "scissors-snip",
+      "colors": [
+        "#B45309",
+        "#F59E0B",
+        "#E11D48",
+        "#3E1E0C"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-scissors-snip.gif"
+    },
+    {
+      "id": "gif-yarn-unroll",
+      "name": "Ovillo Desenrollándose",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Madeja rodando con hilo vivo",
+      "scene": "yarn-unroll",
+      "colors": [
+        "#E63946",
+        "#FF758F",
+        "#FFB3C1",
+        "#6B2229"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-unroll.gif"
+    },
+    {
+      "id": "gif-yarn-bounce",
+      "name": "Ovillos Saltarines",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Dúo de lanas alegres",
+      "scene": "yarn-bounce",
+      "colors": [
+        "#00A896",
+        "#F7B801",
+        "#E63946",
+        "#3A0CA3"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-bounce.gif"
+    },
+    {
+      "id": "gif-measuring-tape",
+      "name": "Cinta Métrica",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Cinta enrollándose en espiral",
+      "scene": "measuring-tape",
+      "colors": [
+        "#F59E0B",
+        "#FEF3C7",
+        "#78350F",
+        "#D97706"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-measuring-tape.gif"
+    },
+    {
+      "id": "gif-stitch-markers",
+      "name": "Marcadores de Punto",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Imperdibles de colores girando",
+      "scene": "stitch-markers",
+      "colors": [
+        "#E11D48",
+        "#0EA5E9",
+        "#10B981",
+        "#F59E0B"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-stitch-markers.gif"
+    },
+    {
+      "id": "gif-yarn-basket",
+      "name": "Canasta de Lanas",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Cesta tejida con ovillos vivos",
+      "scene": "yarn-basket",
+      "colors": [
+        "#9A5B25",
+        "#E11D48",
+        "#2EC4B6",
+        "#F59E0B"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-basket.gif"
+    },
+    {
+      "id": "gif-mandala-spin",
+      "name": "Mandala Arcoíris",
+      "category": "Mandalas Animados",
+      "subtitle": "Rosetón multicolor giratorio",
+      "scene": "mandala-spin",
+      "colors": [
+        "#E11D48",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-spin.gif"
+    },
+    {
+      "id": "gif-mandala-bloom",
+      "name": "Mandala Loto Vivo",
+      "category": "Mandalas Animados",
+      "subtitle": "Pétalos abriéndose por vueltas",
+      "scene": "mandala-bloom",
+      "colors": [
+        "#9D174D",
+        "#F472B6",
+        "#FBBF24",
+        "#0F766E"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-bloom.gif"
+    },
+    {
+      "id": "gif-mandala-kaleidoscope",
+      "name": "Mandala Caleidoscopio",
+      "category": "Mandalas Animados",
+      "subtitle": "Anillos contrarrotatorios",
+      "scene": "mandala-kaleidoscope",
+      "colors": [
+        "#4338CA",
+        "#EC4899",
+        "#14B8A6",
+        "#F59E0B"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-kaleidoscope.gif"
+    },
+    {
+      "id": "gif-mandala-sunburst",
+      "name": "Mandala Sol Radiante",
+      "category": "Mandalas Animados",
+      "subtitle": "Rayos dorados latiendo",
+      "scene": "mandala-sunburst",
+      "colors": [
+        "#B45309",
+        "#F59E0B",
+        "#DC2626",
+        "#FDE047"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-sunburst.gif"
+    },
+    {
+      "id": "gif-mandala-boho",
+      "name": "Mandala Boho Turquesa",
+      "category": "Mandalas Animados",
+      "subtitle": "Turquesa y coral en vaivén",
+      "scene": "mandala-boho",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#FB7185",
+        "#F59E0B"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-boho.gif"
+    },
+    {
+      "id": "gif-mandala-lace-wheel",
+      "name": "Rueda de Encaje Real",
+      "category": "Mandalas Animados",
+      "subtitle": "Filigrana violeta y oro",
+      "scene": "mandala-lace-wheel",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#D97706",
+        "#FDE68A"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-lace-wheel.gif"
+    },
+    {
+      "id": "gif-mandala-star",
+      "name": "Mandala Estrella Nórdica",
+      "category": "Mandalas Animados",
+      "subtitle": "Estrella de 8 puntas tejiéndose",
+      "scene": "mandala-star",
+      "colors": [
+        "#1E3A8A",
+        "#0284C7",
+        "#F59E0B",
+        "#E11D48"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-star.gif"
+    },
+    {
+      "id": "gif-mandala-daisy",
+      "name": "Mandala Jardín Pastel",
+      "category": "Mandalas Animados",
+      "subtitle": "Margaritas en ronda festiva",
+      "scene": "mandala-daisy",
+      "colors": [
+        "#FF70A6",
+        "#FF9770",
+        "#10B981",
+        "#FBBF24"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-daisy.gif"
+    },
+    {
+      "id": "gif-mandala-autumn",
+      "name": "Mandala Otoño Cálido",
+      "category": "Mandalas Animados",
+      "subtitle": "Terracota, ocre y oliva",
+      "scene": "mandala-autumn",
+      "colors": [
+        "#9A3412",
+        "#EA580C",
+        "#CA8A04",
+        "#4D7C0F"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-autumn.gif"
+    },
+    {
+      "id": "gif-mandala-emerald",
+      "name": "Mandala Esmeralda",
+      "category": "Mandalas Animados",
+      "subtitle": "Verde bosque con aro dorado",
+      "scene": "mandala-emerald",
+      "colors": [
+        "#065F46",
+        "#10B981",
+        "#D97706",
+        "#BE123C"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-emerald.gif"
+    },
+    {
+      "id": "gif-granny-build",
+      "name": "Granny Square Clásico",
+      "category": "Granny y Tapetes",
+      "subtitle": "Cuadro de la abuela vuelta a vuelta",
+      "scene": "granny-build",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#059669",
+        "#1D4ED8"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-build.gif"
+    },
+    {
+      "id": "gif-granny-sunflower",
+      "name": "Granny Girasol",
+      "category": "Granny y Tapetes",
+      "subtitle": "Centro café con pétalos oro",
+      "scene": "granny-sunflower",
+      "colors": [
+        "#5C3016",
+        "#EA580C",
+        "#FBBF24",
+        "#0F766E"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-sunflower.gif"
+    },
+    {
+      "id": "gif-granny-heart",
+      "name": "Granny Corazón",
+      "category": "Granny y Tapetes",
+      "subtitle": "Cuadro romántico palpitando",
+      "scene": "granny-heart",
+      "colors": [
+        "#BE123C",
+        "#FB7185",
+        "#FDE2E4",
+        "#6D28D9"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-heart.gif"
+    },
+    {
+      "id": "gif-granny-daisy",
+      "name": "Granny Margarita",
+      "category": "Granny y Tapetes",
+      "subtitle": "Flor central sobre cuadro menta",
+      "scene": "granny-daisy",
+      "colors": [
+        "#F59E0B",
+        "#FFFBEB",
+        "#10B981",
+        "#047857"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-daisy.gif"
+    },
+    {
+      "id": "gif-hexagon-hive",
+      "name": "Hexágonos Colmena",
+      "category": "Granny y Tapetes",
+      "subtitle": "Mosaico hexagonal animado",
+      "scene": "hexagon-hive",
+      "colors": [
+        "#D97706",
+        "#FBBF24",
+        "#0D9488",
+        "#9D174D"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-hexagon-hive.gif"
+    },
+    {
+      "id": "gif-doily-expand",
+      "name": "Tapete Estrellado",
+      "category": "Granny y Tapetes",
+      "subtitle": "Carpeta calada expandiéndose",
+      "scene": "doily-expand",
+      "colors": [
+        "#7A202A",
+        "#B45309",
+        "#0F766E",
+        "#4338CA"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-doily-expand.gif"
+    },
+    {
+      "id": "gif-ripple-wave",
+      "name": "Punto Chevron Ondulado",
+      "category": "Granny y Tapetes",
+      "subtitle": "Zigzag de colores fluyendo",
+      "scene": "ripple-wave",
+      "colors": [
+        "#E11D48",
+        "#F97316",
+        "#14B8A6",
+        "#3B82F6"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-ripple-wave.gif"
+    },
+    {
+      "id": "gif-rainbow-blanket",
+      "name": "Manta Arcoíris",
+      "category": "Granny y Tapetes",
+      "subtitle": "Franjas tejidas ondeando",
+      "scene": "rainbow-blanket",
+      "colors": [
+        "#EF4444",
+        "#F59E0B",
+        "#10B981",
+        "#8B5CF6"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-rainbow-blanket.gif"
+    },
+    {
+      "id": "gif-african-flower",
+      "name": "Flor Africana",
+      "category": "Granny y Tapetes",
+      "subtitle": "Hexágono floral iluminándose",
+      "scene": "african-flower",
+      "colors": [
+        "#BE185D",
+        "#F43F5E",
+        "#14B8A6",
+        "#1E3A8A"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-african-flower.gif"
+    },
+    {
+      "id": "gif-lace-sparkle",
+      "name": "Puntilla Destellante",
+      "category": "Granny y Tapetes",
+      "subtitle": "Encaje clásico con brillos",
+      "scene": "lace-sparkle",
+      "colors": [
+        "#5B285C",
+        "#D97706",
+        "#9F1239",
+        "#FBBF24"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-lace-sparkle.gif"
+    },
+    {
+      "id": "gif-rose-bloom",
+      "name": "Rosa de Ganchillo",
+      "category": "Flores Tejidas",
+      "subtitle": "Capullo en espiral abriéndose",
+      "scene": "rose-bloom",
+      "colors": [
+        "#9F1239",
+        "#E11D48",
+        "#FB7185",
+        "#15803D"
+      ],
+      "file": "gifs/flores-tejidas/gif-rose-bloom.gif"
+    },
+    {
+      "id": "gif-sunflower-sway",
+      "name": "Girasol Alegre",
+      "category": "Flores Tejidas",
+      "subtitle": "Pétalos dorados meciéndose",
+      "scene": "sunflower-sway",
+      "colors": [
+        "#5C3016",
+        "#F59E0B",
+        "#FACC15",
+        "#16A34A"
+      ],
+      "file": "gifs/flores-tejidas/gif-sunflower-sway.gif"
+    },
+    {
+      "id": "gif-daisy-dance",
+      "name": "Margarita Bailarina",
+      "category": "Flores Tejidas",
+      "subtitle": "Flor campestre saltarina",
+      "scene": "daisy-dance",
+      "colors": [
+        "#F59E0B",
+        "#FFF7ED",
+        "#EC4899",
+        "#16A34A"
+      ],
+      "file": "gifs/flores-tejidas/gif-daisy-dance.gif"
+    },
+    {
+      "id": "gif-tulip-open",
+      "name": "Tulipán de Hilo",
+      "category": "Flores Tejidas",
+      "subtitle": "Flor en punto puff abriendo",
+      "scene": "tulip-open",
+      "colors": [
+        "#DB2777",
+        "#F472B6",
+        "#15803D",
+        "#FBBF24"
+      ],
+      "file": "gifs/flores-tejidas/gif-tulip-open.gif"
+    },
+    {
+      "id": "gif-leaf-sway",
+      "name": "Rama y Hojas Tejidas",
+      "category": "Flores Tejidas",
+      "subtitle": "Hojas botánicas en relieve",
+      "scene": "leaf-sway",
+      "colors": [
+        "#14532D",
+        "#16A34A",
+        "#84CC16",
+        "#D97706"
+      ],
+      "file": "gifs/flores-tejidas/gif-leaf-sway.gif"
+    },
+    {
+      "id": "gif-clover-spin",
+      "name": "Trébol de 4 Hojas",
+      "category": "Flores Tejidas",
+      "subtitle": "Trébol de la suerte girando",
+      "scene": "clover-spin",
+      "colors": [
+        "#047857",
+        "#10B981",
+        "#34D399",
+        "#FBBF24"
+      ],
+      "file": "gifs/flores-tejidas/gif-clover-spin.gif"
+    },
+    {
+      "id": "gif-butterfly-flap",
+      "name": "Mariposa de Crochet",
+      "category": "Flores Tejidas",
+      "subtitle": "Aleteo colorido en encaje",
+      "scene": "butterfly-flap",
+      "colors": [
+        "#7C3AED",
+        "#EC4899",
+        "#F59E0B",
+        "#06B6D4"
+      ],
+      "file": "gifs/flores-tejidas/gif-butterfly-flap.gif"
+    },
+    {
+      "id": "gif-bee-fly",
+      "name": "Abejita Amigurumi",
+      "category": "Flores Tejidas",
+      "subtitle": "Abejita zumbando entre flores",
+      "scene": "bee-fly",
+      "colors": [
+        "#F59E0B",
+        "#291509",
+        "#BAE6FD",
+        "#EC4899"
+      ],
+      "file": "gifs/flores-tejidas/gif-bee-fly.gif"
+    },
+    {
+      "id": "gif-mushroom-hop",
+      "name": "Honguito del Bosque",
+      "category": "Flores Tejidas",
+      "subtitle": "Seta amigurumi con lunares",
+      "scene": "mushroom-hop",
+      "colors": [
+        "#DC2626",
+        "#FEF3C7",
+        "#92400E",
+        "#16A34A"
+      ],
+      "file": "gifs/flores-tejidas/gif-mushroom-hop.gif"
+    },
+    {
+      "id": "gif-cactus-bloom",
+      "name": "Cactus en Maceta",
+      "category": "Flores Tejidas",
+      "subtitle": "Cactus tejido con flor rosa",
+      "scene": "cactus-bloom",
+      "colors": [
+        "#15803D",
+        "#4ADE80",
+        "#C2410C",
+        "#EC4899"
+      ],
+      "file": "gifs/flores-tejidas/gif-cactus-bloom.gif"
+    },
+    {
+      "id": "gif-bear-wave",
+      "name": "Osito Saludando",
+      "category": "Amigurumi",
+      "subtitle": "Osito tejido moviendo su patita",
+      "scene": "bear-wave",
+      "colors": [
+        "#8B5A2B",
+        "#C68B59",
+        "#E11D48",
+        "#FDE68A"
+      ],
+      "file": "gifs/amigurumi/gif-bear-wave.gif"
+    },
+    {
+      "id": "gif-bunny-ears",
+      "name": "Conejito Tierno",
+      "category": "Amigurumi",
+      "subtitle": "Orejas largas moviéndose",
+      "scene": "bunny-ears",
+      "colors": [
+        "#E5D3B3",
+        "#FB7185",
+        "#4A2511",
+        "#14B8A6"
+      ],
+      "file": "gifs/amigurumi/gif-bunny-ears.gif"
+    },
+    {
+      "id": "gif-kitty-yarn",
+      "name": "Gatito con Ovillo",
+      "category": "Amigurumi",
+      "subtitle": "Michi jugando con la lana",
+      "scene": "kitty-yarn",
+      "colors": [
+        "#EA580C",
+        "#FDBA74",
+        "#E11D48",
+        "#2563EB"
+      ],
+      "file": "gifs/amigurumi/gif-kitty-yarn.gif"
+    },
+    {
+      "id": "gif-octopus-bob",
+      "name": "Pulpito Amigurumi",
+      "category": "Amigurumi",
+      "subtitle": "Tentáculos en espiral bailando",
+      "scene": "octopus-bob",
+      "colors": [
+        "#7C3AED",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/amigurumi/gif-octopus-bob.gif"
+    },
+    {
+      "id": "gif-whale-hearts",
+      "name": "Ballenita Feliz",
+      "category": "Amigurumi",
+      "subtitle": "Lanzando chorrito de corazones",
+      "scene": "whale-hearts",
+      "colors": [
+        "#0284C7",
+        "#38BDF8",
+        "#E11D48",
+        "#FEF3C7"
+      ],
+      "file": "gifs/amigurumi/gif-whale-hearts.gif"
+    },
+    {
+      "id": "gif-chick-hop",
+      "name": "Pollito Saltarín",
+      "category": "Amigurumi",
+      "subtitle": "Pollito amarillo en punto bajo",
+      "scene": "chick-hop",
+      "colors": [
+        "#FACC15",
+        "#F59E0B",
+        "#EA580C",
+        "#291509"
+      ],
+      "file": "gifs/amigurumi/gif-chick-hop.gif"
+    },
+    {
+      "id": "gif-heart-beat",
+      "name": "Corazón Amigurumi",
+      "category": "Amigurumi",
+      "subtitle": "Corazón tejido latiendo",
+      "scene": "heart-beat",
+      "colors": [
+        "#BE123C",
+        "#F43F5E",
+        "#FDA4AF",
+        "#FDE047"
+      ],
+      "file": "gifs/amigurumi/gif-heart-beat.gif"
+    },
+    {
+      "id": "gif-star-smile",
+      "name": "Estrellita Sonriente",
+      "category": "Amigurumi",
+      "subtitle": "Estrella dorada guiñando",
+      "scene": "star-smile",
+      "colors": [
+        "#F59E0B",
+        "#FDE047",
+        "#EA580C",
+        "#4A220D"
+      ],
+      "file": "gifs/amigurumi/gif-star-smile.gif"
+    },
+    {
+      "id": "gif-cloud-rainbow",
+      "name": "Nube con Arcoíris",
+      "category": "Amigurumi",
+      "subtitle": "Nube amigurumi con lluvia de amor",
+      "scene": "cloud-rainbow",
+      "colors": [
+        "#E0F2FE",
+        "#38BDF8",
+        "#F43F5E",
+        "#FBBF24"
+      ],
+      "file": "gifs/amigurumi/gif-cloud-rainbow.gif"
+    },
+    {
+      "id": "gif-mug-steam",
+      "name": "Taza con Cubre-Taza",
+      "category": "Amigurumi",
+      "subtitle": "Cafecito con funda tejida",
+      "scene": "mug-steam",
+      "colors": [
+        "#78350F",
+        "#D97706",
+        "#E11D48",
+        "#FDE68A"
+      ],
+      "file": "gifs/amigurumi/gif-mug-steam.gif"
+    },
+    {
+      "id": "gif-stamp-done",
+      "name": "Sello ¡Terminado!",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Insignia festiva para proyectos",
+      "scene": "stamp-done",
+      "colors": [
+        "#047857",
+        "#10B981",
+        "#FDE047",
+        "#FFFFFF"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-stamp-done.gif"
+    },
+    {
+      "id": "gif-progress-loop",
+      "name": "En Progreso",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Anillo giratorio de labor activa",
+      "scene": "progress-loop",
+      "colors": [
+        "#D97706",
+        "#F59E0B",
+        "#9F1239",
+        "#0EA5E9"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-progress-loop.gif"
+    },
+    {
+      "id": "gif-idea-bulb",
+      "name": "¡Idea de Diseño!",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Bombilla tejida iluminándose",
+      "scene": "idea-bulb",
+      "colors": [
+        "#F59E0B",
+        "#FDE047",
+        "#B45309",
+        "#EA580C"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-idea-bulb.gif"
+    },
+    {
+      "id": "gif-handmade-ribbon",
+      "name": "Hecho a Mano",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Listón artesanal ondeando",
+      "scene": "handmade-ribbon",
+      "colors": [
+        "#9F1239",
+        "#E11D48",
+        "#FBBF24",
+        "#FFFBEB"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-handmade-ribbon.gif"
+    },
+    {
+      "id": "gif-gold-sparkles",
+      "name": "Destellos Dorados",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Estrellitas doradas titilando",
+      "scene": "gold-sparkles",
+      "colors": [
+        "#D97706",
+        "#FBBF24",
+        "#FDE047",
+        "#9A3412"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-gold-sparkles.gif"
+    },
+    {
+      "id": "gif-bounce-arrow",
+      "name": "Flecha Señaladora",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Flecha bordada rebotando",
+      "scene": "bounce-arrow",
+      "colors": [
+        "#B91C1C",
+        "#F59E0B",
+        "#D97706",
+        "#4A220D"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-bounce-arrow.gif"
+    },
+    {
+      "id": "gif-floating-hearts",
+      "name": "Lluvia de Corazones",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Corazones tejidos flotando",
+      "scene": "floating-hearts",
+      "colors": [
+        "#E11D48",
+        "#FB7185",
+        "#C084FC",
+        "#F59E0B"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-floating-hearts.gif"
+    },
+    {
+      "id": "gif-bunting-flags",
+      "name": "Banderines Tejidos",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Guirnalda de triángulos crochet",
+      "scene": "bunting-flags",
+      "colors": [
+        "#E11D48",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-bunting-flags.gif"
+    },
+    {
+      "id": "gif-queen-crown",
+      "name": "Corona de Tejido",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Corona dorada con perlas",
+      "scene": "queen-crown",
+      "colors": [
+        "#B45309",
+        "#FBBF24",
+        "#E11D48",
+        "#0EA5E9"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-queen-crown.gif"
+    },
+    {
+      "id": "gif-floral-seal",
+      "name": "Sello Flor Dorada",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Medallón giratorio de taller",
+      "scene": "floral-seal",
+      "colors": [
+        "#7A202A",
+        "#D97706",
+        "#FBBF24",
+        "#0F766E"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-floral-seal.gif"
+    },
+    {
+      "id": "gif-chain-hook-v2",
+      "name": "Cadeneta Tejiéndose · Atardecer Coral",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Ganchillo formando cadenetas (Atardecer Coral)",
+      "scene": "chain-hook",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-chain-hook-v2.gif"
+    },
+    {
+      "id": "gif-dc-stitch-v2",
+      "name": "Punto Alto en Acción · Bosque Salvia",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Lazada y punto vareta animado (Bosque Salvia)",
+      "scene": "dc-stitch",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-dc-stitch-v2.gif"
+    },
+    {
+      "id": "gif-magic-ring-v2",
+      "name": "Anillo Mágico · Índigo y Oro",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Aro ajustable con puntos bajos (Índigo y Oro)",
+      "scene": "magic-ring",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-magic-ring-v2.gif"
+    },
+    {
+      "id": "gif-golden-hook-v2",
+      "name": "Ganchillo Dorado · Miel y Cacao",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Aguja brillante con destellos (Miel y Cacao)",
+      "scene": "golden-hook",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-golden-hook-v2.gif"
+    },
+    {
+      "id": "gif-scissors-snip-v2",
+      "name": "Tijeras de Taller · Pastel Primavera",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Tijeras cigüeña cortando hebra (Pastel Primavera)",
+      "scene": "scissors-snip",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-scissors-snip-v2.gif"
+    },
+    {
+      "id": "gif-yarn-unroll-v2",
+      "name": "Ovillo Desenrollándose · Rubí de Gala",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Madeja rodando con hilo vivo (Rubí de Gala)",
+      "scene": "yarn-unroll",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-unroll-v2.gif"
+    },
+    {
+      "id": "gif-yarn-bounce-v2",
+      "name": "Ovillos Saltarines · Océano Sereno",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Dúo de lanas alegres (Océano Sereno)",
+      "scene": "yarn-bounce",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-bounce-v2.gif"
+    },
+    {
+      "id": "gif-measuring-tape-v2",
+      "name": "Cinta Métrica · Otoño Terracota",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Cinta enrollándose en espiral (Otoño Terracota)",
+      "scene": "measuring-tape",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-measuring-tape-v2.gif"
+    },
+    {
+      "id": "gif-stitch-markers-v2",
+      "name": "Marcadores de Punto · Vitral Festivo",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Imperdibles de colores girando (Vitral Festivo)",
+      "scene": "stitch-markers",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-stitch-markers-v2.gif"
+    },
+    {
+      "id": "gif-yarn-basket-v2",
+      "name": "Canasta de Lanas · Rosa Antiguo",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Cesta tejida con ovillos vivos (Rosa Antiguo)",
+      "scene": "yarn-basket",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-basket-v2.gif"
+    },
+    {
+      "id": "gif-mandala-spin-v2",
+      "name": "Mandala Arcoíris · Turquesa Boho",
+      "category": "Mandalas Animados",
+      "subtitle": "Rosetón multicolor giratorio (Turquesa Boho)",
+      "scene": "mandala-spin",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-spin-v2.gif"
+    },
+    {
+      "id": "gif-mandala-bloom-v2",
+      "name": "Mandala Loto Vivo · Lavanda Real",
+      "category": "Mandalas Animados",
+      "subtitle": "Pétalos abriéndose por vueltas (Lavanda Real)",
+      "scene": "mandala-bloom",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-bloom-v2.gif"
+    },
+    {
+      "id": "gif-mandala-kaleidoscope-v2",
+      "name": "Mandala Caleidoscopio · Atardecer Coral",
+      "category": "Mandalas Animados",
+      "subtitle": "Anillos contrarrotatorios (Atardecer Coral)",
+      "scene": "mandala-kaleidoscope",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-kaleidoscope-v2.gif"
+    },
+    {
+      "id": "gif-mandala-sunburst-v2",
+      "name": "Mandala Sol Radiante · Bosque Salvia",
+      "category": "Mandalas Animados",
+      "subtitle": "Rayos dorados latiendo (Bosque Salvia)",
+      "scene": "mandala-sunburst",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-sunburst-v2.gif"
+    },
+    {
+      "id": "gif-mandala-boho-v2",
+      "name": "Mandala Boho Turquesa · Índigo y Oro",
+      "category": "Mandalas Animados",
+      "subtitle": "Turquesa y coral en vaivén (Índigo y Oro)",
+      "scene": "mandala-boho",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-boho-v2.gif"
+    },
+    {
+      "id": "gif-mandala-lace-wheel-v2",
+      "name": "Rueda de Encaje Real · Miel y Cacao",
+      "category": "Mandalas Animados",
+      "subtitle": "Filigrana violeta y oro (Miel y Cacao)",
+      "scene": "mandala-lace-wheel",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-lace-wheel-v2.gif"
+    },
+    {
+      "id": "gif-mandala-star-v2",
+      "name": "Mandala Estrella Nórdica · Pastel Primavera",
+      "category": "Mandalas Animados",
+      "subtitle": "Estrella de 8 puntas tejiéndose (Pastel Primavera)",
+      "scene": "mandala-star",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-star-v2.gif"
+    },
+    {
+      "id": "gif-mandala-daisy-v2",
+      "name": "Mandala Jardín Pastel · Rubí de Gala",
+      "category": "Mandalas Animados",
+      "subtitle": "Margaritas en ronda festiva (Rubí de Gala)",
+      "scene": "mandala-daisy",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-daisy-v2.gif"
+    },
+    {
+      "id": "gif-mandala-autumn-v2",
+      "name": "Mandala Otoño Cálido · Océano Sereno",
+      "category": "Mandalas Animados",
+      "subtitle": "Terracota, ocre y oliva (Océano Sereno)",
+      "scene": "mandala-autumn",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-autumn-v2.gif"
+    },
+    {
+      "id": "gif-mandala-emerald-v2",
+      "name": "Mandala Esmeralda · Otoño Terracota",
+      "category": "Mandalas Animados",
+      "subtitle": "Verde bosque con aro dorado (Otoño Terracota)",
+      "scene": "mandala-emerald",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-emerald-v2.gif"
+    },
+    {
+      "id": "gif-granny-build-v2",
+      "name": "Granny Square Clásico · Vitral Festivo",
+      "category": "Granny y Tapetes",
+      "subtitle": "Cuadro de la abuela vuelta a vuelta (Vitral Festivo)",
+      "scene": "granny-build",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-build-v2.gif"
+    },
+    {
+      "id": "gif-granny-sunflower-v2",
+      "name": "Granny Girasol · Rosa Antiguo",
+      "category": "Granny y Tapetes",
+      "subtitle": "Centro café con pétalos oro (Rosa Antiguo)",
+      "scene": "granny-sunflower",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-sunflower-v2.gif"
+    },
+    {
+      "id": "gif-granny-heart-v2",
+      "name": "Granny Corazón · Turquesa Boho",
+      "category": "Granny y Tapetes",
+      "subtitle": "Cuadro romántico palpitando (Turquesa Boho)",
+      "scene": "granny-heart",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-heart-v2.gif"
+    },
+    {
+      "id": "gif-granny-daisy-v2",
+      "name": "Granny Margarita · Lavanda Real",
+      "category": "Granny y Tapetes",
+      "subtitle": "Flor central sobre cuadro menta (Lavanda Real)",
+      "scene": "granny-daisy",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-daisy-v2.gif"
+    },
+    {
+      "id": "gif-hexagon-hive-v2",
+      "name": "Hexágonos Colmena · Atardecer Coral",
+      "category": "Granny y Tapetes",
+      "subtitle": "Mosaico hexagonal animado (Atardecer Coral)",
+      "scene": "hexagon-hive",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-hexagon-hive-v2.gif"
+    },
+    {
+      "id": "gif-doily-expand-v2",
+      "name": "Tapete Estrellado · Bosque Salvia",
+      "category": "Granny y Tapetes",
+      "subtitle": "Carpeta calada expandiéndose (Bosque Salvia)",
+      "scene": "doily-expand",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-doily-expand-v2.gif"
+    },
+    {
+      "id": "gif-ripple-wave-v2",
+      "name": "Punto Chevron Ondulado · Índigo y Oro",
+      "category": "Granny y Tapetes",
+      "subtitle": "Zigzag de colores fluyendo (Índigo y Oro)",
+      "scene": "ripple-wave",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-ripple-wave-v2.gif"
+    },
+    {
+      "id": "gif-rainbow-blanket-v2",
+      "name": "Manta Arcoíris · Miel y Cacao",
+      "category": "Granny y Tapetes",
+      "subtitle": "Franjas tejidas ondeando (Miel y Cacao)",
+      "scene": "rainbow-blanket",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-rainbow-blanket-v2.gif"
+    },
+    {
+      "id": "gif-african-flower-v2",
+      "name": "Flor Africana · Pastel Primavera",
+      "category": "Granny y Tapetes",
+      "subtitle": "Hexágono floral iluminándose (Pastel Primavera)",
+      "scene": "african-flower",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-african-flower-v2.gif"
+    },
+    {
+      "id": "gif-lace-sparkle-v2",
+      "name": "Puntilla Destellante · Rubí de Gala",
+      "category": "Granny y Tapetes",
+      "subtitle": "Encaje clásico con brillos (Rubí de Gala)",
+      "scene": "lace-sparkle",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-lace-sparkle-v2.gif"
+    },
+    {
+      "id": "gif-rose-bloom-v2",
+      "name": "Rosa de Ganchillo · Océano Sereno",
+      "category": "Flores Tejidas",
+      "subtitle": "Capullo en espiral abriéndose (Océano Sereno)",
+      "scene": "rose-bloom",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/flores-tejidas/gif-rose-bloom-v2.gif"
+    },
+    {
+      "id": "gif-sunflower-sway-v2",
+      "name": "Girasol Alegre · Otoño Terracota",
+      "category": "Flores Tejidas",
+      "subtitle": "Pétalos dorados meciéndose (Otoño Terracota)",
+      "scene": "sunflower-sway",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/flores-tejidas/gif-sunflower-sway-v2.gif"
+    },
+    {
+      "id": "gif-daisy-dance-v2",
+      "name": "Margarita Bailarina · Vitral Festivo",
+      "category": "Flores Tejidas",
+      "subtitle": "Flor campestre saltarina (Vitral Festivo)",
+      "scene": "daisy-dance",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/flores-tejidas/gif-daisy-dance-v2.gif"
+    },
+    {
+      "id": "gif-tulip-open-v2",
+      "name": "Tulipán de Hilo · Rosa Antiguo",
+      "category": "Flores Tejidas",
+      "subtitle": "Flor en punto puff abriendo (Rosa Antiguo)",
+      "scene": "tulip-open",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/flores-tejidas/gif-tulip-open-v2.gif"
+    },
+    {
+      "id": "gif-leaf-sway-v2",
+      "name": "Rama y Hojas Tejidas · Turquesa Boho",
+      "category": "Flores Tejidas",
+      "subtitle": "Hojas botánicas en relieve (Turquesa Boho)",
+      "scene": "leaf-sway",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/flores-tejidas/gif-leaf-sway-v2.gif"
+    },
+    {
+      "id": "gif-clover-spin-v2",
+      "name": "Trébol de 4 Hojas · Lavanda Real",
+      "category": "Flores Tejidas",
+      "subtitle": "Trébol de la suerte girando (Lavanda Real)",
+      "scene": "clover-spin",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/flores-tejidas/gif-clover-spin-v2.gif"
+    },
+    {
+      "id": "gif-butterfly-flap-v2",
+      "name": "Mariposa de Crochet · Atardecer Coral",
+      "category": "Flores Tejidas",
+      "subtitle": "Aleteo colorido en encaje (Atardecer Coral)",
+      "scene": "butterfly-flap",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/flores-tejidas/gif-butterfly-flap-v2.gif"
+    },
+    {
+      "id": "gif-bee-fly-v2",
+      "name": "Abejita Amigurumi · Bosque Salvia",
+      "category": "Flores Tejidas",
+      "subtitle": "Abejita zumbando entre flores (Bosque Salvia)",
+      "scene": "bee-fly",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/flores-tejidas/gif-bee-fly-v2.gif"
+    },
+    {
+      "id": "gif-mushroom-hop-v2",
+      "name": "Honguito del Bosque · Índigo y Oro",
+      "category": "Flores Tejidas",
+      "subtitle": "Seta amigurumi con lunares (Índigo y Oro)",
+      "scene": "mushroom-hop",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/flores-tejidas/gif-mushroom-hop-v2.gif"
+    },
+    {
+      "id": "gif-cactus-bloom-v2",
+      "name": "Cactus en Maceta · Miel y Cacao",
+      "category": "Flores Tejidas",
+      "subtitle": "Cactus tejido con flor rosa (Miel y Cacao)",
+      "scene": "cactus-bloom",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/flores-tejidas/gif-cactus-bloom-v2.gif"
+    },
+    {
+      "id": "gif-bear-wave-v2",
+      "name": "Osito Saludando · Pastel Primavera",
+      "category": "Amigurumi",
+      "subtitle": "Osito tejido moviendo su patita (Pastel Primavera)",
+      "scene": "bear-wave",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/amigurumi/gif-bear-wave-v2.gif"
+    },
+    {
+      "id": "gif-bunny-ears-v2",
+      "name": "Conejito Tierno · Rubí de Gala",
+      "category": "Amigurumi",
+      "subtitle": "Orejas largas moviéndose (Rubí de Gala)",
+      "scene": "bunny-ears",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/amigurumi/gif-bunny-ears-v2.gif"
+    },
+    {
+      "id": "gif-kitty-yarn-v2",
+      "name": "Gatito con Ovillo · Océano Sereno",
+      "category": "Amigurumi",
+      "subtitle": "Michi jugando con la lana (Océano Sereno)",
+      "scene": "kitty-yarn",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/amigurumi/gif-kitty-yarn-v2.gif"
+    },
+    {
+      "id": "gif-octopus-bob-v2",
+      "name": "Pulpito Amigurumi · Otoño Terracota",
+      "category": "Amigurumi",
+      "subtitle": "Tentáculos en espiral bailando (Otoño Terracota)",
+      "scene": "octopus-bob",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/amigurumi/gif-octopus-bob-v2.gif"
+    },
+    {
+      "id": "gif-whale-hearts-v2",
+      "name": "Ballenita Feliz · Vitral Festivo",
+      "category": "Amigurumi",
+      "subtitle": "Lanzando chorrito de corazones (Vitral Festivo)",
+      "scene": "whale-hearts",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/amigurumi/gif-whale-hearts-v2.gif"
+    },
+    {
+      "id": "gif-chick-hop-v2",
+      "name": "Pollito Saltarín · Rosa Antiguo",
+      "category": "Amigurumi",
+      "subtitle": "Pollito amarillo en punto bajo (Rosa Antiguo)",
+      "scene": "chick-hop",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/amigurumi/gif-chick-hop-v2.gif"
+    },
+    {
+      "id": "gif-heart-beat-v2",
+      "name": "Corazón Amigurumi · Turquesa Boho",
+      "category": "Amigurumi",
+      "subtitle": "Corazón tejido latiendo (Turquesa Boho)",
+      "scene": "heart-beat",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/amigurumi/gif-heart-beat-v2.gif"
+    },
+    {
+      "id": "gif-star-smile-v2",
+      "name": "Estrellita Sonriente · Lavanda Real",
+      "category": "Amigurumi",
+      "subtitle": "Estrella dorada guiñando (Lavanda Real)",
+      "scene": "star-smile",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/amigurumi/gif-star-smile-v2.gif"
+    },
+    {
+      "id": "gif-cloud-rainbow-v2",
+      "name": "Nube con Arcoíris · Atardecer Coral",
+      "category": "Amigurumi",
+      "subtitle": "Nube amigurumi con lluvia de amor (Atardecer Coral)",
+      "scene": "cloud-rainbow",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/amigurumi/gif-cloud-rainbow-v2.gif"
+    },
+    {
+      "id": "gif-mug-steam-v2",
+      "name": "Taza con Cubre-Taza · Bosque Salvia",
+      "category": "Amigurumi",
+      "subtitle": "Cafecito con funda tejida (Bosque Salvia)",
+      "scene": "mug-steam",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/amigurumi/gif-mug-steam-v2.gif"
+    },
+    {
+      "id": "gif-stamp-done-v2",
+      "name": "Sello ¡Terminado! · Índigo y Oro",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Insignia festiva para proyectos (Índigo y Oro)",
+      "scene": "stamp-done",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-stamp-done-v2.gif"
+    },
+    {
+      "id": "gif-progress-loop-v2",
+      "name": "En Progreso · Miel y Cacao",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Anillo giratorio de labor activa (Miel y Cacao)",
+      "scene": "progress-loop",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-progress-loop-v2.gif"
+    },
+    {
+      "id": "gif-idea-bulb-v2",
+      "name": "¡Idea de Diseño! · Pastel Primavera",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Bombilla tejida iluminándose (Pastel Primavera)",
+      "scene": "idea-bulb",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-idea-bulb-v2.gif"
+    },
+    {
+      "id": "gif-handmade-ribbon-v2",
+      "name": "Hecho a Mano · Rubí de Gala",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Listón artesanal ondeando (Rubí de Gala)",
+      "scene": "handmade-ribbon",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-handmade-ribbon-v2.gif"
+    },
+    {
+      "id": "gif-gold-sparkles-v2",
+      "name": "Destellos Dorados · Océano Sereno",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Estrellitas doradas titilando (Océano Sereno)",
+      "scene": "gold-sparkles",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-gold-sparkles-v2.gif"
+    },
+    {
+      "id": "gif-bounce-arrow-v2",
+      "name": "Flecha Señaladora · Otoño Terracota",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Flecha bordada rebotando (Otoño Terracota)",
+      "scene": "bounce-arrow",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-bounce-arrow-v2.gif"
+    },
+    {
+      "id": "gif-floating-hearts-v2",
+      "name": "Lluvia de Corazones · Vitral Festivo",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Corazones tejidos flotando (Vitral Festivo)",
+      "scene": "floating-hearts",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-floating-hearts-v2.gif"
+    },
+    {
+      "id": "gif-bunting-flags-v2",
+      "name": "Banderines Tejidos · Rosa Antiguo",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Guirnalda de triángulos crochet (Rosa Antiguo)",
+      "scene": "bunting-flags",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-bunting-flags-v2.gif"
+    },
+    {
+      "id": "gif-queen-crown-v2",
+      "name": "Corona de Tejido · Turquesa Boho",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Corona dorada con perlas (Turquesa Boho)",
+      "scene": "queen-crown",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-queen-crown-v2.gif"
+    },
+    {
+      "id": "gif-floral-seal-v2",
+      "name": "Sello Flor Dorada · Lavanda Real",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Medallón giratorio de taller (Lavanda Real)",
+      "scene": "floral-seal",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-floral-seal-v2.gif"
+    },
+    {
+      "id": "gif-chain-hook-v3",
+      "name": "Cadeneta Tejiéndose · Miel y Cacao",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Ganchillo formando cadenetas (Miel y Cacao)",
+      "scene": "chain-hook",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-chain-hook-v3.gif"
+    },
+    {
+      "id": "gif-dc-stitch-v3",
+      "name": "Punto Alto en Acción · Pastel Primavera",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Lazada y punto vareta animado (Pastel Primavera)",
+      "scene": "dc-stitch",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-dc-stitch-v3.gif"
+    },
+    {
+      "id": "gif-magic-ring-v3",
+      "name": "Anillo Mágico · Rubí de Gala",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Aro ajustable con puntos bajos (Rubí de Gala)",
+      "scene": "magic-ring",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-magic-ring-v3.gif"
+    },
+    {
+      "id": "gif-golden-hook-v3",
+      "name": "Ganchillo Dorado · Océano Sereno",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Aguja brillante con destellos (Océano Sereno)",
+      "scene": "golden-hook",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-golden-hook-v3.gif"
+    },
+    {
+      "id": "gif-scissors-snip-v3",
+      "name": "Tijeras de Taller · Otoño Terracota",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Tijeras cigüeña cortando hebra (Otoño Terracota)",
+      "scene": "scissors-snip",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-scissors-snip-v3.gif"
+    },
+    {
+      "id": "gif-yarn-unroll-v3",
+      "name": "Ovillo Desenrollándose · Vitral Festivo",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Madeja rodando con hilo vivo (Vitral Festivo)",
+      "scene": "yarn-unroll",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-unroll-v3.gif"
+    },
+    {
+      "id": "gif-yarn-bounce-v3",
+      "name": "Ovillos Saltarines · Rosa Antiguo",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Dúo de lanas alegres (Rosa Antiguo)",
+      "scene": "yarn-bounce",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-bounce-v3.gif"
+    },
+    {
+      "id": "gif-measuring-tape-v3",
+      "name": "Cinta Métrica · Turquesa Boho",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Cinta enrollándose en espiral (Turquesa Boho)",
+      "scene": "measuring-tape",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-measuring-tape-v3.gif"
+    },
+    {
+      "id": "gif-stitch-markers-v3",
+      "name": "Marcadores de Punto · Lavanda Real",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Imperdibles de colores girando (Lavanda Real)",
+      "scene": "stitch-markers",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-stitch-markers-v3.gif"
+    },
+    {
+      "id": "gif-yarn-basket-v3",
+      "name": "Canasta de Lanas · Atardecer Coral",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Cesta tejida con ovillos vivos (Atardecer Coral)",
+      "scene": "yarn-basket",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-basket-v3.gif"
+    },
+    {
+      "id": "gif-mandala-spin-v3",
+      "name": "Mandala Arcoíris · Bosque Salvia",
+      "category": "Mandalas Animados",
+      "subtitle": "Rosetón multicolor giratorio (Bosque Salvia)",
+      "scene": "mandala-spin",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-spin-v3.gif"
+    },
+    {
+      "id": "gif-mandala-bloom-v3",
+      "name": "Mandala Loto Vivo · Índigo y Oro",
+      "category": "Mandalas Animados",
+      "subtitle": "Pétalos abriéndose por vueltas (Índigo y Oro)",
+      "scene": "mandala-bloom",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-bloom-v3.gif"
+    },
+    {
+      "id": "gif-mandala-kaleidoscope-v3",
+      "name": "Mandala Caleidoscopio · Miel y Cacao",
+      "category": "Mandalas Animados",
+      "subtitle": "Anillos contrarrotatorios (Miel y Cacao)",
+      "scene": "mandala-kaleidoscope",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-kaleidoscope-v3.gif"
+    },
+    {
+      "id": "gif-mandala-sunburst-v3",
+      "name": "Mandala Sol Radiante · Pastel Primavera",
+      "category": "Mandalas Animados",
+      "subtitle": "Rayos dorados latiendo (Pastel Primavera)",
+      "scene": "mandala-sunburst",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-sunburst-v3.gif"
+    },
+    {
+      "id": "gif-mandala-boho-v3",
+      "name": "Mandala Boho Turquesa · Rubí de Gala",
+      "category": "Mandalas Animados",
+      "subtitle": "Turquesa y coral en vaivén (Rubí de Gala)",
+      "scene": "mandala-boho",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-boho-v3.gif"
+    },
+    {
+      "id": "gif-mandala-lace-wheel-v3",
+      "name": "Rueda de Encaje Real · Océano Sereno",
+      "category": "Mandalas Animados",
+      "subtitle": "Filigrana violeta y oro (Océano Sereno)",
+      "scene": "mandala-lace-wheel",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-lace-wheel-v3.gif"
+    },
+    {
+      "id": "gif-mandala-star-v3",
+      "name": "Mandala Estrella Nórdica · Otoño Terracota",
+      "category": "Mandalas Animados",
+      "subtitle": "Estrella de 8 puntas tejiéndose (Otoño Terracota)",
+      "scene": "mandala-star",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-star-v3.gif"
+    },
+    {
+      "id": "gif-mandala-daisy-v3",
+      "name": "Mandala Jardín Pastel · Vitral Festivo",
+      "category": "Mandalas Animados",
+      "subtitle": "Margaritas en ronda festiva (Vitral Festivo)",
+      "scene": "mandala-daisy",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-daisy-v3.gif"
+    },
+    {
+      "id": "gif-mandala-autumn-v3",
+      "name": "Mandala Otoño Cálido · Rosa Antiguo",
+      "category": "Mandalas Animados",
+      "subtitle": "Terracota, ocre y oliva (Rosa Antiguo)",
+      "scene": "mandala-autumn",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-autumn-v3.gif"
+    },
+    {
+      "id": "gif-mandala-emerald-v3",
+      "name": "Mandala Esmeralda · Turquesa Boho",
+      "category": "Mandalas Animados",
+      "subtitle": "Verde bosque con aro dorado (Turquesa Boho)",
+      "scene": "mandala-emerald",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-emerald-v3.gif"
+    },
+    {
+      "id": "gif-granny-build-v3",
+      "name": "Granny Square Clásico · Lavanda Real",
+      "category": "Granny y Tapetes",
+      "subtitle": "Cuadro de la abuela vuelta a vuelta (Lavanda Real)",
+      "scene": "granny-build",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-build-v3.gif"
+    },
+    {
+      "id": "gif-granny-sunflower-v3",
+      "name": "Granny Girasol · Atardecer Coral",
+      "category": "Granny y Tapetes",
+      "subtitle": "Centro café con pétalos oro (Atardecer Coral)",
+      "scene": "granny-sunflower",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-sunflower-v3.gif"
+    },
+    {
+      "id": "gif-granny-heart-v3",
+      "name": "Granny Corazón · Bosque Salvia",
+      "category": "Granny y Tapetes",
+      "subtitle": "Cuadro romántico palpitando (Bosque Salvia)",
+      "scene": "granny-heart",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-heart-v3.gif"
+    },
+    {
+      "id": "gif-granny-daisy-v3",
+      "name": "Granny Margarita · Índigo y Oro",
+      "category": "Granny y Tapetes",
+      "subtitle": "Flor central sobre cuadro menta (Índigo y Oro)",
+      "scene": "granny-daisy",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-daisy-v3.gif"
+    },
+    {
+      "id": "gif-hexagon-hive-v3",
+      "name": "Hexágonos Colmena · Miel y Cacao",
+      "category": "Granny y Tapetes",
+      "subtitle": "Mosaico hexagonal animado (Miel y Cacao)",
+      "scene": "hexagon-hive",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-hexagon-hive-v3.gif"
+    },
+    {
+      "id": "gif-doily-expand-v3",
+      "name": "Tapete Estrellado · Pastel Primavera",
+      "category": "Granny y Tapetes",
+      "subtitle": "Carpeta calada expandiéndose (Pastel Primavera)",
+      "scene": "doily-expand",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-doily-expand-v3.gif"
+    },
+    {
+      "id": "gif-ripple-wave-v3",
+      "name": "Punto Chevron Ondulado · Rubí de Gala",
+      "category": "Granny y Tapetes",
+      "subtitle": "Zigzag de colores fluyendo (Rubí de Gala)",
+      "scene": "ripple-wave",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-ripple-wave-v3.gif"
+    },
+    {
+      "id": "gif-rainbow-blanket-v3",
+      "name": "Manta Arcoíris · Océano Sereno",
+      "category": "Granny y Tapetes",
+      "subtitle": "Franjas tejidas ondeando (Océano Sereno)",
+      "scene": "rainbow-blanket",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-rainbow-blanket-v3.gif"
+    },
+    {
+      "id": "gif-african-flower-v3",
+      "name": "Flor Africana · Otoño Terracota",
+      "category": "Granny y Tapetes",
+      "subtitle": "Hexágono floral iluminándose (Otoño Terracota)",
+      "scene": "african-flower",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-african-flower-v3.gif"
+    },
+    {
+      "id": "gif-lace-sparkle-v3",
+      "name": "Puntilla Destellante · Vitral Festivo",
+      "category": "Granny y Tapetes",
+      "subtitle": "Encaje clásico con brillos (Vitral Festivo)",
+      "scene": "lace-sparkle",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-lace-sparkle-v3.gif"
+    },
+    {
+      "id": "gif-rose-bloom-v3",
+      "name": "Rosa de Ganchillo · Rosa Antiguo",
+      "category": "Flores Tejidas",
+      "subtitle": "Capullo en espiral abriéndose (Rosa Antiguo)",
+      "scene": "rose-bloom",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/flores-tejidas/gif-rose-bloom-v3.gif"
+    },
+    {
+      "id": "gif-sunflower-sway-v3",
+      "name": "Girasol Alegre · Turquesa Boho",
+      "category": "Flores Tejidas",
+      "subtitle": "Pétalos dorados meciéndose (Turquesa Boho)",
+      "scene": "sunflower-sway",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/flores-tejidas/gif-sunflower-sway-v3.gif"
+    },
+    {
+      "id": "gif-daisy-dance-v3",
+      "name": "Margarita Bailarina · Lavanda Real",
+      "category": "Flores Tejidas",
+      "subtitle": "Flor campestre saltarina (Lavanda Real)",
+      "scene": "daisy-dance",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/flores-tejidas/gif-daisy-dance-v3.gif"
+    },
+    {
+      "id": "gif-tulip-open-v3",
+      "name": "Tulipán de Hilo · Atardecer Coral",
+      "category": "Flores Tejidas",
+      "subtitle": "Flor en punto puff abriendo (Atardecer Coral)",
+      "scene": "tulip-open",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/flores-tejidas/gif-tulip-open-v3.gif"
+    },
+    {
+      "id": "gif-leaf-sway-v3",
+      "name": "Rama y Hojas Tejidas · Bosque Salvia",
+      "category": "Flores Tejidas",
+      "subtitle": "Hojas botánicas en relieve (Bosque Salvia)",
+      "scene": "leaf-sway",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/flores-tejidas/gif-leaf-sway-v3.gif"
+    },
+    {
+      "id": "gif-clover-spin-v3",
+      "name": "Trébol de 4 Hojas · Índigo y Oro",
+      "category": "Flores Tejidas",
+      "subtitle": "Trébol de la suerte girando (Índigo y Oro)",
+      "scene": "clover-spin",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/flores-tejidas/gif-clover-spin-v3.gif"
+    },
+    {
+      "id": "gif-butterfly-flap-v3",
+      "name": "Mariposa de Crochet · Miel y Cacao",
+      "category": "Flores Tejidas",
+      "subtitle": "Aleteo colorido en encaje (Miel y Cacao)",
+      "scene": "butterfly-flap",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/flores-tejidas/gif-butterfly-flap-v3.gif"
+    },
+    {
+      "id": "gif-bee-fly-v3",
+      "name": "Abejita Amigurumi · Pastel Primavera",
+      "category": "Flores Tejidas",
+      "subtitle": "Abejita zumbando entre flores (Pastel Primavera)",
+      "scene": "bee-fly",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/flores-tejidas/gif-bee-fly-v3.gif"
+    },
+    {
+      "id": "gif-mushroom-hop-v3",
+      "name": "Honguito del Bosque · Rubí de Gala",
+      "category": "Flores Tejidas",
+      "subtitle": "Seta amigurumi con lunares (Rubí de Gala)",
+      "scene": "mushroom-hop",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/flores-tejidas/gif-mushroom-hop-v3.gif"
+    },
+    {
+      "id": "gif-cactus-bloom-v3",
+      "name": "Cactus en Maceta · Océano Sereno",
+      "category": "Flores Tejidas",
+      "subtitle": "Cactus tejido con flor rosa (Océano Sereno)",
+      "scene": "cactus-bloom",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/flores-tejidas/gif-cactus-bloom-v3.gif"
+    },
+    {
+      "id": "gif-bear-wave-v3",
+      "name": "Osito Saludando · Otoño Terracota",
+      "category": "Amigurumi",
+      "subtitle": "Osito tejido moviendo su patita (Otoño Terracota)",
+      "scene": "bear-wave",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/amigurumi/gif-bear-wave-v3.gif"
+    },
+    {
+      "id": "gif-bunny-ears-v3",
+      "name": "Conejito Tierno · Vitral Festivo",
+      "category": "Amigurumi",
+      "subtitle": "Orejas largas moviéndose (Vitral Festivo)",
+      "scene": "bunny-ears",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/amigurumi/gif-bunny-ears-v3.gif"
+    },
+    {
+      "id": "gif-kitty-yarn-v3",
+      "name": "Gatito con Ovillo · Rosa Antiguo",
+      "category": "Amigurumi",
+      "subtitle": "Michi jugando con la lana (Rosa Antiguo)",
+      "scene": "kitty-yarn",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/amigurumi/gif-kitty-yarn-v3.gif"
+    },
+    {
+      "id": "gif-octopus-bob-v3",
+      "name": "Pulpito Amigurumi · Turquesa Boho",
+      "category": "Amigurumi",
+      "subtitle": "Tentáculos en espiral bailando (Turquesa Boho)",
+      "scene": "octopus-bob",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/amigurumi/gif-octopus-bob-v3.gif"
+    },
+    {
+      "id": "gif-whale-hearts-v3",
+      "name": "Ballenita Feliz · Lavanda Real",
+      "category": "Amigurumi",
+      "subtitle": "Lanzando chorrito de corazones (Lavanda Real)",
+      "scene": "whale-hearts",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/amigurumi/gif-whale-hearts-v3.gif"
+    },
+    {
+      "id": "gif-chick-hop-v3",
+      "name": "Pollito Saltarín · Atardecer Coral",
+      "category": "Amigurumi",
+      "subtitle": "Pollito amarillo en punto bajo (Atardecer Coral)",
+      "scene": "chick-hop",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/amigurumi/gif-chick-hop-v3.gif"
+    },
+    {
+      "id": "gif-heart-beat-v3",
+      "name": "Corazón Amigurumi · Bosque Salvia",
+      "category": "Amigurumi",
+      "subtitle": "Corazón tejido latiendo (Bosque Salvia)",
+      "scene": "heart-beat",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/amigurumi/gif-heart-beat-v3.gif"
+    },
+    {
+      "id": "gif-star-smile-v3",
+      "name": "Estrellita Sonriente · Índigo y Oro",
+      "category": "Amigurumi",
+      "subtitle": "Estrella dorada guiñando (Índigo y Oro)",
+      "scene": "star-smile",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/amigurumi/gif-star-smile-v3.gif"
+    },
+    {
+      "id": "gif-cloud-rainbow-v3",
+      "name": "Nube con Arcoíris · Miel y Cacao",
+      "category": "Amigurumi",
+      "subtitle": "Nube amigurumi con lluvia de amor (Miel y Cacao)",
+      "scene": "cloud-rainbow",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/amigurumi/gif-cloud-rainbow-v3.gif"
+    },
+    {
+      "id": "gif-mug-steam-v3",
+      "name": "Taza con Cubre-Taza · Pastel Primavera",
+      "category": "Amigurumi",
+      "subtitle": "Cafecito con funda tejida (Pastel Primavera)",
+      "scene": "mug-steam",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/amigurumi/gif-mug-steam-v3.gif"
+    },
+    {
+      "id": "gif-stamp-done-v3",
+      "name": "Sello ¡Terminado! · Rubí de Gala",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Insignia festiva para proyectos (Rubí de Gala)",
+      "scene": "stamp-done",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-stamp-done-v3.gif"
+    },
+    {
+      "id": "gif-progress-loop-v3",
+      "name": "En Progreso · Océano Sereno",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Anillo giratorio de labor activa (Océano Sereno)",
+      "scene": "progress-loop",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-progress-loop-v3.gif"
+    },
+    {
+      "id": "gif-idea-bulb-v3",
+      "name": "¡Idea de Diseño! · Otoño Terracota",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Bombilla tejida iluminándose (Otoño Terracota)",
+      "scene": "idea-bulb",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-idea-bulb-v3.gif"
+    },
+    {
+      "id": "gif-handmade-ribbon-v3",
+      "name": "Hecho a Mano · Vitral Festivo",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Listón artesanal ondeando (Vitral Festivo)",
+      "scene": "handmade-ribbon",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-handmade-ribbon-v3.gif"
+    },
+    {
+      "id": "gif-gold-sparkles-v3",
+      "name": "Destellos Dorados · Rosa Antiguo",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Estrellitas doradas titilando (Rosa Antiguo)",
+      "scene": "gold-sparkles",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-gold-sparkles-v3.gif"
+    },
+    {
+      "id": "gif-bounce-arrow-v3",
+      "name": "Flecha Señaladora · Turquesa Boho",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Flecha bordada rebotando (Turquesa Boho)",
+      "scene": "bounce-arrow",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-bounce-arrow-v3.gif"
+    },
+    {
+      "id": "gif-floating-hearts-v3",
+      "name": "Lluvia de Corazones · Lavanda Real",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Corazones tejidos flotando (Lavanda Real)",
+      "scene": "floating-hearts",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-floating-hearts-v3.gif"
+    },
+    {
+      "id": "gif-bunting-flags-v3",
+      "name": "Banderines Tejidos · Atardecer Coral",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Guirnalda de triángulos crochet (Atardecer Coral)",
+      "scene": "bunting-flags",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-bunting-flags-v3.gif"
+    },
+    {
+      "id": "gif-queen-crown-v3",
+      "name": "Corona de Tejido · Bosque Salvia",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Corona dorada con perlas (Bosque Salvia)",
+      "scene": "queen-crown",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-queen-crown-v3.gif"
+    },
+    {
+      "id": "gif-floral-seal-v3",
+      "name": "Sello Flor Dorada · Índigo y Oro",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Medallón giratorio de taller (Índigo y Oro)",
+      "scene": "floral-seal",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-floral-seal-v3.gif"
+    },
+    {
+      "id": "gif-chain-hook-v4",
+      "name": "Cadeneta Tejiéndose · Océano Sereno",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Ganchillo formando cadenetas (Océano Sereno)",
+      "scene": "chain-hook",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-chain-hook-v4.gif"
+    },
+    {
+      "id": "gif-dc-stitch-v4",
+      "name": "Punto Alto en Acción · Otoño Terracota",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Lazada y punto vareta animado (Otoño Terracota)",
+      "scene": "dc-stitch",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-dc-stitch-v4.gif"
+    },
+    {
+      "id": "gif-magic-ring-v4",
+      "name": "Anillo Mágico · Vitral Festivo",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Aro ajustable con puntos bajos (Vitral Festivo)",
+      "scene": "magic-ring",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-magic-ring-v4.gif"
+    },
+    {
+      "id": "gif-golden-hook-v4",
+      "name": "Ganchillo Dorado · Rosa Antiguo",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Aguja brillante con destellos (Rosa Antiguo)",
+      "scene": "golden-hook",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-golden-hook-v4.gif"
+    },
+    {
+      "id": "gif-scissors-snip-v4",
+      "name": "Tijeras de Taller · Turquesa Boho",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Tijeras cigüeña cortando hebra (Turquesa Boho)",
+      "scene": "scissors-snip",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-scissors-snip-v4.gif"
+    },
+    {
+      "id": "gif-yarn-unroll-v4",
+      "name": "Ovillo Desenrollándose · Lavanda Real",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Madeja rodando con hilo vivo (Lavanda Real)",
+      "scene": "yarn-unroll",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-unroll-v4.gif"
+    },
+    {
+      "id": "gif-yarn-bounce-v4",
+      "name": "Ovillos Saltarines · Atardecer Coral",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Dúo de lanas alegres (Atardecer Coral)",
+      "scene": "yarn-bounce",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-bounce-v4.gif"
+    },
+    {
+      "id": "gif-measuring-tape-v4",
+      "name": "Cinta Métrica · Bosque Salvia",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Cinta enrollándose en espiral (Bosque Salvia)",
+      "scene": "measuring-tape",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-measuring-tape-v4.gif"
+    },
+    {
+      "id": "gif-stitch-markers-v4",
+      "name": "Marcadores de Punto · Índigo y Oro",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Imperdibles de colores girando (Índigo y Oro)",
+      "scene": "stitch-markers",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-stitch-markers-v4.gif"
+    },
+    {
+      "id": "gif-yarn-basket-v4",
+      "name": "Canasta de Lanas · Miel y Cacao",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Cesta tejida con ovillos vivos (Miel y Cacao)",
+      "scene": "yarn-basket",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-basket-v4.gif"
+    },
+    {
+      "id": "gif-mandala-spin-v4",
+      "name": "Mandala Arcoíris · Pastel Primavera",
+      "category": "Mandalas Animados",
+      "subtitle": "Rosetón multicolor giratorio (Pastel Primavera)",
+      "scene": "mandala-spin",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-spin-v4.gif"
+    },
+    {
+      "id": "gif-mandala-bloom-v4",
+      "name": "Mandala Loto Vivo · Rubí de Gala",
+      "category": "Mandalas Animados",
+      "subtitle": "Pétalos abriéndose por vueltas (Rubí de Gala)",
+      "scene": "mandala-bloom",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-bloom-v4.gif"
+    },
+    {
+      "id": "gif-mandala-kaleidoscope-v4",
+      "name": "Mandala Caleidoscopio · Océano Sereno",
+      "category": "Mandalas Animados",
+      "subtitle": "Anillos contrarrotatorios (Océano Sereno)",
+      "scene": "mandala-kaleidoscope",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-kaleidoscope-v4.gif"
+    },
+    {
+      "id": "gif-mandala-sunburst-v4",
+      "name": "Mandala Sol Radiante · Otoño Terracota",
+      "category": "Mandalas Animados",
+      "subtitle": "Rayos dorados latiendo (Otoño Terracota)",
+      "scene": "mandala-sunburst",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-sunburst-v4.gif"
+    },
+    {
+      "id": "gif-mandala-boho-v4",
+      "name": "Mandala Boho Turquesa · Vitral Festivo",
+      "category": "Mandalas Animados",
+      "subtitle": "Turquesa y coral en vaivén (Vitral Festivo)",
+      "scene": "mandala-boho",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-boho-v4.gif"
+    },
+    {
+      "id": "gif-mandala-lace-wheel-v4",
+      "name": "Rueda de Encaje Real · Rosa Antiguo",
+      "category": "Mandalas Animados",
+      "subtitle": "Filigrana violeta y oro (Rosa Antiguo)",
+      "scene": "mandala-lace-wheel",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-lace-wheel-v4.gif"
+    },
+    {
+      "id": "gif-mandala-star-v4",
+      "name": "Mandala Estrella Nórdica · Turquesa Boho",
+      "category": "Mandalas Animados",
+      "subtitle": "Estrella de 8 puntas tejiéndose (Turquesa Boho)",
+      "scene": "mandala-star",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-star-v4.gif"
+    },
+    {
+      "id": "gif-mandala-daisy-v4",
+      "name": "Mandala Jardín Pastel · Lavanda Real",
+      "category": "Mandalas Animados",
+      "subtitle": "Margaritas en ronda festiva (Lavanda Real)",
+      "scene": "mandala-daisy",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-daisy-v4.gif"
+    },
+    {
+      "id": "gif-mandala-autumn-v4",
+      "name": "Mandala Otoño Cálido · Atardecer Coral",
+      "category": "Mandalas Animados",
+      "subtitle": "Terracota, ocre y oliva (Atardecer Coral)",
+      "scene": "mandala-autumn",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-autumn-v4.gif"
+    },
+    {
+      "id": "gif-mandala-emerald-v4",
+      "name": "Mandala Esmeralda · Bosque Salvia",
+      "category": "Mandalas Animados",
+      "subtitle": "Verde bosque con aro dorado (Bosque Salvia)",
+      "scene": "mandala-emerald",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-emerald-v4.gif"
+    },
+    {
+      "id": "gif-granny-build-v4",
+      "name": "Granny Square Clásico · Índigo y Oro",
+      "category": "Granny y Tapetes",
+      "subtitle": "Cuadro de la abuela vuelta a vuelta (Índigo y Oro)",
+      "scene": "granny-build",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-build-v4.gif"
+    },
+    {
+      "id": "gif-granny-sunflower-v4",
+      "name": "Granny Girasol · Miel y Cacao",
+      "category": "Granny y Tapetes",
+      "subtitle": "Centro café con pétalos oro (Miel y Cacao)",
+      "scene": "granny-sunflower",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-sunflower-v4.gif"
+    },
+    {
+      "id": "gif-granny-heart-v4",
+      "name": "Granny Corazón · Pastel Primavera",
+      "category": "Granny y Tapetes",
+      "subtitle": "Cuadro romántico palpitando (Pastel Primavera)",
+      "scene": "granny-heart",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-heart-v4.gif"
+    },
+    {
+      "id": "gif-granny-daisy-v4",
+      "name": "Granny Margarita · Rubí de Gala",
+      "category": "Granny y Tapetes",
+      "subtitle": "Flor central sobre cuadro menta (Rubí de Gala)",
+      "scene": "granny-daisy",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-daisy-v4.gif"
+    },
+    {
+      "id": "gif-hexagon-hive-v4",
+      "name": "Hexágonos Colmena · Océano Sereno",
+      "category": "Granny y Tapetes",
+      "subtitle": "Mosaico hexagonal animado (Océano Sereno)",
+      "scene": "hexagon-hive",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-hexagon-hive-v4.gif"
+    },
+    {
+      "id": "gif-doily-expand-v4",
+      "name": "Tapete Estrellado · Otoño Terracota",
+      "category": "Granny y Tapetes",
+      "subtitle": "Carpeta calada expandiéndose (Otoño Terracota)",
+      "scene": "doily-expand",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-doily-expand-v4.gif"
+    },
+    {
+      "id": "gif-ripple-wave-v4",
+      "name": "Punto Chevron Ondulado · Vitral Festivo",
+      "category": "Granny y Tapetes",
+      "subtitle": "Zigzag de colores fluyendo (Vitral Festivo)",
+      "scene": "ripple-wave",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-ripple-wave-v4.gif"
+    },
+    {
+      "id": "gif-rainbow-blanket-v4",
+      "name": "Manta Arcoíris · Rosa Antiguo",
+      "category": "Granny y Tapetes",
+      "subtitle": "Franjas tejidas ondeando (Rosa Antiguo)",
+      "scene": "rainbow-blanket",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-rainbow-blanket-v4.gif"
+    },
+    {
+      "id": "gif-african-flower-v4",
+      "name": "Flor Africana · Turquesa Boho",
+      "category": "Granny y Tapetes",
+      "subtitle": "Hexágono floral iluminándose (Turquesa Boho)",
+      "scene": "african-flower",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-african-flower-v4.gif"
+    },
+    {
+      "id": "gif-lace-sparkle-v4",
+      "name": "Puntilla Destellante · Lavanda Real",
+      "category": "Granny y Tapetes",
+      "subtitle": "Encaje clásico con brillos (Lavanda Real)",
+      "scene": "lace-sparkle",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-lace-sparkle-v4.gif"
+    },
+    {
+      "id": "gif-rose-bloom-v4",
+      "name": "Rosa de Ganchillo · Atardecer Coral",
+      "category": "Flores Tejidas",
+      "subtitle": "Capullo en espiral abriéndose (Atardecer Coral)",
+      "scene": "rose-bloom",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/flores-tejidas/gif-rose-bloom-v4.gif"
+    },
+    {
+      "id": "gif-sunflower-sway-v4",
+      "name": "Girasol Alegre · Bosque Salvia",
+      "category": "Flores Tejidas",
+      "subtitle": "Pétalos dorados meciéndose (Bosque Salvia)",
+      "scene": "sunflower-sway",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/flores-tejidas/gif-sunflower-sway-v4.gif"
+    },
+    {
+      "id": "gif-daisy-dance-v4",
+      "name": "Margarita Bailarina · Índigo y Oro",
+      "category": "Flores Tejidas",
+      "subtitle": "Flor campestre saltarina (Índigo y Oro)",
+      "scene": "daisy-dance",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/flores-tejidas/gif-daisy-dance-v4.gif"
+    },
+    {
+      "id": "gif-tulip-open-v4",
+      "name": "Tulipán de Hilo · Miel y Cacao",
+      "category": "Flores Tejidas",
+      "subtitle": "Flor en punto puff abriendo (Miel y Cacao)",
+      "scene": "tulip-open",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/flores-tejidas/gif-tulip-open-v4.gif"
+    },
+    {
+      "id": "gif-leaf-sway-v4",
+      "name": "Rama y Hojas Tejidas · Pastel Primavera",
+      "category": "Flores Tejidas",
+      "subtitle": "Hojas botánicas en relieve (Pastel Primavera)",
+      "scene": "leaf-sway",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/flores-tejidas/gif-leaf-sway-v4.gif"
+    },
+    {
+      "id": "gif-clover-spin-v4",
+      "name": "Trébol de 4 Hojas · Rubí de Gala",
+      "category": "Flores Tejidas",
+      "subtitle": "Trébol de la suerte girando (Rubí de Gala)",
+      "scene": "clover-spin",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/flores-tejidas/gif-clover-spin-v4.gif"
+    },
+    {
+      "id": "gif-butterfly-flap-v4",
+      "name": "Mariposa de Crochet · Océano Sereno",
+      "category": "Flores Tejidas",
+      "subtitle": "Aleteo colorido en encaje (Océano Sereno)",
+      "scene": "butterfly-flap",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/flores-tejidas/gif-butterfly-flap-v4.gif"
+    },
+    {
+      "id": "gif-bee-fly-v4",
+      "name": "Abejita Amigurumi · Otoño Terracota",
+      "category": "Flores Tejidas",
+      "subtitle": "Abejita zumbando entre flores (Otoño Terracota)",
+      "scene": "bee-fly",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/flores-tejidas/gif-bee-fly-v4.gif"
+    },
+    {
+      "id": "gif-mushroom-hop-v4",
+      "name": "Honguito del Bosque · Vitral Festivo",
+      "category": "Flores Tejidas",
+      "subtitle": "Seta amigurumi con lunares (Vitral Festivo)",
+      "scene": "mushroom-hop",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/flores-tejidas/gif-mushroom-hop-v4.gif"
+    },
+    {
+      "id": "gif-cactus-bloom-v4",
+      "name": "Cactus en Maceta · Rosa Antiguo",
+      "category": "Flores Tejidas",
+      "subtitle": "Cactus tejido con flor rosa (Rosa Antiguo)",
+      "scene": "cactus-bloom",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/flores-tejidas/gif-cactus-bloom-v4.gif"
+    },
+    {
+      "id": "gif-bear-wave-v4",
+      "name": "Osito Saludando · Turquesa Boho",
+      "category": "Amigurumi",
+      "subtitle": "Osito tejido moviendo su patita (Turquesa Boho)",
+      "scene": "bear-wave",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/amigurumi/gif-bear-wave-v4.gif"
+    },
+    {
+      "id": "gif-bunny-ears-v4",
+      "name": "Conejito Tierno · Lavanda Real",
+      "category": "Amigurumi",
+      "subtitle": "Orejas largas moviéndose (Lavanda Real)",
+      "scene": "bunny-ears",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/amigurumi/gif-bunny-ears-v4.gif"
+    },
+    {
+      "id": "gif-kitty-yarn-v4",
+      "name": "Gatito con Ovillo · Atardecer Coral",
+      "category": "Amigurumi",
+      "subtitle": "Michi jugando con la lana (Atardecer Coral)",
+      "scene": "kitty-yarn",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/amigurumi/gif-kitty-yarn-v4.gif"
+    },
+    {
+      "id": "gif-octopus-bob-v4",
+      "name": "Pulpito Amigurumi · Bosque Salvia",
+      "category": "Amigurumi",
+      "subtitle": "Tentáculos en espiral bailando (Bosque Salvia)",
+      "scene": "octopus-bob",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/amigurumi/gif-octopus-bob-v4.gif"
+    },
+    {
+      "id": "gif-whale-hearts-v4",
+      "name": "Ballenita Feliz · Índigo y Oro",
+      "category": "Amigurumi",
+      "subtitle": "Lanzando chorrito de corazones (Índigo y Oro)",
+      "scene": "whale-hearts",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/amigurumi/gif-whale-hearts-v4.gif"
+    },
+    {
+      "id": "gif-chick-hop-v4",
+      "name": "Pollito Saltarín · Miel y Cacao",
+      "category": "Amigurumi",
+      "subtitle": "Pollito amarillo en punto bajo (Miel y Cacao)",
+      "scene": "chick-hop",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/amigurumi/gif-chick-hop-v4.gif"
+    },
+    {
+      "id": "gif-heart-beat-v4",
+      "name": "Corazón Amigurumi · Pastel Primavera",
+      "category": "Amigurumi",
+      "subtitle": "Corazón tejido latiendo (Pastel Primavera)",
+      "scene": "heart-beat",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/amigurumi/gif-heart-beat-v4.gif"
+    },
+    {
+      "id": "gif-star-smile-v4",
+      "name": "Estrellita Sonriente · Rubí de Gala",
+      "category": "Amigurumi",
+      "subtitle": "Estrella dorada guiñando (Rubí de Gala)",
+      "scene": "star-smile",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/amigurumi/gif-star-smile-v4.gif"
+    },
+    {
+      "id": "gif-cloud-rainbow-v4",
+      "name": "Nube con Arcoíris · Océano Sereno",
+      "category": "Amigurumi",
+      "subtitle": "Nube amigurumi con lluvia de amor (Océano Sereno)",
+      "scene": "cloud-rainbow",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/amigurumi/gif-cloud-rainbow-v4.gif"
+    },
+    {
+      "id": "gif-mug-steam-v4",
+      "name": "Taza con Cubre-Taza · Otoño Terracota",
+      "category": "Amigurumi",
+      "subtitle": "Cafecito con funda tejida (Otoño Terracota)",
+      "scene": "mug-steam",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/amigurumi/gif-mug-steam-v4.gif"
+    },
+    {
+      "id": "gif-stamp-done-v4",
+      "name": "Sello ¡Terminado! · Vitral Festivo",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Insignia festiva para proyectos (Vitral Festivo)",
+      "scene": "stamp-done",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-stamp-done-v4.gif"
+    },
+    {
+      "id": "gif-progress-loop-v4",
+      "name": "En Progreso · Rosa Antiguo",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Anillo giratorio de labor activa (Rosa Antiguo)",
+      "scene": "progress-loop",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-progress-loop-v4.gif"
+    },
+    {
+      "id": "gif-idea-bulb-v4",
+      "name": "¡Idea de Diseño! · Turquesa Boho",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Bombilla tejida iluminándose (Turquesa Boho)",
+      "scene": "idea-bulb",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-idea-bulb-v4.gif"
+    },
+    {
+      "id": "gif-handmade-ribbon-v4",
+      "name": "Hecho a Mano · Lavanda Real",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Listón artesanal ondeando (Lavanda Real)",
+      "scene": "handmade-ribbon",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-handmade-ribbon-v4.gif"
+    },
+    {
+      "id": "gif-gold-sparkles-v4",
+      "name": "Destellos Dorados · Atardecer Coral",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Estrellitas doradas titilando (Atardecer Coral)",
+      "scene": "gold-sparkles",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-gold-sparkles-v4.gif"
+    },
+    {
+      "id": "gif-bounce-arrow-v4",
+      "name": "Flecha Señaladora · Bosque Salvia",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Flecha bordada rebotando (Bosque Salvia)",
+      "scene": "bounce-arrow",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-bounce-arrow-v4.gif"
+    },
+    {
+      "id": "gif-floating-hearts-v4",
+      "name": "Lluvia de Corazones · Índigo y Oro",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Corazones tejidos flotando (Índigo y Oro)",
+      "scene": "floating-hearts",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-floating-hearts-v4.gif"
+    },
+    {
+      "id": "gif-bunting-flags-v4",
+      "name": "Banderines Tejidos · Miel y Cacao",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Guirnalda de triángulos crochet (Miel y Cacao)",
+      "scene": "bunting-flags",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-bunting-flags-v4.gif"
+    },
+    {
+      "id": "gif-queen-crown-v4",
+      "name": "Corona de Tejido · Pastel Primavera",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Corona dorada con perlas (Pastel Primavera)",
+      "scene": "queen-crown",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-queen-crown-v4.gif"
+    },
+    {
+      "id": "gif-floral-seal-v4",
+      "name": "Sello Flor Dorada · Rubí de Gala",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Medallón giratorio de taller (Rubí de Gala)",
+      "scene": "floral-seal",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-floral-seal-v4.gif"
+    },
+    {
+      "id": "gif-chain-hook-v5",
+      "name": "Cadeneta Tejiéndose · Rosa Antiguo",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Ganchillo formando cadenetas (Rosa Antiguo)",
+      "scene": "chain-hook",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-chain-hook-v5.gif"
+    },
+    {
+      "id": "gif-dc-stitch-v5",
+      "name": "Punto Alto en Acción · Turquesa Boho",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Lazada y punto vareta animado (Turquesa Boho)",
+      "scene": "dc-stitch",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-dc-stitch-v5.gif"
+    },
+    {
+      "id": "gif-magic-ring-v5",
+      "name": "Anillo Mágico · Lavanda Real",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Aro ajustable con puntos bajos (Lavanda Real)",
+      "scene": "magic-ring",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-magic-ring-v5.gif"
+    },
+    {
+      "id": "gif-golden-hook-v5",
+      "name": "Ganchillo Dorado · Atardecer Coral",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Aguja brillante con destellos (Atardecer Coral)",
+      "scene": "golden-hook",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-golden-hook-v5.gif"
+    },
+    {
+      "id": "gif-scissors-snip-v5",
+      "name": "Tijeras de Taller · Bosque Salvia",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Tijeras cigüeña cortando hebra (Bosque Salvia)",
+      "scene": "scissors-snip",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-scissors-snip-v5.gif"
+    },
+    {
+      "id": "gif-yarn-unroll-v5",
+      "name": "Ovillo Desenrollándose · Índigo y Oro",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Madeja rodando con hilo vivo (Índigo y Oro)",
+      "scene": "yarn-unroll",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-unroll-v5.gif"
+    },
+    {
+      "id": "gif-yarn-bounce-v5",
+      "name": "Ovillos Saltarines · Miel y Cacao",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Dúo de lanas alegres (Miel y Cacao)",
+      "scene": "yarn-bounce",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-bounce-v5.gif"
+    },
+    {
+      "id": "gif-measuring-tape-v5",
+      "name": "Cinta Métrica · Pastel Primavera",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Cinta enrollándose en espiral (Pastel Primavera)",
+      "scene": "measuring-tape",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-measuring-tape-v5.gif"
+    },
+    {
+      "id": "gif-stitch-markers-v5",
+      "name": "Marcadores de Punto · Rubí de Gala",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Imperdibles de colores girando (Rubí de Gala)",
+      "scene": "stitch-markers",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-stitch-markers-v5.gif"
+    },
+    {
+      "id": "gif-yarn-basket-v5",
+      "name": "Canasta de Lanas · Océano Sereno",
+      "category": "Puntos y Ganchillo",
+      "subtitle": "Cesta tejida con ovillos vivos (Océano Sereno)",
+      "scene": "yarn-basket",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/puntos-y-ganchillo/gif-yarn-basket-v5.gif"
+    },
+    {
+      "id": "gif-mandala-spin-v5",
+      "name": "Mandala Arcoíris · Otoño Terracota",
+      "category": "Mandalas Animados",
+      "subtitle": "Rosetón multicolor giratorio (Otoño Terracota)",
+      "scene": "mandala-spin",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-spin-v5.gif"
+    },
+    {
+      "id": "gif-mandala-bloom-v5",
+      "name": "Mandala Loto Vivo · Vitral Festivo",
+      "category": "Mandalas Animados",
+      "subtitle": "Pétalos abriéndose por vueltas (Vitral Festivo)",
+      "scene": "mandala-bloom",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-bloom-v5.gif"
+    },
+    {
+      "id": "gif-mandala-kaleidoscope-v5",
+      "name": "Mandala Caleidoscopio · Rosa Antiguo",
+      "category": "Mandalas Animados",
+      "subtitle": "Anillos contrarrotatorios (Rosa Antiguo)",
+      "scene": "mandala-kaleidoscope",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-kaleidoscope-v5.gif"
+    },
+    {
+      "id": "gif-mandala-sunburst-v5",
+      "name": "Mandala Sol Radiante · Turquesa Boho",
+      "category": "Mandalas Animados",
+      "subtitle": "Rayos dorados latiendo (Turquesa Boho)",
+      "scene": "mandala-sunburst",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-sunburst-v5.gif"
+    },
+    {
+      "id": "gif-mandala-boho-v5",
+      "name": "Mandala Boho Turquesa · Lavanda Real",
+      "category": "Mandalas Animados",
+      "subtitle": "Turquesa y coral en vaivén (Lavanda Real)",
+      "scene": "mandala-boho",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-boho-v5.gif"
+    },
+    {
+      "id": "gif-mandala-lace-wheel-v5",
+      "name": "Rueda de Encaje Real · Atardecer Coral",
+      "category": "Mandalas Animados",
+      "subtitle": "Filigrana violeta y oro (Atardecer Coral)",
+      "scene": "mandala-lace-wheel",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-lace-wheel-v5.gif"
+    },
+    {
+      "id": "gif-mandala-star-v5",
+      "name": "Mandala Estrella Nórdica · Bosque Salvia",
+      "category": "Mandalas Animados",
+      "subtitle": "Estrella de 8 puntas tejiéndose (Bosque Salvia)",
+      "scene": "mandala-star",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-star-v5.gif"
+    },
+    {
+      "id": "gif-mandala-daisy-v5",
+      "name": "Mandala Jardín Pastel · Índigo y Oro",
+      "category": "Mandalas Animados",
+      "subtitle": "Margaritas en ronda festiva (Índigo y Oro)",
+      "scene": "mandala-daisy",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-daisy-v5.gif"
+    },
+    {
+      "id": "gif-mandala-autumn-v5",
+      "name": "Mandala Otoño Cálido · Miel y Cacao",
+      "category": "Mandalas Animados",
+      "subtitle": "Terracota, ocre y oliva (Miel y Cacao)",
+      "scene": "mandala-autumn",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-autumn-v5.gif"
+    },
+    {
+      "id": "gif-mandala-emerald-v5",
+      "name": "Mandala Esmeralda · Pastel Primavera",
+      "category": "Mandalas Animados",
+      "subtitle": "Verde bosque con aro dorado (Pastel Primavera)",
+      "scene": "mandala-emerald",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/mandalas-animados/gif-mandala-emerald-v5.gif"
+    },
+    {
+      "id": "gif-granny-build-v5",
+      "name": "Granny Square Clásico · Rubí de Gala",
+      "category": "Granny y Tapetes",
+      "subtitle": "Cuadro de la abuela vuelta a vuelta (Rubí de Gala)",
+      "scene": "granny-build",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-build-v5.gif"
+    },
+    {
+      "id": "gif-granny-sunflower-v5",
+      "name": "Granny Girasol · Océano Sereno",
+      "category": "Granny y Tapetes",
+      "subtitle": "Centro café con pétalos oro (Océano Sereno)",
+      "scene": "granny-sunflower",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-sunflower-v5.gif"
+    },
+    {
+      "id": "gif-granny-heart-v5",
+      "name": "Granny Corazón · Otoño Terracota",
+      "category": "Granny y Tapetes",
+      "subtitle": "Cuadro romántico palpitando (Otoño Terracota)",
+      "scene": "granny-heart",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-heart-v5.gif"
+    },
+    {
+      "id": "gif-granny-daisy-v5",
+      "name": "Granny Margarita · Vitral Festivo",
+      "category": "Granny y Tapetes",
+      "subtitle": "Flor central sobre cuadro menta (Vitral Festivo)",
+      "scene": "granny-daisy",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-granny-daisy-v5.gif"
+    },
+    {
+      "id": "gif-hexagon-hive-v5",
+      "name": "Hexágonos Colmena · Rosa Antiguo",
+      "category": "Granny y Tapetes",
+      "subtitle": "Mosaico hexagonal animado (Rosa Antiguo)",
+      "scene": "hexagon-hive",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-hexagon-hive-v5.gif"
+    },
+    {
+      "id": "gif-doily-expand-v5",
+      "name": "Tapete Estrellado · Turquesa Boho",
+      "category": "Granny y Tapetes",
+      "subtitle": "Carpeta calada expandiéndose (Turquesa Boho)",
+      "scene": "doily-expand",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-doily-expand-v5.gif"
+    },
+    {
+      "id": "gif-ripple-wave-v5",
+      "name": "Punto Chevron Ondulado · Lavanda Real",
+      "category": "Granny y Tapetes",
+      "subtitle": "Zigzag de colores fluyendo (Lavanda Real)",
+      "scene": "ripple-wave",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-ripple-wave-v5.gif"
+    },
+    {
+      "id": "gif-rainbow-blanket-v5",
+      "name": "Manta Arcoíris · Atardecer Coral",
+      "category": "Granny y Tapetes",
+      "subtitle": "Franjas tejidas ondeando (Atardecer Coral)",
+      "scene": "rainbow-blanket",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-rainbow-blanket-v5.gif"
+    },
+    {
+      "id": "gif-african-flower-v5",
+      "name": "Flor Africana · Bosque Salvia",
+      "category": "Granny y Tapetes",
+      "subtitle": "Hexágono floral iluminándose (Bosque Salvia)",
+      "scene": "african-flower",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-african-flower-v5.gif"
+    },
+    {
+      "id": "gif-lace-sparkle-v5",
+      "name": "Puntilla Destellante · Índigo y Oro",
+      "category": "Granny y Tapetes",
+      "subtitle": "Encaje clásico con brillos (Índigo y Oro)",
+      "scene": "lace-sparkle",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/granny-y-tapetes/gif-lace-sparkle-v5.gif"
+    },
+    {
+      "id": "gif-rose-bloom-v5",
+      "name": "Rosa de Ganchillo · Miel y Cacao",
+      "category": "Flores Tejidas",
+      "subtitle": "Capullo en espiral abriéndose (Miel y Cacao)",
+      "scene": "rose-bloom",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/flores-tejidas/gif-rose-bloom-v5.gif"
+    },
+    {
+      "id": "gif-sunflower-sway-v5",
+      "name": "Girasol Alegre · Pastel Primavera",
+      "category": "Flores Tejidas",
+      "subtitle": "Pétalos dorados meciéndose (Pastel Primavera)",
+      "scene": "sunflower-sway",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/flores-tejidas/gif-sunflower-sway-v5.gif"
+    },
+    {
+      "id": "gif-daisy-dance-v5",
+      "name": "Margarita Bailarina · Rubí de Gala",
+      "category": "Flores Tejidas",
+      "subtitle": "Flor campestre saltarina (Rubí de Gala)",
+      "scene": "daisy-dance",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/flores-tejidas/gif-daisy-dance-v5.gif"
+    },
+    {
+      "id": "gif-tulip-open-v5",
+      "name": "Tulipán de Hilo · Océano Sereno",
+      "category": "Flores Tejidas",
+      "subtitle": "Flor en punto puff abriendo (Océano Sereno)",
+      "scene": "tulip-open",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/flores-tejidas/gif-tulip-open-v5.gif"
+    },
+    {
+      "id": "gif-leaf-sway-v5",
+      "name": "Rama y Hojas Tejidas · Otoño Terracota",
+      "category": "Flores Tejidas",
+      "subtitle": "Hojas botánicas en relieve (Otoño Terracota)",
+      "scene": "leaf-sway",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/flores-tejidas/gif-leaf-sway-v5.gif"
+    },
+    {
+      "id": "gif-clover-spin-v5",
+      "name": "Trébol de 4 Hojas · Vitral Festivo",
+      "category": "Flores Tejidas",
+      "subtitle": "Trébol de la suerte girando (Vitral Festivo)",
+      "scene": "clover-spin",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/flores-tejidas/gif-clover-spin-v5.gif"
+    },
+    {
+      "id": "gif-butterfly-flap-v5",
+      "name": "Mariposa de Crochet · Rosa Antiguo",
+      "category": "Flores Tejidas",
+      "subtitle": "Aleteo colorido en encaje (Rosa Antiguo)",
+      "scene": "butterfly-flap",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/flores-tejidas/gif-butterfly-flap-v5.gif"
+    },
+    {
+      "id": "gif-bee-fly-v5",
+      "name": "Abejita Amigurumi · Turquesa Boho",
+      "category": "Flores Tejidas",
+      "subtitle": "Abejita zumbando entre flores (Turquesa Boho)",
+      "scene": "bee-fly",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/flores-tejidas/gif-bee-fly-v5.gif"
+    },
+    {
+      "id": "gif-mushroom-hop-v5",
+      "name": "Honguito del Bosque · Lavanda Real",
+      "category": "Flores Tejidas",
+      "subtitle": "Seta amigurumi con lunares (Lavanda Real)",
+      "scene": "mushroom-hop",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/flores-tejidas/gif-mushroom-hop-v5.gif"
+    },
+    {
+      "id": "gif-cactus-bloom-v5",
+      "name": "Cactus en Maceta · Atardecer Coral",
+      "category": "Flores Tejidas",
+      "subtitle": "Cactus tejido con flor rosa (Atardecer Coral)",
+      "scene": "cactus-bloom",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/flores-tejidas/gif-cactus-bloom-v5.gif"
+    },
+    {
+      "id": "gif-bear-wave-v5",
+      "name": "Osito Saludando · Bosque Salvia",
+      "category": "Amigurumi",
+      "subtitle": "Osito tejido moviendo su patita (Bosque Salvia)",
+      "scene": "bear-wave",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/amigurumi/gif-bear-wave-v5.gif"
+    },
+    {
+      "id": "gif-bunny-ears-v5",
+      "name": "Conejito Tierno · Índigo y Oro",
+      "category": "Amigurumi",
+      "subtitle": "Orejas largas moviéndose (Índigo y Oro)",
+      "scene": "bunny-ears",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/amigurumi/gif-bunny-ears-v5.gif"
+    },
+    {
+      "id": "gif-kitty-yarn-v5",
+      "name": "Gatito con Ovillo · Miel y Cacao",
+      "category": "Amigurumi",
+      "subtitle": "Michi jugando con la lana (Miel y Cacao)",
+      "scene": "kitty-yarn",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/amigurumi/gif-kitty-yarn-v5.gif"
+    },
+    {
+      "id": "gif-octopus-bob-v5",
+      "name": "Pulpito Amigurumi · Pastel Primavera",
+      "category": "Amigurumi",
+      "subtitle": "Tentáculos en espiral bailando (Pastel Primavera)",
+      "scene": "octopus-bob",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/amigurumi/gif-octopus-bob-v5.gif"
+    },
+    {
+      "id": "gif-whale-hearts-v5",
+      "name": "Ballenita Feliz · Rubí de Gala",
+      "category": "Amigurumi",
+      "subtitle": "Lanzando chorrito de corazones (Rubí de Gala)",
+      "scene": "whale-hearts",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/amigurumi/gif-whale-hearts-v5.gif"
+    },
+    {
+      "id": "gif-chick-hop-v5",
+      "name": "Pollito Saltarín · Océano Sereno",
+      "category": "Amigurumi",
+      "subtitle": "Pollito amarillo en punto bajo (Océano Sereno)",
+      "scene": "chick-hop",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/amigurumi/gif-chick-hop-v5.gif"
+    },
+    {
+      "id": "gif-heart-beat-v5",
+      "name": "Corazón Amigurumi · Otoño Terracota",
+      "category": "Amigurumi",
+      "subtitle": "Corazón tejido latiendo (Otoño Terracota)",
+      "scene": "heart-beat",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/amigurumi/gif-heart-beat-v5.gif"
+    },
+    {
+      "id": "gif-star-smile-v5",
+      "name": "Estrellita Sonriente · Vitral Festivo",
+      "category": "Amigurumi",
+      "subtitle": "Estrella dorada guiñando (Vitral Festivo)",
+      "scene": "star-smile",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/amigurumi/gif-star-smile-v5.gif"
+    },
+    {
+      "id": "gif-cloud-rainbow-v5",
+      "name": "Nube con Arcoíris · Rosa Antiguo",
+      "category": "Amigurumi",
+      "subtitle": "Nube amigurumi con lluvia de amor (Rosa Antiguo)",
+      "scene": "cloud-rainbow",
+      "colors": [
+        "#9F1239",
+        "#FB7185",
+        "#FDE2E4",
+        "#D97706"
+      ],
+      "file": "gifs/amigurumi/gif-cloud-rainbow-v5.gif"
+    },
+    {
+      "id": "gif-mug-steam-v5",
+      "name": "Taza con Cubre-Taza · Turquesa Boho",
+      "category": "Amigurumi",
+      "subtitle": "Cafecito con funda tejida (Turquesa Boho)",
+      "scene": "mug-steam",
+      "colors": [
+        "#0F766E",
+        "#2DD4BF",
+        "#F59E0B",
+        "#1E3A8A"
+      ],
+      "file": "gifs/amigurumi/gif-mug-steam-v5.gif"
+    },
+    {
+      "id": "gif-stamp-done-v5",
+      "name": "Sello ¡Terminado! · Lavanda Real",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Insignia festiva para proyectos (Lavanda Real)",
+      "scene": "stamp-done",
+      "colors": [
+        "#6D28D9",
+        "#C084FC",
+        "#F472B6",
+        "#FBBF24"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-stamp-done-v5.gif"
+    },
+    {
+      "id": "gif-progress-loop-v5",
+      "name": "En Progreso · Atardecer Coral",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Anillo giratorio de labor activa (Atardecer Coral)",
+      "scene": "progress-loop",
+      "colors": [
+        "#C2410C",
+        "#FB923C",
+        "#FDE047",
+        "#BE185D"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-progress-loop-v5.gif"
+    },
+    {
+      "id": "gif-idea-bulb-v5",
+      "name": "¡Idea de Diseño! · Bosque Salvia",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Bombilla tejida iluminándose (Bosque Salvia)",
+      "scene": "idea-bulb",
+      "colors": [
+        "#14532D",
+        "#4ADE80",
+        "#D97706",
+        "#FEF3C7"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-idea-bulb-v5.gif"
+    },
+    {
+      "id": "gif-handmade-ribbon-v5",
+      "name": "Hecho a Mano · Índigo y Oro",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Listón artesanal ondeando (Índigo y Oro)",
+      "scene": "handmade-ribbon",
+      "colors": [
+        "#1E3A8A",
+        "#38BDF8",
+        "#FBBF24",
+        "#7C3AED"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-handmade-ribbon-v5.gif"
+    },
+    {
+      "id": "gif-gold-sparkles-v5",
+      "name": "Destellos Dorados · Miel y Cacao",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Estrellitas doradas titilando (Miel y Cacao)",
+      "scene": "gold-sparkles",
+      "colors": [
+        "#5C3016",
+        "#D97706",
+        "#FCD34D",
+        "#991B1B"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-gold-sparkles-v5.gif"
+    },
+    {
+      "id": "gif-bounce-arrow-v5",
+      "name": "Flecha Señaladora · Pastel Primavera",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Flecha bordada rebotando (Pastel Primavera)",
+      "scene": "bounce-arrow",
+      "colors": [
+        "#EC4899",
+        "#A7F3D0",
+        "#FDE68A",
+        "#60A5FA"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-bounce-arrow-v5.gif"
+    },
+    {
+      "id": "gif-floating-hearts-v5",
+      "name": "Lluvia de Corazones · Rubí de Gala",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Corazones tejidos flotando (Rubí de Gala)",
+      "scene": "floating-hearts",
+      "colors": [
+        "#881337",
+        "#E11D48",
+        "#FBBF24",
+        "#4C1D95"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-floating-hearts-v5.gif"
+    },
+    {
+      "id": "gif-bunting-flags-v5",
+      "name": "Banderines Tejidos · Océano Sereno",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Guirnalda de triángulos crochet (Océano Sereno)",
+      "scene": "bunting-flags",
+      "colors": [
+        "#0369A1",
+        "#06B6D4",
+        "#2DD4BF",
+        "#F472B6"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-bunting-flags-v5.gif"
+    },
+    {
+      "id": "gif-queen-crown-v5",
+      "name": "Corona de Tejido · Otoño Terracota",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Corona dorada con perlas (Otoño Terracota)",
+      "scene": "queen-crown",
+      "colors": [
+        "#7C2D12",
+        "#EA580C",
+        "#CA8A04",
+        "#3F6212"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-queen-crown-v5.gif"
+    },
+    {
+      "id": "gif-floral-seal-v5",
+      "name": "Sello Flor Dorada · Vitral Festivo",
+      "category": "Notas del Cuaderno",
+      "subtitle": "Medallón giratorio de taller (Vitral Festivo)",
+      "scene": "floral-seal",
+      "colors": [
+        "#DC2626",
+        "#F59E0B",
+        "#10B981",
+        "#2563EB"
+      ],
+      "file": "gifs/notas-del-cuaderno/gif-floral-seal-v5.gif"
+    }
+  ]
+}

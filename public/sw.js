@@ -2,7 +2,7 @@
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Handles Web Push notifications for incoming calls & messages even when app is closed.
  */
-const CACHE_NAME = 'los-nazco-shell-v14';
+const CACHE_NAME = 'los-nazco-shell-v15';
 const PUSH_ENDPOINT_URL = 'https://yqhcyjrmkibhoorziqvg.supabase.co/functions/v1/nazco-push-notify';
 const dismissedCallIds = new Set();
 const STATIC_ASSETS = [
@@ -67,6 +67,7 @@ self.addEventListener('fetch', (event) => {
 
   const isSafeStatic =
     url.pathname.includes('/crochet/') ||
+    url.pathname.includes('/crochet-assets/') ||
     url.pathname.includes('/textures/') ||
     url.pathname.includes('/icons/') ||
     url.pathname.endsWith('/manifest.webmanifest') ||

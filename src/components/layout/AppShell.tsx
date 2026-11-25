@@ -33,6 +33,34 @@ import { BottomSheet } from '../shared/BottomSheet';
 import { completePushTutorial, hasPendingPushTutorial } from '../../services/localFamilyPreferences';
 import { SideDrawer } from './SideDrawer';
 
+function ringTarotBowl(audio: AudioContext, volume: number) {
+  const time = audio.currentTime;
+  const modes = [
+    { frequency: 528, level: 1, decay: 7.4 },
+    { frequency: 531, level: .26, decay: 6.3 },
+    { frequency: 1_024, level: .19, decay: 3.2 },
+    { frequency: 1_452, level: .10, decay: 1.7 },
+    { frequency: 2_107, level: .045, decay: .8 },
+  ];
+
+  for (const { frequency, level, decay } of modes) {
+    const tone = audio.createOscillator();
+    const envelope = audio.createGain();
+    tone.frequency.value = frequency;
+    envelope.gain.setValueAtTime(.00001, time);
+    envelope.gain.exponentialRampToValueAtTime(volume * level, time + .025);
+    envelope.gain.exponentialRampToValueAtTime(.00001, time + decay);
+    tone.connect(envelope);
+    envelope.connect(audio.destination);
+    tone.start(time);
+    tone.stop(time + decay);
+    tone.onended = () => {
+      tone.disconnect();
+      envelope.disconnect();
+    };
+  }
+}
+
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const {
     snapshot,
@@ -134,6 +162,23 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
+  const tarotAudioRef = useRef<AudioContext | null>(null);
+  const tarotAudioActive = activeSection === 'TAROT' && Boolean(currentUser);
+
+  useEffect(() => {
+    if (!tarotAudioActive) return;
+    const repeat = window.setInterval(() => {
+      const audio = tarotAudioRef.current;
+      if (audio?.state === 'running' && !document.hidden) ringTarotBowl(audio, .024);
+    }, 6_800);
+    return () => {
+      window.clearInterval(repeat);
+      const audio = tarotAudioRef.current;
+      tarotAudioRef.current = null;
+      if (audio && audio.state !== 'closed') void audio.close().catch(() => {});
+    };
+  }, [tarotAudioActive]);
+
   if (!currentUser) return null;
 
   const isAdmin = currentUser.role === 'ADMIN';
@@ -174,7 +219,20 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   ];
 
   const handleSelectSection = (id: AppSection) => {
-    triggerFeedback('tap');
+    if (id === 'TAROT') {
+      // Start audio inside the click so browsers can authorize playback.
+      try {
+        const audio = tarotAudioRef.current ?? new AudioContext();
+        tarotAudioRef.current = audio;
+        void audio.resume().then(() => {
+          if (tarotAudioRef.current === audio) ringTarotBowl(audio, .11);
+        }).catch(() => {});
+      } catch {
+        // The reading remains available when the device cannot play audio.
+      }
+    } else {
+      triggerFeedback('tap');
+    }
     if (id === 'PROFILE') openProfile(currentUser.id);
     else setActiveSection(id);
   };

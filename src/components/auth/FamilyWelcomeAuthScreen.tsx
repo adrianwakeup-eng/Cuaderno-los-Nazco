@@ -470,10 +470,6 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
                   <ShieldCheck className="h-4 w-4" />
                   Entrar como Administrador
                 </button>
-
-                <p className="text-center text-[11px] text-[#7C788C]">
-                  Clave inicial: <code className="font-bold text-[#5B2CB5]">nazco2026</code>
-                </p>
               </form>
             </div>
           )}

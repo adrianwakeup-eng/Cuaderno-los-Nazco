@@ -381,6 +381,50 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return found ?? null;
   }, [snapshot.members, activeUserId]);
 
+  const presenceMemberId = currentUser?.role === 'MEMBER' ? currentUser.id : null;
+  const [presenceClock, setPresenceClock] = useState(Date.now);
+
+  useEffect(() => {
+    const updateClock = () => setPresenceClock(Date.now());
+    const timer = window.setInterval(updateClock, 5_000);
+    document.addEventListener('visibilitychange', updateClock);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', updateClock);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!presenceMemberId || cloudStatus !== 'CONNECTED') return;
+    const renewPresence = () => {
+      if (!navigator.onLine) return;
+      void firebaseSyncService.updateMemberFields(presenceMemberId, {
+        presence: 'ONLINE',
+        lastActiveAt: new Date().toISOString(),
+      }).catch(() => {});
+    };
+    renewPresence();
+    const timer = window.setInterval(renewPresence, 20_000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') renewPresence();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    window.addEventListener('online', renewPresence);
+    return () => {
+      window.clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+      window.removeEventListener('online', renewPresence);
+    };
+  }, [presenceMemberId, cloudStatus]);
+
+  const visibleMembers = useMemo(() => snapshot.members.map((member) => {
+    if (member.presence !== 'ONLINE') return member;
+    const age = presenceClock - Date.parse(member.lastActiveAt || '');
+    const connected = member.status === 'ACTIVE' && member.role !== 'ADMIN'
+      && age >= -60_000 && age < 60_000;
+    return connected ? member : { ...member, presence: 'OFFLINE' as const };
+  }), [snapshot.members, presenceClock]);
+
   // Silently keep this device's Web Push subscription synced & pre-warm push pipeline + circular avatar
   // Ghost Admin never registers presence or push footprint so nobody knows the Admin is active.
   useEffect(() => {
@@ -1602,7 +1646,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [notify]);
 
   const value: FamilyAppContextValue = {
-    snapshot,
+    snapshot: { ...snapshot, members: visibleMembers },
     cloudStatus,
     pushEnabled,
     pushSupport,
@@ -1615,7 +1659,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     rejectIncomingCall,
     publishCloudStory,
     publishCloudAlbumPhoto,
-    currentUser,
+    currentUser: visibleMembers.find((member) => member.id === currentUser?.id) ?? null,
     activeSection,
     setActiveSection,
     registerBackHandler,

@@ -6,6 +6,7 @@ export interface WebRtcCallCallbacks {
   onLocalStream: (stream: MediaStream | null) => void;
   onRemoteStream: (stream: MediaStream | null) => void;
   onScreenShareChange: (sharing: boolean) => void;
+  onRawCameraTrackChange?: (track: MediaStreamTrack | null) => void;
 }
 
 function buildIceServers(): RTCIceServer[] {
@@ -35,6 +36,7 @@ export class FamilyWebRtcController {
   private localStream: MediaStream | null = null;
   private screenStream: MediaStream | null = null;
   private cameraTrack: MediaStreamTrack | null = null;
+  private effectTrack: MediaStreamTrack | null = null;
   private facingMode: 'user' | 'environment' = 'user';
   private callbacks: WebRtcCallCallbacks;
 
@@ -53,7 +55,8 @@ export class FamilyWebRtcController {
     try {
       this.localStream = await this.acquireMedia(mode);
       this.cameraTrack = this.localStream.getVideoTracks()[0] ?? null;
-      this.callbacks.onLocalStream(new MediaStream(this.localStream.getTracks()));
+      this.callbacks.onRawCameraTrackChange?.(this.cameraTrack);
+      this.callbacks.onLocalStream(this.buildOutgoingStream());
     } catch (err) {
       const msg = this.explainPermissionError(err, mode);
       this.callbacks.onStateChange('ERROR', msg);
@@ -123,7 +126,7 @@ export class FamilyWebRtcController {
 
       this.peer.on('open', () => {
         if (!isHost && this.localStream && this.peer) {
-          const call = this.peer.call(peerId, this.localStream);
+          const call = this.peer.call(peerId, this.buildOutgoingStream());
           this.wireMediaConnection(call);
         } else {
           this.callbacks.onStateChange(
@@ -135,7 +138,7 @@ export class FamilyWebRtcController {
 
       this.peer.on('call', (incoming) => {
         if (!this.localStream) return;
-        incoming.answer(this.localStream);
+        incoming.answer(this.buildOutgoingStream());
         this.wireMediaConnection(incoming);
       });
 
@@ -186,6 +189,34 @@ export class FamilyWebRtcController {
     this.localStream?.getVideoTracks().forEach((t) => {
       t.enabled = enabled;
     });
+    if (this.effectTrack) {
+      this.effectTrack.enabled = enabled;
+    }
+  }
+
+  private buildOutgoingStream(): MediaStream {
+    const audioTracks = this.localStream?.getAudioTracks() ?? [];
+    const screenTrack = this.screenStream?.getVideoTracks()[0] ?? null;
+    const videoTrack = screenTrack ?? this.effectTrack ?? this.cameraTrack;
+    return new MediaStream([...(videoTrack ? [videoTrack] : []), ...audioTracks]);
+  }
+
+  async setEffectVideoTrack(track: MediaStreamTrack | null): Promise<void> {
+    if (this.effectTrack === track) return;
+    this.effectTrack = track;
+    if (this.screenStream) return;
+    const targetTrack = track ?? this.cameraTrack;
+    if (targetTrack) {
+      if (this.cameraTrack) {
+        targetTrack.enabled = this.cameraTrack.enabled;
+      }
+      await this.replaceOutgoingVideoTrack(targetTrack);
+    }
+    this.callbacks.onLocalStream(this.buildOutgoingStream());
+  }
+
+  getFacingMode(): 'user' | 'environment' {
+    return this.facingMode;
   }
 
   async toggleScreenShare(): Promise<boolean> {
@@ -217,9 +248,10 @@ export class FamilyWebRtcController {
     if (!this.screenStream) return;
     this.screenStream.getTracks().forEach((t) => t.stop());
     this.screenStream = null;
-    if (this.cameraTrack) {
-      void this.replaceOutgoingVideoTrack(this.cameraTrack);
-      this.callbacks.onLocalStream(new MediaStream(this.localStream?.getTracks() ?? []));
+    const restoreTrack = this.effectTrack ?? this.cameraTrack;
+    if (restoreTrack) {
+      void this.replaceOutgoingVideoTrack(restoreTrack);
+      this.callbacks.onLocalStream(this.buildOutgoingStream());
     }
     this.callbacks.onScreenShareChange(false);
   }
@@ -241,8 +273,11 @@ export class FamilyWebRtcController {
     }
     this.localStream.addTrack(newTrack);
     this.cameraTrack = newTrack;
-    await this.replaceOutgoingVideoTrack(newTrack);
-    this.callbacks.onLocalStream(new MediaStream(this.localStream.getTracks()));
+    this.callbacks.onRawCameraTrackChange?.(newTrack);
+    if (!this.effectTrack) {
+      await this.replaceOutgoingVideoTrack(newTrack);
+      this.callbacks.onLocalStream(this.buildOutgoingStream());
+    }
   }
 
   private async replaceOutgoingVideoTrack(newTrack: MediaStreamTrack) {
@@ -269,8 +304,10 @@ export class FamilyWebRtcController {
     this.localStream?.getTracks().forEach((t) => t.stop());
     this.localStream = null;
     this.cameraTrack = null;
+    this.effectTrack = null;
     this.activeConnection = null;
     this.peer = null;
+    this.callbacks.onRawCameraTrackChange?.(null);
     this.callbacks.onLocalStream(null);
     this.callbacks.onRemoteStream(null);
     this.callbacks.onStateChange('ENDED', 'Llamada finalizada');

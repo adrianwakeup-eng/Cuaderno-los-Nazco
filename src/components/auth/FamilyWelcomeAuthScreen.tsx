@@ -32,6 +32,7 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
   const [showAdminPass, setShowAdminPass] = useState(false);
 
   // Register new family member state
+  const [registering, setRegistering] = useState(false);
   const [regName, setRegName] = useState('');
   const [regUsername, setRegUsername] = useState('');
   const [regEmail, setRegEmail] = useState('');
@@ -259,13 +260,16 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
               )}
 
               <form
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
+                  if (registering) return;
                   if (regPassword !== regConfirm) {
                     setError('Las contraseñas no coinciden.');
                     return;
                   }
-                  const res = registerMember({
+                  setError(null);
+                  setRegistering(true);
+                  const res = await registerMember({
                     name: regName,
                     username: regUsername,
                     email: regEmail,
@@ -276,6 +280,7 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
                     avatarUrl: regAvatarUrl,
                     inviteCode: regInvite,
                   });
+                  setRegistering(false);
                   if (!res.ok) setError(res.error ?? 'No se pudo crear la cuenta.');
                 }}
                 className="mt-4 space-y-2.5"
@@ -379,12 +384,13 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
 
                 <button
                   type="submit"
+                  disabled={registering}
                   className="mt-1 h-[46px] w-full rounded-full text-sm font-bold text-white shadow-[0_8px_22px_rgba(88,36,178,0.34)] transition hover:brightness-105"
                   style={{
                     background: 'linear-gradient(90deg, #8B4FD9 0%, #6A31C3 54%, #471DA6 100%)',
                   }}
                 >
-                  Crear mi cuenta y entrar
+                  {registering ? 'Confirmando cuenta en la nube…' : 'Crear mi cuenta y entrar'}
                 </button>
               </form>
             </div>

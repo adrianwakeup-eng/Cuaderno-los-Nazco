@@ -28,6 +28,23 @@ export interface LoadedCrochetPack {
   gifCategories: string[];
 }
 
+// Keep these IDs resolvable for posts and chats that already use them.
+const duplicatePickerIds = new Set([
+  'cs:guirnalda-perlas-durazno',
+  'cs:perla-gota-esmeralda',
+  'cs:racimo-perlas-7-durazno',
+  'cs:carrete-hilo-mostaza',
+  'cs:guirnalda-perlas-marfil',
+  'cs:borla-coral',
+  'cs:borla-indigo',
+  'cs:aguja-lanera-salvia',
+  'cg:gif-mandala-autumn-v5',
+  'cg:gif-mandala-emerald-v2',
+  'cg:gif-idea-bulb-v5',
+  'cg:gif-handmade-ribbon-v2',
+  'cg:gif-mandala-boho-v3',
+]);
+
 let cachedPack: LoadedCrochetPack | null = null;
 let loadPromise: Promise<LoadedCrochetPack> | null = null;
 
@@ -42,7 +59,7 @@ function buildEmptyPack(): LoadedCrochetPack {
 }
 
 /**
- * Loads the 378 SVG crochet stickers + 300 animated crochet GIFs from
+ * Loads the crochet stickers and animated GIFs from
  * ./crochet-assets/manifest.json once and caches them in RAM (0 KB JS bundle bloat).
  */
 export function loadCrochetAssetsPack(): Promise<LoadedCrochetPack> {
@@ -94,8 +111,8 @@ export function loadCrochetAssetsPack(): Promise<LoadedCrochetPack> {
       });
 
       cachedPack = {
-        stickers,
-        gifs,
+        stickers: stickers.filter((item) => !duplicatePickerIds.has(item.id)),
+        gifs: gifs.filter((item) => !duplicatePickerIds.has(item.id)),
         byId,
         stickerCategories: Array.from(stickerCatSet),
         gifCategories: Array.from(gifCatSet),

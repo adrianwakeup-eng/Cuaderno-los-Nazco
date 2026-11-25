@@ -14,6 +14,7 @@ import {
   getNotificationPermission,
   getPushSupportState,
   sendTestPushToSelf,
+  warmPushPipeline,
   type PushSupportState,
 } from '../services/pushNotificationService';
 import { realtimeBus } from '../services/realtimeBus';
@@ -379,9 +380,10 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return found ?? null;
   }, [snapshot.members, activeUserId]);
 
-  // Silently keep this device's Web Push subscription synced & pre-warm sender's circular notification avatar
+  // Silently keep this device's Web Push subscription synced & pre-warm push pipeline + circular avatar
   useEffect(() => {
     if (!currentUser) return;
+    warmPushPipeline();
     if (getNotificationPermission() === 'granted') {
       void enableDevicePush(currentUser.id, false).then((res) => {
         if (res.ok) setPushEnabled(true);
@@ -393,6 +395,11 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       avatarUrl: currentUser.avatarUrl,
       avatarColor: currentUser.avatarColor,
     });
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') warmPushPipeline();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
   }, [currentUser?.id, currentUser?.avatarUrl, currentUser?.name, currentUser?.avatarColor]);
 
   // Deep-link when user taps an incoming call Push Notification (?incomingCall=... or ?joinCall=...)
@@ -1365,10 +1372,10 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           },
         };
 
-        // First ring immediately + keep ringing every 4.5s (up to ~45s) until answered or hung up
+        // First ring immediately + keep ringing every 3.8s (up to ~45s) until answered or hung up
         void dispatchPushNotification(pushPayload);
         let ringsSent = 1;
-        const MAX_RINGS = 10;
+        const MAX_RINGS = 12;
         const timerId = window.setInterval(() => {
           if (outgoingRingRef.current?.callId !== callId) {
             window.clearInterval(timerId);
@@ -1380,7 +1387,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           }
           ringsSent += 1;
           void dispatchPushNotification(pushPayload);
-        }, 4500);
+        }, 3800);
 
         outgoingRingRef.current = {
           callId,

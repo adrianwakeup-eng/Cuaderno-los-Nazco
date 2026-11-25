@@ -1,4 +1,14 @@
-import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import {
+  collection,
+  deleteDoc,
+  doc,
+  getDoc,
+  getDocs,
+  onSnapshot,
+  query,
+  setDoc,
+  where,
+} from 'firebase/firestore';
 import type { CallMode } from '../types';
 import { ensureFirebaseSession, firebaseAuth, firestoreDb } from './firebaseClient';
 
@@ -9,7 +19,69 @@ export interface PushSenderAvatarInfo {
   avatarColor?: string;
 }
 
+const AVATAR_CACHE_STORAGE_KEY = 'nazco_push_avatar_cache_v1';
 const avatarMediaCache = new Map<string, string>();
+let livePushSubs: StoredPushSubscription[] = [];
+let livePushSubsReady = false;
+let livePushSubsUnsub: (() => void) | null = null;
+let lastWarmAt = 0;
+
+// Hydrate avatar media ID cache from localStorage so app restarts skip Firestore getDoc (0ms)
+try {
+  if (typeof localStorage !== 'undefined') {
+    const raw = localStorage.getItem(AVATAR_CACHE_STORAGE_KEY);
+    if (raw) {
+      const parsed = JSON.parse(raw) as Record<string, string>;
+      Object.entries(parsed).forEach(([k, v]) => {
+        if (typeof v === 'string' && v.startsWith('av_')) {
+          avatarMediaCache.set(k, v);
+        }
+      });
+    }
+  }
+} catch {
+  // ignore
+}
+
+function persistAvatarCacheEntry(fingerprint: string, mediaId: string): void {
+  avatarMediaCache.set(fingerprint, mediaId);
+  try {
+    if (typeof localStorage !== 'undefined') {
+      const entries = Array.from(avatarMediaCache.entries()).slice(-12);
+      localStorage.setItem(AVATAR_CACHE_STORAGE_KEY, JSON.stringify(Object.fromEntries(entries)));
+    }
+  } catch {
+    // ignore
+  }
+}
+
+/**
+ * Keeps all family push subscriptions warm in RAM via Firestore onSnapshot
+ * and pre-warms the Supabase Edge Function isolate so messages & calls fire in <300ms.
+ */
+export function warmPushPipeline(): void {
+  const now = Date.now();
+  if (now - lastWarmAt > 90_000) {
+    lastWarmAt = now;
+    void fetch(`${PUSH_ENDPOINT_URL}?warm=1`, { method: 'GET', mode: 'cors' }).catch(() => {});
+  }
+  if (livePushSubsUnsub) return;
+  void ensureFirebaseSession()
+    .then(() => {
+      if (livePushSubsUnsub) return;
+      livePushSubsUnsub = onSnapshot(
+        collection(firestoreDb, `${FAMILY_ROOT}/push_subs`),
+        (snap) => {
+          livePushSubs = snap.docs.map((d) => d.data() as StoredPushSubscription);
+          livePushSubsReady = true;
+        },
+        () => {
+          livePushSubsReady = false;
+        }
+      );
+    })
+    .catch(() => {});
+}
 
 function hashStringPair(input: string): string {
   let h1 = 2166136261;
@@ -137,7 +209,7 @@ export async function ensureSenderCircularAvatarMediaId(
     const metaRef = doc(firestoreDb, `${FAMILY_ROOT}/media`, mediaId);
     const existing = await getDoc(metaRef);
     if (existing.exists()) {
-      avatarMediaCache.set(fingerprint, mediaId);
+      persistAvatarCacheEntry(fingerprint, mediaId);
       return mediaId;
     }
 
@@ -156,7 +228,7 @@ export async function ensureSenderCircularAvatarMediaId(
       createdAt: new Date().toISOString(),
     });
 
-    avatarMediaCache.set(fingerprint, mediaId);
+    persistAvatarCacheEntry(fingerprint, mediaId);
     return mediaId;
   } catch (err) {
     console.warn('Could not sync circular push avatar:', err);
@@ -357,18 +429,20 @@ export async function dispatchPushNotification(params: {
     const targets = params.targetMemberIds.filter((id) => id !== params.excludeMemberId);
     if (targets.length === 0) return { sent: 0, total: 0 };
 
-    const [subsSnap, senderAvatarMediaId] = await Promise.all([
-      getDocs(collection(firestoreDb, `${FAMILY_ROOT}/push_subs`)),
+    const [allSubs, senderAvatarMediaId] = await Promise.all([
+      livePushSubsReady
+        ? Promise.resolve(livePushSubs)
+        : getDocs(collection(firestoreDb, `${FAMILY_ROOT}/push_subs`)).then((snap) =>
+            snap.docs.map((d) => d.data() as StoredPushSubscription)
+          ),
       params.sender
         ? Promise.race([
             ensureSenderCircularAvatarMediaId(params.sender),
-            new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 3500)),
+            new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 1800)),
           ])
         : Promise.resolve(undefined),
     ]);
-    const matched = subsSnap.docs
-      .map((d) => d.data() as StoredPushSubscription)
-      .filter((s) => targets.includes(s.memberId));
+    const matched = allSubs.filter((s) => targets.includes(s.memberId));
 
     if (matched.length === 0) return { sent: 0, total: 0 };
 

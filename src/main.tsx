@@ -3,6 +3,12 @@ import ReactDOM from 'react-dom/client';
 import { App } from './App';
 import './index.css';
 
+// Recover automatically if a stale cached shell ever fails to preload an updated asset
+window.addEventListener('vite:preloadError', (event) => {
+  event.preventDefault();
+  window.location.reload();
+});
+
 // Register safe static-shell PWA Service Worker and auto-refresh on new deployments
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   let refreshing = false;

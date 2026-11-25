@@ -1,45 +1,87 @@
-import React, { Suspense, lazy } from 'react';
+import React from 'react';
+import { AdminPanelView } from './components/admin/AdminPanelView';
+import { AlbumsView } from './components/albums/AlbumsView';
 import { FamilyWelcomeAuthScreen } from './components/auth/FamilyWelcomeAuthScreen';
+import { CallsHubView } from './components/calls/CallsHubView';
 import { IncomingCallModal } from './components/calls/IncomingCallModal';
 import { VideoCallOverlay } from './components/calls/VideoCallOverlay';
-import { YarnBallLoader } from './components/crochet/CrochetArt';
+import { FamilyWorldView } from './components/family/FamilyWorldView';
 import { FeedView } from './components/feed/FeedView';
 import { AppShell } from './components/layout/AppShell';
+import { MessengerView } from './components/messenger/MessengerView';
+import { ProfileView } from './components/profile/ProfileView';
 import { JoyBurstLayer } from './components/shared/JoyBurstLayer';
 import { AppearanceProvider } from './context/AppearanceContext';
 import { FamilyAppProvider, useFamilyApp } from './context/FamilyAppContext';
 
-// Code-split secondary sections for lightning-fast mobile loading
-const MessengerView = lazy(() =>
-  import('./components/messenger/MessengerView').then((m) => ({ default: m.MessengerView }))
-);
-const CallsHubView = lazy(() =>
-  import('./components/calls/CallsHubView').then((m) => ({ default: m.CallsHubView }))
-);
-const AlbumsView = lazy(() =>
-  import('./components/albums/AlbumsView').then((m) => ({ default: m.AlbumsView }))
-);
-const FamilyWorldView = lazy(() =>
-  import('./components/family/FamilyWorldView').then((m) => ({ default: m.FamilyWorldView }))
-);
-const ProfileView = lazy(() =>
-  import('./components/profile/ProfileView').then((m) => ({ default: m.ProfileView }))
-);
-const AdminPanelView = lazy(() =>
-  import('./components/admin/AdminPanelView').then((m) => ({ default: m.AdminPanelView }))
-);
+interface SectionErrorBoundaryProps {
+  sectionKey: string;
+  onGoHome: () => void;
+  children: React.ReactNode;
+}
 
-const SectionLoader: React.FC = () => (
-  <div className="flex min-h-[260px] items-center justify-center">
-    <YarnBallLoader size={46} label="Tejiendo esta sección…" />
-  </div>
-);
+interface SectionErrorBoundaryState {
+  hasError: boolean;
+}
+
+class SectionErrorBoundary extends React.Component<
+  SectionErrorBoundaryProps,
+  SectionErrorBoundaryState
+> {
+  state: SectionErrorBoundaryState = { hasError: false };
+
+  static getDerivedStateFromError(): SectionErrorBoundaryState {
+    return { hasError: true };
+  }
+
+  componentDidUpdate(prevProps: SectionErrorBoundaryProps) {
+    if (prevProps.sectionKey !== this.props.sectionKey && this.state.hasError) {
+      this.setState({ hasError: false });
+    }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="crochet-card mx-auto my-8 max-w-md rounded-3xl p-6 text-center">
+          <p className="font-display text-lg font-bold text-forest-800">
+            Esta sección necesitó recargarse
+          </p>
+          <p className="mt-1.5 text-sm text-espresso-700">
+            Toca el botón para continuar sin cerrar la aplicación.
+          </p>
+          <div className="mt-4 flex justify-center gap-2.5">
+            <button
+              type="button"
+              onClick={() => {
+                this.setState({ hasError: false });
+                this.props.onGoHome();
+              }}
+              className="btn-yarn-press rounded-full bg-forest-700 px-5 py-2.5 text-sm font-bold text-white"
+            >
+              Volver al Muro
+            </button>
+            <button
+              type="button"
+              onClick={() => window.location.reload()}
+              className="btn-yarn-press rounded-full border border-cotton-300 bg-white px-5 py-2.5 text-sm font-bold text-forest-800"
+            >
+              Actualizar app
+            </button>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 const CuadernoContent: React.FC = () => {
   const {
     snapshot,
     currentUser,
     activeSection,
+    setActiveSection,
     joyBursts,
     incomingCall,
     acceptIncomingCall,
@@ -75,7 +117,10 @@ const CuadernoContent: React.FC = () => {
       ) : (
         <>
           <AppShell>
-            <Suspense fallback={<SectionLoader />}>
+            <SectionErrorBoundary
+              sectionKey={activeSection}
+              onGoHome={() => setActiveSection('FEED')}
+            >
               {activeSection === 'FEED' && <FeedView />}
               {activeSection === 'MESSAGES' && <MessengerView />}
               {activeSection === 'CALLS' && <CallsHubView />}
@@ -83,7 +128,7 @@ const CuadernoContent: React.FC = () => {
               {activeSection === 'FAMILY' && <FamilyWorldView />}
               {activeSection === 'PROFILE' && <ProfileView />}
               {activeSection === 'ADMIN' && <AdminPanelView />}
-            </Suspense>
+            </SectionErrorBoundary>
           </AppShell>
           {/* Mounted outside AppShell so top/bottom navigation bars NEVER cover full-screen calls */}
           <VideoCallOverlay />

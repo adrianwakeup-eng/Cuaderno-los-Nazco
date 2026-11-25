@@ -45,6 +45,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     currentUser,
     activeSection,
     setActiveSection,
+    registerBackHandler,
     openProfile,
     openChatWithMember,
     startCall,
@@ -54,7 +55,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     triggerJoyBurst,
   } = useFamilyApp();
 
-  const { prefs, parallax, triggerFeedback, setShowAppearanceModal } = useAppearance();
+  const { prefs, parallax, triggerFeedback, showAppearanceModal, setShowAppearanceModal } =
+    useAppearance();
   const { isOffline } = usePwaInstall();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -62,6 +64,36 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const [notifSheetOpen, setNotifSheetOpen] = useState(false);
   const [enablingPush, setEnablingPush] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+
+  // Close open drawers/sheets on Android Back button before leaving the current section
+  useEffect(() => {
+    return registerBackHandler(() => {
+      if (notifSheetOpen) {
+        setNotifSheetOpen(false);
+        return true;
+      }
+      if (showAppearanceModal) {
+        setShowAppearanceModal(false);
+        return true;
+      }
+      if (installOpen) {
+        setInstallOpen(false);
+        return true;
+      }
+      if (drawerOpen) {
+        setDrawerOpen(false);
+        return true;
+      }
+      return false;
+    });
+  }, [
+    registerBackHandler,
+    notifSheetOpen,
+    showAppearanceModal,
+    installOpen,
+    drawerOpen,
+    setShowAppearanceModal,
+  ]);
 
   // Smoothly compact top header height on mobile scroll down
   useEffect(() => {

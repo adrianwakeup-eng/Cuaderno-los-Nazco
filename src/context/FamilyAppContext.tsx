@@ -63,6 +63,7 @@ interface FamilyAppContextValue {
   currentUser: FamilyMember | null;
   activeSection: AppSection;
   setActiveSection: (section: AppSection) => void;
+  registerBackHandler: (handler: () => boolean) => () => void;
   viewedProfileId: string;
   openProfile: (memberId: string) => void;
   activeChatId: string;
@@ -169,7 +170,35 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return null;
   });
 
-  const [activeSection, setActiveSection] = useState<AppSection>('FEED');
+  const [activeSection, setActiveSectionState] = useState<AppSection>('FEED');
+  const activeSectionRef = useRef<AppSection>('FEED');
+  const sectionHistoryRef = useRef<AppSection[]>(['FEED']);
+  const backHandlersRef = useRef<Array<() => boolean>>([]);
+  const lastBackPressAtRef = useRef<number>(0);
+  const exitingRef = useRef<boolean>(false);
+
+  const setActiveSection = useCallback((next: AppSection) => {
+    setActiveSectionState((prev) => {
+      if (prev !== next) {
+        const stack = sectionHistoryRef.current;
+        if (next === 'FEED') {
+          sectionHistoryRef.current = ['FEED'];
+        } else {
+          sectionHistoryRef.current = [...stack.filter((s) => s !== next).slice(-8), next];
+        }
+        window.scrollTo({ top: 0, behavior: 'auto' });
+      }
+      activeSectionRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const registerBackHandler = useCallback((handler: () => boolean) => {
+    backHandlersRef.current.push(handler);
+    return () => {
+      backHandlersRef.current = backHandlersRef.current.filter((fn) => fn !== handler);
+    };
+  }, []);
   const [viewedProfileId, setViewedProfileId] = useState<string>('nazco_adrian');
   const [activeChatId, setActiveChatId] = useState<string>('chat_familia_general');
   const [activeCall, setActiveCall] = useState<ActiveCallSession | null>(null);
@@ -377,9 +406,9 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const callerNameParam = params.get('callerName') || titleParam.replace(/^[^a-zA-ZÀ-ÿ]+/, '');
     const autoAnswer = params.get('autoAnswer') === '1' || Boolean(params.get('joinCall'));
 
-    // Clean query params so reloading later won't re-trigger
+    // Clean query params so reloading later won't re-trigger (preserve history guard state)
     const cleanUrl = `${window.location.origin}${window.location.pathname}`;
-    window.history.replaceState({}, '', cleanUrl);
+    window.history.replaceState(window.history.state, '', cleanUrl);
 
     if (autoAnswer) {
       setActiveCall({
@@ -458,6 +487,101 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       ) ?? null
     );
   }, [deepLinkIncomingCall, liveCalls, currentUser, activeCall, dismissedCallIds]);
+
+  const activeCallRef = useRef(activeCall);
+  activeCallRef.current = activeCall;
+  const incomingCallRef = useRef(incomingCall);
+  incomingCallRef.current = incomingCall;
+
+  // Prevent accidental app exit on Android Back button:
+  // 1) Closes open drawers/modals/chat threads first
+  // 2) Navigates back to previous section / Muro
+  // 3) On Muro, requires pressing Back twice within 1 second (1000 ms) to exit
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.history?.pushState) return;
+
+    const currentState = window.history.state as { nazcoHistory?: string } | null;
+    if (currentState?.nazcoHistory !== 'guard') {
+      window.history.replaceState({ nazcoHistory: 'base' }, '');
+      window.history.pushState({ nazcoHistory: 'guard' }, '');
+    }
+
+    const pushGuard = () => {
+      try {
+        window.history.pushState({ nazcoHistory: 'guard' }, '');
+      } catch {
+        // ignore restricted environments
+      }
+    };
+
+    const handlePopState = () => {
+      if (exitingRef.current) return;
+
+      // 1. Protect active live call from accidental back swipe
+      if (activeCallRef.current) {
+        pushGuard();
+        lastBackPressAtRef.current = 0;
+        notify('Toca el botón rojo Colgar para salir de la llamada.', 'info');
+        return;
+      }
+
+      // 2. Dismiss incoming ringing overlay if active
+      if (incomingCallRef.current) {
+        pushGuard();
+        lastBackPressAtRef.current = 0;
+        const inc = incomingCallRef.current;
+        setDeepLinkIncomingCall(null);
+        setDismissedCallIds((prev) => [...prev, inc.id]);
+        if (inc.scope === 'DIRECT') {
+          void firebaseSyncService.updateCallSignalStatus(inc.id, 'ENDED').catch(() => {});
+        }
+        return;
+      }
+
+      // 3. Let topmost open modal, drawer, lightbox, or mobile chat thread handle Back
+      for (let i = backHandlersRef.current.length - 1; i >= 0; i--) {
+        try {
+          if (backHandlersRef.current[i]()) {
+            pushGuard();
+            lastBackPressAtRef.current = 0;
+            return;
+          }
+        } catch {
+          // continue
+        }
+      }
+
+      // 4. Navigate back to previous section / home Muro before considering app exit
+      if (activeSectionRef.current !== 'FEED') {
+        const stack = sectionHistoryRef.current;
+        stack.pop();
+        const prevSection = stack[stack.length - 1] ?? 'FEED';
+        activeSectionRef.current = prevSection;
+        setActiveSectionState(prevSection);
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        pushGuard();
+        lastBackPressAtRef.current = 0;
+        return;
+      }
+
+      // 5. Already on Muro: require two Back presses within 1 second (1000 ms) to close app
+      const now = Date.now();
+      if (now - lastBackPressAtRef.current <= 1000) {
+        exitingRef.current = true;
+        window.history.back();
+        return;
+      }
+
+      lastBackPressAtRef.current = now;
+      pushGuard();
+      notify('Presiona atrás otra vez para salir', 'info');
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [notify]);
 
   const unreadMessageCount = useMemo(() => {
     if (!currentUser) return 0;
@@ -1332,6 +1456,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     currentUser,
     activeSection,
     setActiveSection,
+    registerBackHandler,
     viewedProfileId,
     openProfile,
     activeChatId,

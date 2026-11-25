@@ -1,4 +1,4 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
@@ -82,8 +82,15 @@ function loadCustomAlbumPhotos(): AlbumPhotoItem[] {
 }
 
 export const AlbumsView: React.FC = () => {
-  const { snapshot, cloudAlbumPhotos, publishCloudAlbumPhoto, currentUser, notify, triggerJoyBurst } =
-    useFamilyApp();
+  const {
+    snapshot,
+    cloudAlbumPhotos,
+    publishCloudAlbumPhoto,
+    currentUser,
+    registerBackHandler,
+    notify,
+    triggerJoyBurst,
+  } = useFamilyApp();
   const { triggerFeedback } = useAppearance();
 
   const [selectedAlbum, setSelectedAlbum] = useState<AlbumCategoryId | null>(null);
@@ -91,6 +98,21 @@ export const AlbumsView: React.FC = () => {
   const [lightboxIdx, setLightboxIdx] = useState<number | null>(null);
   const [zoom, setZoom] = useState(1);
   const [commentDraft, setCommentDraft] = useState('');
+
+  useEffect(() => {
+    return registerBackHandler(() => {
+      if (lightboxIdx !== null) {
+        setLightboxIdx(null);
+        setZoom(1);
+        return true;
+      }
+      if (selectedAlbum !== null) {
+        setSelectedAlbum(null);
+        return true;
+      }
+      return false;
+    });
+  }, [registerBackHandler, lightboxIdx, selectedAlbum]);
 
   const uploadInputRef = useRef<HTMLInputElement | null>(null);
   const touchStartRef = useRef<{ x: number; y: number } | null>(null);

@@ -35,6 +35,7 @@ export const MessengerView: React.FC = () => {
     currentUser,
     activeChatId,
     setActiveChatId,
+    registerBackHandler,
     sendMessage,
     markChatRead,
     notifyTyping,
@@ -98,6 +99,28 @@ export const MessengerView: React.FC = () => {
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [activeChat?.messages.length, activeChat?.id]);
+
+  useEffect(() => {
+    return registerBackHandler(() => {
+      if (showNewGroup) {
+        setShowNewGroup(false);
+        return true;
+      }
+      if (selectedMessage) {
+        setSelectedMessage(null);
+        return true;
+      }
+      if (showStickerSheet) {
+        setShowStickerSheet(false);
+        return true;
+      }
+      if (mobileShowThread) {
+        setMobileShowThread(false);
+        return true;
+      }
+      return false;
+    });
+  }, [registerBackHandler, showNewGroup, selectedMessage, showStickerSheet, mobileShowThread]);
 
   useEffect(() => {
     return () => {

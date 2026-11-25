@@ -7,6 +7,7 @@ import {
   signInWithPopup,
 } from 'firebase/auth';
 import {
+  arrayUnion,
   collection,
   deleteDoc,
   doc,
@@ -24,6 +25,7 @@ import type {
   AlbumPhotoItem,
   CallMode,
   CallScope,
+  ChatMessage,
   FamilyAppSnapshot,
   FamilyChat,
   FamilyInvite,
@@ -424,7 +426,9 @@ export const firebaseSyncService = {
       unsubs.push(
         onSnapshot(
           collection(firestoreDb, `${FAMILY_ROOT}/chats`),
+          { includeMetadataChanges: true },
           (qs) => {
+            if (qs.metadata.hasPendingWrites) return;
             handlers.onStatus('CONNECTED');
             const list = qs.docs
               .map((d) => d.data() as FamilyChat)
@@ -588,6 +592,85 @@ export const firebaseSyncService = {
   async deletePost(postId: string): Promise<void> {
     await ensureFirebaseSession();
     await deleteDoc(doc(firestoreDb, `${FAMILY_ROOT}/posts`, postId));
+  },
+
+  async appendChatMessage(chat: FamilyChat, message: ChatMessage): Promise<void> {
+    if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
+    const attachment = message.attachment
+      ? await prepareAttachmentForCloud(message.attachment, message.senderId)
+      : undefined;
+    const prepared = stripUndefined({ ...message, attachment });
+    const ref = doc(firestoreDb, `${FAMILY_ROOT}/chats`, chat.id);
+    await runTransaction(firestoreDb, async (tx) => {
+      const snapshot = await tx.get(ref);
+      const latest = snapshot.exists() ? snapshot.data() as FamilyChat : chat;
+      if (latest.messages.some((item) => item.id === message.id)) return;
+      tx.set(ref, stripUndefined({
+        ...latest,
+        messages: [...latest.messages, prepared].sort((a, b) => a.createdAt.localeCompare(b.createdAt)),
+        typingUserIds: latest.typingUserIds.filter((id) => id !== message.senderId),
+        updatedAt: latest.updatedAt > message.createdAt ? latest.updatedAt : message.createdAt,
+      }));
+    });
+  },
+
+  async addChatParticipant(chatId: string, memberId: string): Promise<void> {
+    if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
+    await updateDoc(doc(firestoreDb, `${FAMILY_ROOT}/chats`, chatId), {
+      participantIds: arrayUnion(memberId),
+    });
+  },
+
+  async deleteChatMessage(chatId: string, messageId: string): Promise<void> {
+    if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
+    const ref = doc(firestoreDb, `${FAMILY_ROOT}/chats`, chatId);
+    await runTransaction(firestoreDb, async (tx) => {
+      const snapshot = await tx.get(ref);
+      if (!snapshot.exists()) return;
+      const chat = snapshot.data() as FamilyChat;
+      const messages = chat.messages.filter((message) => message.id !== messageId);
+      if (messages.length === chat.messages.length) return;
+      tx.update(ref, { messages, updatedAt: messages.at(-1)?.createdAt ?? chat.updatedAt });
+    });
+  },
+
+  async confirmChatMessages(
+    chatId: string,
+    memberId: string,
+    messageIds: string[],
+    read: boolean
+  ): Promise<void> {
+    if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
+    const ref = doc(firestoreDb, `${FAMILY_ROOT}/chats`, chatId);
+    const targets = new Set(messageIds);
+    await runTransaction(firestoreDb, async (tx) => {
+      const snapshot = await tx.get(ref);
+      if (!snapshot.exists()) return;
+      const chat = snapshot.data() as FamilyChat;
+      if (!chat.participantIds.includes(memberId)) return;
+      let changed = false;
+      const messages = chat.messages.map((message) => {
+        if (!targets.has(message.id) || message.senderId === memberId) return message;
+        const readBy = message.readBy ?? [];
+        const deliveredTo = message.deliveredTo ?? [];
+        if (readBy.includes(memberId) || (!read && deliveredTo.includes(memberId))) return message;
+        changed = true;
+        return {
+          ...message,
+          deliveredTo: deliveredTo.includes(memberId) ? deliveredTo : [...deliveredTo, memberId],
+          readBy: read ? [...readBy, memberId] : readBy,
+        };
+      });
+      if (changed) tx.update(ref, { messages });
+    });
+  },
+
+  async ensureChatCreated(chat: FamilyChat): Promise<void> {
+    if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
+    const ref = doc(firestoreDb, `${FAMILY_ROOT}/chats`, chat.id);
+    await runTransaction(firestoreDb, async (tx) => {
+      if (!(await tx.get(ref)).exists()) tx.set(ref, stripUndefined(chat));
+    });
   },
 
   async saveChat(chat: FamilyChat): Promise<void> {

@@ -134,9 +134,9 @@ interface FamilyAppContextValue {
   deletePost: (postId: string) => void;
 
   // Messenger
-  sendMessage: (chatId: string, text: string, attachment?: MediaAttachment, stickerId?: string) => void;
+  sendMessage: (chatId: string, text: string, attachment?: MediaAttachment, stickerId?: string) => Promise<boolean>;
   deleteMessage: (chatId: string, messageId: string) => void;
-  markChatRead: (chatId: string) => void;
+  markChatRead: (chat: FamilyChat) => void;
   notifyTyping: (chatId: string, isTyping: boolean) => void;
   createGroupChat: (title: string, description: string, participantIds: string[]) => FamilyChat;
 
@@ -645,7 +645,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ...prev,
         chats: [newChat, ...prev.chats.filter((c) => c.id !== newChat.id)],
       }));
-      void firebaseSyncService.saveChat(newChat).catch(() => {});
+      void firebaseSyncService.ensureChatCreated(newChat).catch(() => {});
       setActiveChatId(newChat.id);
       setActiveSection('MESSAGES');
     },
@@ -873,7 +873,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         return next;
       });
 
-      if (updatedGeneralChat) void firebaseSyncService.saveChat(updatedGeneralChat).catch(() => {});
+      if (updatedGeneralChat) void firebaseSyncService.addChatParticipant(updatedGeneralChat.id, member.id).catch(() => {});
 
       setActiveUserId(member.id);
       setViewedProfileId(member.id);
@@ -1166,10 +1166,10 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   // --- Messenger Actions (Cloud Real-Time Synced) ---
   const sendMessage = useCallback(
     (chatId: string, text: string, attachment?: MediaAttachment, stickerId?: string) => {
-      if (!currentUser) return;
+      const chat = snapshot.chats.find((item) => item.id === chatId);
       const clean = text.trim();
-      if (!clean && !attachment && !stickerId) return;
-      const msg: ChatMessage = {
+      if (!currentUser || !chat || (!clean && !attachment && !stickerId)) return Promise.resolve(false);
+      const message: ChatMessage = {
         id: `msg_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`,
         chatId,
         senderId: currentUser.id,
@@ -1179,112 +1179,67 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         createdAt: new Date().toISOString(),
         readBy: [currentUser.id],
       };
-      commitSnapshot((prev) => ({
-        ...prev,
-        chats: prev.chats
-          .map((chat) => {
-            if (chat.id !== chatId) return chat;
-            const updated: FamilyChat = {
-              ...chat,
-              messages: [...chat.messages, msg],
-              typingUserIds: chat.typingUserIds.filter((id) => id !== currentUser.id),
-              updatedAt: msg.createdAt,
-            };
-            void firebaseSyncService.saveChat(updated).catch(() => {});
-            void dispatchPushNotification({
-              targetMemberIds: updated.participantIds,
-              excludeMemberId: currentUser.id,
-              title:
-                updated.kind === 'GROUP'
-                  ? `💬 ${currentUser.name.split(' ')[0]} en ${updated.title || 'Familia'}`
-                  : `💬 ${currentUser.name}`,
-              body:
-                clean ||
-                (attachment?.kind === 'AUDIO'
-                  ? '🎙️ Nota de voz'
-                  : attachment?.kind === 'IMAGE'
-                    ? '📷 Envió una foto'
-                    : '✨ Envió un sticker'),
-              kind: 'MESSAGE',
-              sender: {
-                id: currentUser.id,
-                name: currentUser.name,
-                avatarUrl: currentUser.avatarUrl,
-                avatarColor: currentUser.avatarColor,
-              },
-            });
-            return updated;
-          })
-          .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
-      }));
-      if (stickerId) triggerJoyBurst('💕', 4);
+      return firebaseSyncService.appendChatMessage(chat, message).then(() => {
+        if (stickerId) triggerJoyBurst('💕', 4);
+        void dispatchPushNotification({
+          targetMemberIds: chat.participantIds,
+          excludeMemberId: currentUser.id,
+          title: chat.kind === 'GROUP'
+            ? `💬 ${currentUser.name.split(' ')[0]} en ${chat.title || 'Familia'}`
+            : `💬 ${currentUser.name}`,
+          body: clean || (attachment?.kind === 'AUDIO' ? '🎙️ Nota de voz' :
+            attachment?.kind === 'IMAGE' ? '📷 Envió una foto' : '✨ Envió un sticker'),
+          kind: 'MESSAGE',
+          sender: {
+            id: currentUser.id,
+            name: currentUser.name,
+            avatarUrl: currentUser.avatarUrl,
+            avatarColor: currentUser.avatarColor,
+          },
+        });
+        return true;
+      }, () => {
+        notify('No se pudo enviar el mensaje. Revisa tu conexión e inténtalo de nuevo.', 'warning');
+        return false;
+      });
     },
-    [currentUser, commitSnapshot, triggerJoyBurst]
+    [currentUser, snapshot.chats, triggerJoyBurst, notify]
   );
 
-  const deleteMessage = useCallback(
-    (chatId: string, messageId: string) => {
-      if (!currentUser) return;
-      let deleted = false;
-      commitSnapshot((prev) => ({
-        ...prev,
-        chats: prev.chats.map((chat) => {
-          if (chat.id !== chatId) return chat;
-          const target = chat.messages.find((m) => m.id === messageId);
-          if (!target) return chat;
-          // Allow author (or sole Admin) to delete sent messages at will
-          if (target.senderId !== currentUser.id && currentUser.role !== 'ADMIN') return chat;
-          deleted = true;
-          if (target.attachment?.storageKey) {
-            void deleteMediaBlob(target.attachment.storageKey).catch(() => {});
-          }
-          const remaining = chat.messages.filter((m) => m.id !== messageId);
-          const updated: FamilyChat = {
-            ...chat,
-            messages: remaining,
-            updatedAt:
-              remaining.length > 0
-                ? remaining[remaining.length - 1].createdAt
-                : chat.updatedAt,
-          };
-          void firebaseSyncService.saveChat(updated).catch(() => {});
-          return updated;
-        }),
-      }));
-      if (deleted) {
-        notify('Mensaje eliminado 🗑️', 'info');
-      }
-    },
-    [currentUser, commitSnapshot, notify]
-  );
+  const deleteMessage = useCallback((chatId: string, messageId: string) => {
+    const message = snapshot.chats.find((chat) => chat.id === chatId)?.messages.find((item) => item.id === messageId);
+    if (!currentUser || !message || (message.senderId !== currentUser.id && currentUser.role !== 'ADMIN')) return;
+    void firebaseSyncService.deleteChatMessage(chatId, messageId).then(() => {
+      if (message.attachment?.storageKey) void deleteMediaBlob(message.attachment.storageKey).catch(() => {});
+      notify('Mensaje eliminado.', 'info');
+    }, () => notify('No se pudo eliminar el mensaje.', 'warning'));
+  }, [currentUser, snapshot.chats, notify]);
 
-  const markChatRead = useCallback(
-    (chatId: string) => {
-      // Ghost Admin never leaves read receipts when reviewing family chats
-      if (!currentUser || currentUser.role === 'ADMIN') return;
-      commitSnapshot((prev) => ({
-        ...prev,
-        chats: prev.chats.map((chat) => {
-          if (chat.id !== chatId) return chat;
-          const hasUnread = chat.messages.some(
-            (m) => m.senderId !== currentUser.id && !m.readBy.includes(currentUser.id)
-          );
-          if (!hasUnread) return chat;
-          const updated: FamilyChat = {
-            ...chat,
-            messages: chat.messages.map((m) =>
-              m.readBy.includes(currentUser.id)
-                ? m
-                : { ...m, readBy: [...m.readBy, currentUser.id] }
-            ),
-          };
-          void firebaseSyncService.saveChat(updated).catch(() => {});
-          return updated;
-        }),
-      }));
-    },
-    [currentUser, commitSnapshot]
-  );
+  const receiptWrites = useRef(new Set<string>());
+  const confirmMessages = useCallback((chat: FamilyChat, read: boolean) => {
+    const memberId = currentUser?.id;
+    if (!memberId || currentUser.role === 'ADMIN' || !chat.participantIds.includes(memberId)) return;
+    const pending = chat.messages.filter((message) =>
+      message.senderId !== memberId && !(message.readBy ?? []).includes(memberId) &&
+      (read || !(message.deliveredTo ?? []).includes(memberId))
+    );
+    if (!pending.length) return;
+    const key = JSON.stringify([memberId, chat.id, read, ...pending.map((message) => message.id)]);
+    if (receiptWrites.current.has(key)) return;
+    receiptWrites.current.add(key);
+    void firebaseSyncService.confirmChatMessages(chat.id, memberId, pending.map((message) => message.id), read)
+      .catch(() => {})
+      .finally(() => receiptWrites.current.delete(key));
+  }, [currentUser?.id, currentUser?.role]);
+
+  useEffect(() => {
+    const confirmDelivery = () => snapshot.chats.forEach((chat) => confirmMessages(chat, false));
+    confirmDelivery();
+    window.addEventListener('online', confirmDelivery);
+    return () => window.removeEventListener('online', confirmDelivery);
+  }, [snapshot.chats, confirmMessages]);
+
+  const markChatRead = useCallback((chat: FamilyChat) => confirmMessages(chat, true), [confirmMessages]);
 
   const notifyTyping = useCallback(
     (chatId: string, isTyping: boolean) => {

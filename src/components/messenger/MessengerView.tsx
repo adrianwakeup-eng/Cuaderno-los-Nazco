@@ -2,6 +2,8 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   ArrowLeft,
   Camera,
+  Check,
+  CheckCheck,
   Copy,
   Heart,
   ImagePlus,
@@ -48,6 +50,7 @@ export const MessengerView: React.FC = () => {
   } = useFamilyApp();
   const { triggerFeedback } = useAppearance();
 
+  const [sending, setSending] = useState(false);
   const [mobileShowThread, setMobileShowThread] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [draft, setDraft] = useState('');
@@ -105,10 +108,23 @@ export const MessengerView: React.FC = () => {
     myChats.find((c) => c.id === activeChatId) ?? myChats[0];
 
   useEffect(() => {
-    if (activeChat) {
-      markChatRead(activeChat.id);
-    }
-  }, [activeChat?.id, activeChat?.messages.length, markChatRead]);
+    const desktop = window.matchMedia('(min-width: 768px)');
+    const confirmRead = () => {
+      if (activeChat && document.visibilityState === 'visible' && document.hasFocus() &&
+          (mobileShowThread || desktop.matches)) markChatRead(activeChat);
+    };
+    confirmRead();
+    desktop.addEventListener('change', confirmRead);
+    document.addEventListener('visibilitychange', confirmRead);
+    window.addEventListener('focus', confirmRead);
+    window.addEventListener('online', confirmRead);
+    return () => {
+      desktop.removeEventListener('change', confirmRead);
+      document.removeEventListener('visibilitychange', confirmRead);
+      window.removeEventListener('focus', confirmRead);
+      window.removeEventListener('online', confirmRead);
+    };
+  }, [activeChat, mobileShowThread, markChatRead]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -282,17 +298,20 @@ export const MessengerView: React.FC = () => {
     }
   };
 
-  const handleSend = (e: React.FormEvent) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!activeChat) return;
+    if (!activeChat || sending) return;
     if (!draft.trim() && !pendingAttachment) return;
     const composed = replyQuote ? `↪ "${replyQuote}"\n${draft}` : draft;
-    sendMessage(activeChat.id, composed, pendingAttachment ?? undefined);
+    setSending(true);
+    const sent = await sendMessage(activeChat.id, composed, pendingAttachment ?? undefined);
+    setSending(false);
+    if (!sent) return;
     notifyTyping(activeChat.id, false);
     triggerFeedback('tap');
-    setDraft('');
-    setReplyQuote(null);
-    setPendingAttachment(null);
+    setDraft((value) => value === draft ? '' : value);
+    setReplyQuote((value) => value === replyQuote ? null : value);
+    setPendingAttachment((value) => value === pendingAttachment ? null : value);
   };
 
   const activeMeta = activeChat ? getChatMeta(activeChat) : null;
@@ -499,6 +518,14 @@ export const MessengerView: React.FC = () => {
 
                 {activeChat.messages.map((msg) => {
                   const isMine = msg.senderId === currentUser.id;
+                  const recipients = activeChat.participantIds.filter((id) =>
+                    id !== msg.senderId && membersById.get(id)?.role !== 'ADMIN'
+                  );
+                  const read = recipients.length > 0 && recipients.every((id) => msg.readBy?.includes(id));
+                  const delivered = recipients.length > 0 && recipients.every((id) =>
+                    msg.deliveredTo?.includes(id) || msg.readBy?.includes(id)
+                  );
+                  const receiptLabel = read ? 'Leído' : delivered ? 'Recibido' : 'Enviado';
                   const sender = membersById.get(msg.senderId);
                   const reaction = msgReactions[msg.id];
                   return (
@@ -626,6 +653,12 @@ export const MessengerView: React.FC = () => {
                           >
                             {formatClock(msg.createdAt)}
                           </span>
+                          {isMine && (
+                            <span role="img" aria-label={receiptLabel} title={receiptLabel}
+                              className={read ? 'text-sky-300' : 'text-white/75'}>
+                              {delivered ? <CheckCheck className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                            </span>
+                          )}
                         </div>
 
                         {reaction && (

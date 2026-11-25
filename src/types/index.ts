@@ -75,6 +75,7 @@ export interface ChatMessage {
   attachment?: MediaAttachment;
   stickerId?: string;
   createdAt: string;
+  deliveredTo?: string[];
   readBy: string[];
 }
 

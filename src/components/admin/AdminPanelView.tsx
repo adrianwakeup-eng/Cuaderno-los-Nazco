@@ -1,7 +1,5 @@
 import React, { useRef, useState } from 'react';
 import {
-  Check,
-  Copy,
   Download,
   Eye,
   EyeOff,
@@ -30,8 +28,6 @@ export const AdminPanelView: React.FC = () => {
     snapshot,
     currentUser,
     storageUsage,
-    createInvite,
-    toggleInviteActive,
     setMemberStatus,
     refreshMembers,
     deleteRetiredMember,
@@ -54,9 +50,6 @@ export const AdminPanelView: React.FC = () => {
   const [refreshingMembers, setRefreshingMembers] = useState(false);
   const [savingMemberId, setSavingMemberId] = useState<string | null>(null);
   const [tab, setTab] = useState<AdminTab>('MEMBERS');
-  const [inviteLabel, setInviteLabel] = useState('');
-  const [inviteMaxUses, setInviteMaxUses] = useState(5);
-  const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [curAdminPass, setCurAdminPass] = useState('');
   const [newAdminPass, setNewAdminPass] = useState('');
   const [passMsg, setPassMsg] = useState<string | null>(null);
@@ -140,13 +133,6 @@ export const AdminPanelView: React.FC = () => {
     100,
     Math.round((storageUsage.totalBytes / Math.max(1, storageUsage.quotaBytes)) * 100)
   );
-
-  const copyCode = (code: string) => {
-    void navigator.clipboard?.writeText(code);
-    setCopiedCode(code);
-    notify(`Código ${code} copiado.`, 'success');
-    window.setTimeout(() => setCopiedCode(null), 1800);
-  };
 
   return (
     <div className="mx-auto max-w-6xl space-y-6">
@@ -251,7 +237,7 @@ export const AdminPanelView: React.FC = () => {
         <div className="mt-5 flex flex-wrap gap-2 border-t border-amber-200/60 pt-4">
           {(
             [
-              ['MEMBERS', 'Miembros e invitaciones', Users],
+              ['MEMBERS', 'Miembros', Users],
               ['MODERATION', 'Moderación de posts', FileText],
               ['STORAGE', 'Almacenamiento y módulos', Sliders],
             ] as const
@@ -273,52 +259,14 @@ export const AdminPanelView: React.FC = () => {
         </div>
       </div>
 
-      {/* TAB 1: MEMBERS & INVITES */}
+      {/* TAB 1: MEMBERS */}
       {tab === 'MEMBERS' && (
         <div className="grid grid-cols-1 gap-5 lg:grid-cols-12">
-          {/* Invite Generator */}
-          <div className="card-warm space-y-4 rounded-3xl p-5 lg:col-span-5">
-            <div className="flex items-center gap-2">
+          <div className="card-warm self-start space-y-4 rounded-3xl p-5 lg:col-span-5">
+            <h3 className="flex items-center gap-2 font-editorial text-lg font-bold text-espresso-900">
               <KeyRound className="h-5 w-5 text-terracotta-600" />
-              <h3 className="font-editorial text-lg font-bold text-espresso-900">
-                Invitar familiares
-              </h3>
-            </div>
-            <form
-              onSubmit={(e) => {
-                e.preventDefault();
-                createInvite(inviteLabel || 'Invitación familiar', inviteMaxUses);
-                setInviteLabel('');
-              }}
-              className="space-y-3 rounded-2xl bg-linen-50 p-4"
-            >
-              <input
-                value={inviteLabel}
-                onChange={(e) => setInviteLabel(e.target.value)}
-                placeholder="Etiqueta (ej. Tíos de Colombia)"
-                className="w-full rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm focus:border-terracotta-500 focus:outline-none"
-              />
-              <div className="flex items-center gap-2">
-                <span className="flex-1 rounded-xl border border-linen-200 bg-white px-3 py-2 text-xs font-semibold text-espresso-600">
-                  Rol asignado: Miembro familiar
-                </span>
-                <input
-                  type="number"
-                  min={1}
-                  max={50}
-                  value={inviteMaxUses}
-                  onChange={(e) => setInviteMaxUses(Number(e.target.value) || 1)}
-                  className="w-24 rounded-xl border border-linen-300 bg-white px-3 py-2 text-sm"
-                  placeholder="Usos"
-                />
-              </div>
-              <button
-                type="submit"
-                className="w-full rounded-xl bg-terracotta-600 py-2.5 text-sm font-semibold text-white hover:bg-terracotta-700"
-              >
-                Generar código de invitación
-              </button>
-            </form>
+              Contraseña de administrador
+            </h3>
 
             {/* Exclusive Admin Master Password Change */}
             <form
@@ -369,54 +317,6 @@ export const AdminPanelView: React.FC = () => {
               </button>
             </form>
 
-            <div className="space-y-2">
-              {snapshot.invites.map((inv) => (
-                <div
-                  key={inv.code}
-                  className="flex items-center justify-between gap-2 rounded-2xl border border-linen-200 p-3"
-                >
-                  <div className="min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm font-bold text-espresso-900">
-                        {inv.code}
-                      </span>
-                      <span
-                        className={`rounded-full px-2 py-0.5 text-[10px] font-bold ${
-                          inv.active
-                            ? 'bg-olive-100 text-olive-700'
-                            : 'bg-stone-200 text-stone-600'
-                        }`}
-                      >
-                        {inv.active ? 'Activo' : 'Revocado'}
-                      </span>
-                    </div>
-                    <p className="text-xs text-espresso-500">
-                      {inv.label} · {inv.assignedRole === 'ADMIN' ? 'Admin' : 'Miembro'} ·{' '}
-                      {inv.uses}/{inv.maxUses} usos
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <button
-                      onClick={() => copyCode(inv.code)}
-                      className="rounded-lg p-2 text-espresso-600 hover:bg-linen-100"
-                      title="Copiar código"
-                    >
-                      {copiedCode === inv.code ? (
-                        <Check className="h-4 w-4 text-olive-600" />
-                      ) : (
-                        <Copy className="h-4 w-4" />
-                      )}
-                    </button>
-                    <button
-                      onClick={() => toggleInviteActive(inv.code)}
-                      className="rounded-lg border border-linen-300 px-2.5 py-1 text-xs font-semibold text-espresso-700 hover:bg-linen-100"
-                    >
-                      {inv.active ? 'Revocar' : 'Activar'}
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
           {/* Family Members Role & Account Control */}

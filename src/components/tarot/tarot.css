@@ -386,30 +386,51 @@
   animation: tarot-mist-drift 18s ease-in-out infinite alternate;
 }
 
-.tarot-scene { position: relative; }
+.tarot-scene {
+  --tarot-feather: clamp(12px, (100vw - 700px) * .1, 42px);
+  position: relative;
+  isolation: isolate;
+}
+
+.tarot-scene::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  box-shadow: inset 0 1px #f5d18a80, inset 0 -1px #f5d18a55;
+}
 
 .tarot-room-wing { display: none; }
 
 @media (min-width: 760px) {
+  .tarot-table {
+    background: transparent;
+  }
+
+  .tarot-reader, .tarot-table::after {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 var(--tarot-feather), #000 calc(100% - var(--tarot-feather)), transparent);
+    mask-image: linear-gradient(to right, transparent, #000 var(--tarot-feather), #000 calc(100% - var(--tarot-feather)), transparent);
+  }
+
   .tarot-room-wing {
     display: block;
     position: absolute;
     inset-block: 0;
-    width: max(0px, calc((100vw - 100%) / 2 - 9px));
+    width: calc((100vw - 100%) / 2 - 9px + var(--tarot-feather));
     pointer-events: none;
     overflow: hidden;
     background-image: url('./habitacion-laterales.webp');
-    background-size: 200% 103%;
-    background-position-y: bottom;
+    background-size: 200% 109%;
+    background-position-y: top;
   }
 
   .tarot-room-wing-west {
-    right: 100%;
+    right: calc(100% - var(--tarot-feather));
     background-position-x: left;
   }
 
   .tarot-room-wing-east {
-    left: 100%;
+    left: calc(100% - var(--tarot-feather));
     background-position-x: right;
   }
 
@@ -417,7 +438,18 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, #faebcc 0%, #fff5db38 12%, #fff5db25 84%, #e1e6d2 100%);
+    background:
+      linear-gradient(var(--tarot-wing-light), #fff7df46, transparent 58%),
+      linear-gradient(180deg, #faebccd9, #fff5db28 14%, transparent 62%, #1e130943 87%, #1e1309c4);
+  }
+
+  .tarot-room-wing-west { --tarot-wing-light: 90deg; }
+  .tarot-room-wing-east { --tarot-wing-light: 270deg; }
+
+  .tarot-scene::after {
+    inset-inline: calc((100% - 100vw) / 2 + 9px);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 12%, #000 88%, transparent);
   }
 }
 

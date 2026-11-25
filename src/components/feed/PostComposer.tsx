@@ -222,7 +222,7 @@ export const PostComposer: React.FC = () => {
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder={`¿Qué alegría quieres compartir hoy con los Nazco, ${currentUser.name.split(' ')[0]}? 💛`}
-              className="w-full resize-none rounded-2xl border border-cotton-300 bg-white/85 px-3.5 py-2.5 text-[15px] text-espresso-900 placeholder:text-espresso-500 focus:border-forest-700 focus:bg-white focus:outline-none"
+              className="liquid-chat-input w-full resize-none rounded-2xl px-3.5 py-2.5 text-[15px] text-espresso-900 placeholder:text-espresso-600 focus:outline-none"
             />
           </div>
         </div>

@@ -48,12 +48,12 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ open, title, onClose, 
           <div className="h-1.5 w-12 rounded-full bg-artisanal-500/50" />
         </div>
 
-        <div className="flex items-center justify-between border-b border-cotton-300/70 px-5 py-3.5">
-          <h3 className="font-editorial text-lg font-bold text-forest-800">{title}</h3>
+        <div className="flex items-center justify-between border-b border-white/55 px-5 py-3.5">
+          <h3 className="font-editorial text-lg font-bold text-forest-900">{title}</h3>
           <button
             type="button"
             onClick={onClose}
-            className="btn-yarn-press flex h-10 w-10 items-center justify-center rounded-full bg-cotton-200/80 text-espresso-700 hover:bg-cotton-300"
+            className="liquid-glass-pill btn-yarn-press flex h-10 w-10 items-center justify-center rounded-full text-espresso-800 hover:bg-white/70"
             aria-label="Cerrar panel"
           >
             <X className="h-5 w-5" />

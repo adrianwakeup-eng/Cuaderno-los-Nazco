@@ -33,23 +33,32 @@
 
   body {
     font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-    background-color: #f5ebdd;
+    background-color: #c99d3b;
     background-image:
-      radial-gradient(circle at 12% 8%, rgba(255, 245, 214, 0.72), transparent 44%),
-      radial-gradient(circle at 88% 12%, rgba(242, 196, 67, 0.2), transparent 46%),
-      radial-gradient(circle at 50% 94%, rgba(57, 139, 75, 0.14), transparent 48%),
-      url('/crochet/cotton-cream-weave.webp');
-    background-size: 384px 384px;
-    background-repeat: repeat;
-    color: #231a12;
+      linear-gradient(
+        135deg,
+        rgba(255, 246, 206, 0.24) 0%,
+        rgba(196, 146, 44, 0.08) 38%,
+        rgba(255, 236, 168, 0.20) 64%,
+        rgba(128, 86, 18, 0.22) 100%
+      ),
+      radial-gradient(circle at 16% 10%, rgba(255, 250, 224, 0.34), transparent 46%),
+      radial-gradient(circle at 86% 88%, rgba(120, 78, 16, 0.26), transparent 50%),
+      url('/textures/metallic-gold-bg.webp');
+    background-size: 100% 100%, 100% 100%, 100% 100%, 520px 520px;
+    background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+    background-attachment: fixed, fixed, fixed, scroll;
+    color: #1f160d;
     overflow-x: clip;
   }
 }
 
-/* Light performance mode */
+/* Light performance mode — preserves metallic gold aesthetic without heavy GPU blur */
 html[data-mode='LIGHT'] body {
-  background-image: none;
-  background-color: #f5ebdd;
+  background-image:
+    linear-gradient(145deg, rgba(247, 222, 152, 0.92), rgba(206, 162, 68, 0.95)),
+    url('/textures/metallic-gold-bg.webp');
+  background-size: 100% 100%, 520px 520px;
 }
 
 .font-editorial {
@@ -61,56 +70,69 @@ html[data-mode='LIGHT'] body {
   font-family: 'Dancing Script', 'Playfair Display', cursive;
 }
 
-/* ======================== TACTILE CROCHET & COTTON SURFACES ======================== */
+/* ======================== iOS LIQUID GLASS + ARTISANAL GOLD SURFACES ======================== */
 
-/* Natural artisanal cotton card with subtle stitched seam & 3D warmth */
+/* Translucent iOS Liquid Glass card preserving warm ivory & artisanal gold edges */
 .card-warm,
-.card-crochet {
+.card-crochet,
+.crochet-card {
   position: relative;
-  background-color: #fcf7ee;
-  background-image:
-    linear-gradient(160deg, rgba(255, 253, 248, 0.92) 0%, rgba(247, 238, 223, 0.86) 100%),
-    url('/crochet/cotton-cream-weave.webp');
-  background-size: 300px 300px;
-  border: 1.5px solid rgba(186, 146, 84, 0.45);
+  background-color: rgba(255, 251, 240, 0.44);
+  background-image: linear-gradient(
+    145deg,
+    rgba(255, 254, 249, 0.62) 0%,
+    rgba(255, 248, 230, 0.38) 52%,
+    rgba(255, 252, 242, 0.54) 100%
+  );
+  backdrop-filter: blur(22px) saturate(185%) brightness(1.06);
+  -webkit-backdrop-filter: blur(22px) saturate(185%) brightness(1.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.68);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.95),
-    inset 0 -2px 0 rgba(186, 146, 84, 0.18),
-    0 12px 28px -12px rgba(22, 77, 50, 0.16),
-    0 3px 10px -4px rgba(102, 72, 34, 0.12);
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.92),
+    inset 0 -1.5px 2px rgba(176, 126, 36, 0.22),
+    0 16px 38px -12px rgba(58, 38, 6, 0.30),
+    0 4px 12px -2px rgba(96, 66, 14, 0.14);
   transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease;
 }
 
 html[data-mode='IMMERSIVE_3D'][data-effects3d='on'] .card-warm:hover,
-html[data-mode='IMMERSIVE_3D'][data-effects3d='on'] .card-crochet:hover {
+html[data-mode='IMMERSIVE_3D'][data-effects3d='on'] .card-crochet:hover,
+html[data-mode='IMMERSIVE_3D'][data-effects3d='on'] .crochet-card:hover {
   transform: translateY(-2px);
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.98),
-    inset 0 -2px 0 rgba(186, 146, 84, 0.22),
-    0 18px 36px -14px rgba(22, 77, 50, 0.22),
-    0 6px 14px -4px rgba(186, 146, 84, 0.18);
+    inset 0 2px 1.5px rgba(255, 255, 255, 0.96),
+    inset 0 -1.5px 2px rgba(186, 138, 42, 0.28),
+    0 22px 44px -14px rgba(58, 38, 6, 0.36),
+    0 6px 16px -4px rgba(140, 96, 20, 0.20);
 }
 
 html[data-mode='LIGHT'] .card-warm,
-html[data-mode='LIGHT'] .card-crochet {
+html[data-mode='LIGHT'] .card-crochet,
+html[data-mode='LIGHT'] .crochet-card {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
   background-image: none;
-  background-color: #fffdf9;
-  box-shadow: 0 2px 8px rgba(35, 26, 18, 0.08);
+  background-color: rgba(255, 252, 245, 0.92);
+  box-shadow: 0 4px 12px rgba(58, 38, 6, 0.14);
 }
 
-/* Woven burlap/macrame stitched inner panel (Sala Familiar, Banner parchment, Plaque) */
+/* Warm Champagne Liquid Glass Panel (Sala Familiar, Welcome Banner, Incoming Call, Plaques) */
 .crochet-parchment {
   position: relative;
-  background-color: #f3e4c9;
-  background-image:
-    linear-gradient(155deg, rgba(255, 249, 236, 0.72), rgba(235, 212, 174, 0.78)),
-    url('/crochet/crochet-burlap-card.webp');
-  background-size: 170px 170px;
-  border: 2px solid #cfa96d;
+  background-color: rgba(255, 248, 228, 0.48);
+  background-image: linear-gradient(
+    145deg,
+    rgba(255, 253, 244, 0.66) 0%,
+    rgba(248, 228, 178, 0.40) 55%,
+    rgba(255, 248, 226, 0.56) 100%
+  );
+  backdrop-filter: blur(24px) saturate(195%) brightness(1.06);
+  -webkit-backdrop-filter: blur(24px) saturate(195%) brightness(1.06);
+  border: 1.5px solid rgba(255, 252, 238, 0.76);
   box-shadow:
-    inset 0 0 0 3px rgba(255, 250, 238, 0.78),
-    inset 0 2px 6px rgba(138, 97, 40, 0.16),
-    0 10px 24px -10px rgba(77, 52, 20, 0.28);
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.92),
+    inset 0 -2px 4px rgba(164, 114, 28, 0.20),
+    0 14px 32px -10px rgba(68, 44, 8, 0.30);
 }
 
 .crochet-parchment::after {
@@ -118,24 +140,28 @@ html[data-mode='LIGHT'] .card-crochet {
   position: absolute;
   inset: 5px;
   border-radius: inherit;
-  border: 1.5px dashed rgba(154, 116, 59, 0.65);
+  border: 1.5px dashed rgba(176, 130, 46, 0.48);
   pointer-events: none;
 }
 
-/* 3D Forest & Brazil Green Knitted Surface (Publicar, Bottom Nav, Call CTA, Header Ribbon) */
+/* Liquid Emerald Jewel Glass (Publicar, Call CTA, Primary Green Buttons) */
 .crochet-green-3d {
   position: relative;
-  background-color: #164d32;
-  background-image:
-    linear-gradient(180deg, rgba(57, 139, 75, 0.56) 0%, rgba(22, 77, 50, 0.88) 100%),
-    url('/crochet/crochet-green-knit.webp');
-  background-size: 132px 132px;
-  border: 2px solid #103a25;
+  background-color: rgba(18, 86, 52, 0.78);
+  background-image: linear-gradient(
+    155deg,
+    rgba(56, 152, 86, 0.80) 0%,
+    rgba(18, 82, 49, 0.88) 58%,
+    rgba(12, 58, 35, 0.92) 100%
+  );
+  backdrop-filter: blur(16px) saturate(185%);
+  -webkit-backdrop-filter: blur(16px) saturate(185%);
+  border: 1.5px solid rgba(190, 245, 206, 0.44);
   box-shadow:
-    inset 0 2px 2px rgba(172, 232, 185, 0.36),
-    inset 0 -3px 5px rgba(8, 32, 19, 0.62),
-    0 6px 0 #0f3823,
-    0 12px 22px -6px rgba(14, 52, 32, 0.45);
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.48),
+    inset 0 -3px 6px rgba(6, 30, 17, 0.55),
+    0 4px 0 rgba(11, 50, 30, 0.85),
+    0 12px 24px -6px rgba(10, 44, 26, 0.46);
 }
 
 .crochet-green-3d::after {
@@ -143,11 +169,11 @@ html[data-mode='LIGHT'] .card-crochet {
   position: absolute;
   inset: 3px;
   border-radius: inherit;
-  border: 1.5px dashed rgba(242, 196, 67, 0.55);
+  border: 1px dashed rgba(248, 214, 108, 0.48);
   pointer-events: none;
 }
 
-/* Flat green knit bar for mobile bottom nav (pinned fixed to bottom viewport) */
+/* Liquid Emerald Crystal Mobile Bottom Navigation Bar (pinned fixed to bottom viewport) */
 .crochet-nav-bar {
   position: fixed;
   bottom: 0;
@@ -159,41 +185,48 @@ html[data-mode='LIGHT'] .card-crochet {
   z-index: 40;
   transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
-  background-color: #164d32;
-  background-image:
-    linear-gradient(180deg, rgba(44, 118, 63, 0.76) 0%, rgba(16, 58, 37, 0.94) 100%),
-    url('/crochet/crochet-green-knit.webp');
-  background-size: 120px 120px;
-  border-top: 2px solid #398b4b;
+  background-color: rgba(16, 68, 42, 0.68);
+  background-image: linear-gradient(
+    180deg,
+    rgba(36, 118, 66, 0.66) 0%,
+    rgba(13, 56, 34, 0.84) 100%
+  );
+  backdrop-filter: blur(26px) saturate(195%);
+  -webkit-backdrop-filter: blur(26px) saturate(195%);
+  border-top: 1.5px solid rgba(255, 246, 202, 0.62);
   box-shadow:
-    inset 0 2px 0 rgba(242, 196, 67, 0.42),
-    0 -8px 26px rgba(12, 42, 26, 0.28);
+    inset 0 1.5px 1px rgba(255, 255, 255, 0.42),
+    0 -10px 30px rgba(26, 22, 8, 0.34);
 }
 
 .crochet-nav-bar::before {
   content: '';
   position: absolute;
   top: 4px;
-  left: 10px;
-  right: 10px;
-  border-top: 1.5px dashed rgba(242, 196, 67, 0.52);
+  left: 12px;
+  right: 12px;
+  border-top: 1px dashed rgba(252, 224, 122, 0.48);
   pointer-events: none;
 }
 
-/* 3D Brazilian Solar Yellow Knitted Pill (Active Nav Tab, Active Filter "Todo") */
+/* Liquid Solar Gold Jewel Glass Pill (Active Nav Tab, Active Filter "Todo") */
 .crochet-gold-3d {
   position: relative;
-  background-color: #f2c443;
-  background-image:
-    linear-gradient(180deg, rgba(255, 232, 134, 0.65) 0%, rgba(219, 166, 33, 0.78) 100%),
-    url('/crochet/crochet-gold-knit.webp');
-  background-size: 120px 120px;
-  border: 2px solid #c68c16;
+  background-color: rgba(244, 198, 68, 0.82);
+  background-image: linear-gradient(
+    155deg,
+    rgba(255, 242, 168, 0.88) 0%,
+    rgba(242, 194, 62, 0.82) 55%,
+    rgba(208, 152, 24, 0.88) 100%
+  );
+  backdrop-filter: blur(14px) saturate(190%);
+  -webkit-backdrop-filter: blur(14px) saturate(190%);
+  border: 1.5px solid rgba(255, 252, 226, 0.78);
   box-shadow:
-    inset 0 2px 2px rgba(255, 252, 232, 0.78),
-    inset 0 -3px 4px rgba(154, 102, 10, 0.42),
-    0 4px 0 #b27b11,
-    0 8px 16px -4px rgba(178, 123, 17, 0.38);
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.88),
+    inset 0 -3px 5px rgba(148, 96, 8, 0.36),
+    0 3px 0 rgba(164, 110, 12, 0.82),
+    0 10px 20px -4px rgba(132, 88, 10, 0.40);
 }
 
 .crochet-gold-3d::after {
@@ -201,64 +234,178 @@ html[data-mode='LIGHT'] .card-crochet {
   position: absolute;
   inset: 3px;
   border-radius: inherit;
-  border: 1.5px dashed rgba(138, 86, 8, 0.42);
+  border: 1px dashed rgba(138, 86, 8, 0.38);
   pointer-events: none;
 }
 
-/* 3D Ocean Blue Crochet Surface */
+/* Liquid Ocean Sapphire Glass Surface */
 .crochet-blue-3d {
   position: relative;
-  background-color: #16466c;
-  background-image:
-    linear-gradient(180deg, rgba(46, 112, 164, 0.55) 0%, rgba(15, 51, 80, 0.9) 100%),
-    url('/crochet/crochet-blue-knit.webp');
-  background-size: 128px 128px;
-  border: 2px solid #0f3350;
+  background-color: rgba(22, 70, 108, 0.78);
+  background-image: linear-gradient(
+    155deg,
+    rgba(52, 124, 178, 0.78) 0%,
+    rgba(16, 56, 88, 0.90) 100%
+  );
+  backdrop-filter: blur(16px) saturate(185%);
+  -webkit-backdrop-filter: blur(16px) saturate(185%);
+  border: 1.5px solid rgba(196, 232, 255, 0.45);
   box-shadow:
-    inset 0 2px 2px rgba(186, 224, 255, 0.32),
-    0 5px 0 #0d2b44,
-    0 10px 20px -6px rgba(15, 51, 80, 0.42);
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.44),
+    0 4px 0 rgba(12, 42, 68, 0.82),
+    0 10px 22px -6px rgba(12, 44, 70, 0.44);
 }
 
-/* Tactile wool squish press physics on buttons */
+/* Tactile squish press physics on buttons */
 .btn-yarn-press {
   transition: transform 0.14s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.14s ease, filter 0.16s ease;
 }
 
 .btn-yarn-press:active:not(:disabled) {
-  transform: translateY(3px) scale(0.96);
-  filter: brightness(0.97);
+  transform: translateY(2px) scale(0.96);
+  filter: brightness(0.98);
 }
 
-/* Artisanal cotton stationery surface for Messenger thread */
+/* ======================== iOS LIQUID GLASS MESSENGER CHATS ======================== */
+
+/* Outer chat shell: crystalline frosted frame letting metallic gold shine softly through */
+.liquid-chat-shell {
+  position: relative;
+  background: linear-gradient(
+    145deg,
+    rgba(255, 252, 242, 0.30) 0%,
+    rgba(255, 245, 218, 0.18) 55%,
+    rgba(255, 250, 236, 0.28) 100%
+  );
+  backdrop-filter: blur(18px) saturate(185%) brightness(1.04);
+  -webkit-backdrop-filter: blur(18px) saturate(185%) brightness(1.04);
+  border: 1.5px solid rgba(255, 255, 255, 0.70);
+  box-shadow:
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.88),
+    inset 0 -1.5px 2px rgba(176, 126, 36, 0.20),
+    0 20px 44px -14px rgba(56, 36, 6, 0.34);
+}
+
+/* Transparent frosted conversation list panel */
+.liquid-chat-sidebar {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 253, 246, 0.42) 0%,
+    rgba(255, 248, 228, 0.30) 100%
+  );
+  backdrop-filter: blur(22px) saturate(190%);
+  -webkit-backdrop-filter: blur(22px) saturate(190%);
+}
+
+/* Transparent liquid glass message thread canvas */
 .stationery-surface {
-  background-color: #f6ede0;
-  background-image:
-    linear-gradient(180deg, rgba(252, 247, 238, 0.88), rgba(245, 235, 221, 0.94)),
-    url('/crochet/cotton-cream-weave.webp');
-  background-size: 320px 320px;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 250, 236, 0.16) 0%,
+    rgba(255, 244, 214, 0.10) 50%,
+    rgba(255, 250, 236, 0.18) 100%
+  );
 }
 
-/* Artisanal header capsule */
+/* Floating iOS Liquid Glass chat header & composer bar */
+.liquid-chat-bar {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 253, 247, 0.54) 0%,
+    rgba(255, 248, 230, 0.40) 100%
+  );
+  backdrop-filter: blur(24px) saturate(195%) brightness(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(195%) brightness(1.05);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+}
+
+/* Translucent iOS Liquid Glass input pill */
+.liquid-chat-input {
+  background: rgba(255, 254, 250, 0.50);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  border: 1.5px solid rgba(255, 255, 255, 0.76);
+  box-shadow:
+    inset 0 1px 3px rgba(68, 44, 8, 0.08),
+    0 2px 8px rgba(68, 44, 8, 0.08);
+}
+
+.liquid-chat-input:focus {
+  background: rgba(255, 255, 255, 0.72);
+  border-color: rgba(22, 77, 50, 0.65);
+}
+
+/* Sent message bubble: Translucent Emerald iOS Liquid Glass */
+.liquid-bubble-mine {
+  background: linear-gradient(
+    145deg,
+    rgba(28, 124, 70, 0.72) 0%,
+    rgba(16, 76, 44, 0.80) 100%
+  );
+  backdrop-filter: blur(20px) saturate(190%);
+  -webkit-backdrop-filter: blur(20px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.44);
+  box-shadow:
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.48),
+    inset 0 -1px 1px rgba(8, 34, 18, 0.32),
+    0 8px 22px -6px rgba(10, 44, 24, 0.36);
+}
+
+/* Received message bubble: Pure Clear Frosted iOS Liquid Crystal */
+.liquid-bubble-other {
+  background: linear-gradient(
+    145deg,
+    rgba(255, 254, 250, 0.60) 0%,
+    rgba(255, 248, 232, 0.42) 100%
+  );
+  backdrop-filter: blur(22px) saturate(195%) brightness(1.06);
+  -webkit-backdrop-filter: blur(22px) saturate(195%) brightness(1.06);
+  border: 1px solid rgba(255, 255, 255, 0.80);
+  box-shadow:
+    inset 0 1.5px 1.5px rgba(255, 255, 255, 0.94),
+    inset 0 -1px 1px rgba(176, 126, 36, 0.16),
+    0 8px 22px -6px rgba(58, 38, 6, 0.24);
+}
+
+/* Reusable translucent liquid glass pill (badges, inputs, sub-cards) */
+.liquid-glass-pill {
+  background: rgba(255, 253, 246, 0.46);
+  backdrop-filter: blur(18px) saturate(185%);
+  -webkit-backdrop-filter: blur(18px) saturate(185%);
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.88),
+    0 4px 14px -4px rgba(58, 38, 6, 0.20);
+}
+
+/* Liquid Glass Top Header Bar */
 .header-crochet-shell {
-  background-color: rgba(252, 247, 238, 0.94);
-  background-image:
-    linear-gradient(180deg, rgba(255, 252, 244, 0.94), rgba(245, 235, 221, 0.92)),
-    url('/crochet/cotton-cream-weave.webp');
-  background-size: 280px 280px;
-  backdrop-filter: blur(14px);
-  border-bottom: 1.5px solid rgba(186, 146, 84, 0.42);
-  box-shadow: 0 8px 24px -14px rgba(22, 77, 50, 0.22);
+  background-color: rgba(255, 252, 244, 0.46);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 254, 248, 0.62) 0%,
+    rgba(255, 248, 230, 0.40) 100%
+  );
+  backdrop-filter: blur(26px) saturate(195%) brightness(1.05);
+  -webkit-backdrop-filter: blur(26px) saturate(195%) brightness(1.05);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.90),
+    0 10px 28px -10px rgba(64, 42, 6, 0.28);
 }
 
 /* Warm stitched ribbon / subtle legacy utility alias */
 .celestial-silk {
   position: relative;
-  background-color: #f3e4c9;
-  background-image:
-    linear-gradient(135deg, rgba(245, 235, 221, 0.72), rgba(242, 196, 67, 0.24), rgba(57, 139, 75, 0.18)),
-    url('/crochet/crochet-burlap-card.webp');
-  background-size: 180px 180px;
+  background-color: rgba(255, 248, 228, 0.48);
+  background-image: linear-gradient(
+    135deg,
+    rgba(255, 252, 242, 0.62),
+    rgba(242, 196, 67, 0.26),
+    rgba(57, 139, 75, 0.16)
+  );
+  backdrop-filter: blur(18px) saturate(185%);
+  -webkit-backdrop-filter: blur(18px) saturate(185%);
 }
 
 .bg-warm-love-gradient {

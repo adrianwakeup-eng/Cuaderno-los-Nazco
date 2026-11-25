@@ -212,7 +212,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 triggerFeedback('tap');
                 setDrawerOpen(true);
               }}
-              className="btn-yarn-press flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-artisanal-500/50 bg-cotton-50 text-forest-800 shadow-sm lg:hidden"
+              className="liquid-glass-pill btn-yarn-press flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-forest-900 lg:hidden"
               aria-label="Abrir menú lateral"
             >
               <Menu className="h-5 w-5" />

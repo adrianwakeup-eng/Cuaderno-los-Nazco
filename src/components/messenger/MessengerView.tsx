@@ -277,18 +277,20 @@ export const MessengerView: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-6xl">
-      <div className="card-crochet grid h-[calc(100dvh-165px)] min-h-[500px] grid-cols-1 overflow-hidden rounded-3xl md:h-[calc(100dvh-145px)] md:grid-cols-12">
-        {/* Left WhatsApp-Style Conversation List */}
+      <div className="liquid-chat-shell grid h-[calc(100dvh-165px)] min-h-[500px] grid-cols-1 overflow-hidden rounded-[30px] md:h-[calc(100dvh-145px)] md:grid-cols-12">
+        {/* Left iOS Liquid Glass Conversation List */}
         <aside
-          className={`flex flex-col border-r border-cotton-300/80 bg-cotton-50/70 md:col-span-5 lg:col-span-4 ${
+          className={`liquid-chat-sidebar flex flex-col border-r border-white/55 md:col-span-5 lg:col-span-4 ${
             mobileShowThread ? 'hidden md:flex' : 'flex'
           }`}
         >
-          <div className="space-y-2.5 border-b border-cotton-300/80 px-4 py-3.5">
+          <div className="space-y-2.5 border-b border-white/55 px-4 py-3.5">
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="font-editorial text-2xl font-bold text-forest-900">Mensajes</h2>
-                <p className="text-xs text-espresso-600">Chats privados y grupos familiares</p>
+                <p className="text-xs font-medium text-espresso-700">
+                  Chats privados y grupos familiares
+                </p>
               </div>
               <button
                 type="button"
@@ -305,12 +307,12 @@ export const MessengerView: React.FC = () => {
 
             {/* Search bar */}
             <div className="relative">
-              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-espresso-500" />
+              <Search className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-espresso-600" />
               <input
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar conversación o familiar…"
-                className="h-10 w-full rounded-full border border-cotton-300 bg-white pl-10 pr-4 text-xs text-espresso-900 focus:border-forest-700 focus:outline-none"
+                className="liquid-chat-input h-10 w-full rounded-full pl-10 pr-4 text-xs text-espresso-900 placeholder:text-espresso-600 focus:outline-none"
               />
             </div>
           </div>
@@ -333,10 +335,10 @@ export const MessengerView: React.FC = () => {
                     setActiveChatId(chat.id);
                     setMobileShowThread(true);
                   }}
-                  className={`mb-1 flex min-h-[64px] w-full items-center gap-3 rounded-2xl p-3 text-left transition ${
+                  className={`mb-1.5 flex min-h-[64px] w-full items-center gap-3 rounded-2xl p-3 text-left transition ${
                     isSelected
-                      ? 'border border-brazil-400 bg-brazil-50 shadow-sm'
-                      : 'hover:bg-white/80'
+                      ? 'liquid-glass-pill ring-1 ring-forest-700/25'
+                      : 'border border-transparent hover:border-white/50 hover:bg-white/30'
                   }`}
                 >
                   {meta.otherMember ? (
@@ -391,13 +393,13 @@ export const MessengerView: React.FC = () => {
         >
           {activeChat && activeMeta ? (
             <>
-              {/* Chat Header */}
-              <div className="flex items-center justify-between gap-2 border-b border-cotton-300/80 bg-white/90 px-3 py-3 backdrop-blur-md sm:px-4">
+              {/* Floating iOS Liquid Glass Chat Header */}
+              <div className="liquid-chat-bar flex items-center justify-between gap-2 border-b border-white/60 px-3 py-3 sm:px-4">
                 <div className="flex min-w-0 items-center gap-2.5">
                   <button
                     type="button"
                     onClick={() => setMobileShowThread(false)}
-                    className="btn-yarn-press flex h-10 w-10 items-center justify-center rounded-full text-forest-800 hover:bg-cotton-200 md:hidden"
+                    className="btn-yarn-press flex h-10 w-10 items-center justify-center rounded-full bg-white/35 text-forest-900 backdrop-blur-md hover:bg-white/55 md:hidden"
                     aria-label="Volver a conversaciones"
                   >
                     <ArrowLeft className="h-5 w-5" />
@@ -506,10 +508,10 @@ export const MessengerView: React.FC = () => {
                           triggerFeedback('heart');
                           setMsgReactions((prev) => ({ ...prev, [msg.id]: '❤️' }));
                         }}
-                        className={`relative max-w-[82%] rounded-2xl px-4 py-2.5 shadow-sm sm:max-w-[70%] ${
+                        className={`relative max-w-[82%] rounded-[22px] px-4 py-2.5 sm:max-w-[70%] ${
                           isMine
-                            ? 'rounded-br-sm bg-forest-700 text-white'
-                            : 'rounded-bl-sm border border-cotton-300 bg-white/95 text-espresso-900'
+                            ? 'liquid-bubble-mine rounded-br-[6px] text-white'
+                            : 'liquid-bubble-other rounded-bl-[6px] text-espresso-900'
                         }`}
                       >
                         {!isMine && activeChat.kind === 'GROUP' && (
@@ -612,13 +614,13 @@ export const MessengerView: React.FC = () => {
                 <div ref={endRef} />
               </div>
 
-              {/* Fixed Bottom Composer Bar (Virtual Keyboard Safe) */}
+              {/* Fixed iOS Liquid Glass Bottom Composer Bar (Virtual Keyboard Safe) */}
               <form
                 onSubmit={handleSend}
-                className="border-t border-cotton-300/80 bg-white/95 p-2.5 backdrop-blur-md sm:p-3.5"
+                className="liquid-chat-bar border-t border-white/60 p-2.5 sm:p-3.5"
               >
                 {replyQuote && (
-                  <div className="mb-2 flex items-center justify-between rounded-xl border-l-4 border-brazil-500 bg-brazil-50 px-3 py-1.5 text-xs text-forest-900">
+                  <div className="liquid-glass-pill mb-2 flex items-center justify-between rounded-xl border-l-4 border-l-forest-700 px-3 py-1.5 text-xs font-medium text-forest-900">
                     <span className="truncate">Respondiendo a: «{replyQuote}»</span>
                     <button
                       type="button"
@@ -631,7 +633,7 @@ export const MessengerView: React.FC = () => {
                 )}
 
                 {pendingAttachment && (
-                  <div className="mb-2 flex items-center justify-between rounded-2xl border border-cotton-300 bg-cotton-50 px-3 py-2">
+                  <div className="liquid-glass-pill mb-2 flex items-center justify-between rounded-2xl px-3 py-2">
                     <div className="flex items-center gap-2.5">
                       {pendingAttachment.previewUrl && (
                         <img
@@ -726,7 +728,7 @@ export const MessengerView: React.FC = () => {
                     value={draft}
                     onChange={(e) => handleDraftChange(e.target.value)}
                     placeholder="Mensaje…"
-                    className="h-11 min-w-0 flex-1 rounded-full border border-cotton-300 bg-cotton-50 px-4 text-sm text-espresso-900 placeholder:text-espresso-500 focus:border-forest-700 focus:bg-white focus:outline-none"
+                    className="liquid-chat-input h-11 min-w-0 flex-1 rounded-full px-4 text-sm text-espresso-900 placeholder:text-espresso-600 focus:outline-none"
                   />
                   {draft.trim() || pendingAttachment ? (
                     <button

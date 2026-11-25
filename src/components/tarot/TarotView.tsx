@@ -165,101 +165,114 @@ export function TarotView({ onBack }: { onBack: () => void }) {
   useEffect(() => () => narrationRef.current?.pause(), []);
 
   return (
-    <section className="tarot-room mx-auto max-w-2xl" aria-labelledby="tarot-title">
-      <div className="tarot-heading">
-        <button type="button" className="tarot-back" onClick={onBack}>
-          <ArrowLeft size={17} aria-hidden="true" /> Volver al muro
-        </button>
-        <h1 id="tarot-title" className="font-editorial"><MoonStar aria-hidden="true" /> Tarot del día</h1>
-        <p>Toca las tres cartas para descubrir tu lectura simbólica de hoy.</p>
-      </div>
-      <div className="tarot-table" data-revealing={revealed.length > 0} data-motion-video={readerPlaying}>
-        <img className="tarot-reader" src={reader} alt="El lector de tarot detrás de su mesa de cartas"
-          width={928} height={1152} fetchPriority="high" />
-        <img className="tarot-reader tarot-reader-hands" src={readerHands} alt=""
-          width={928} height={1152} decoding="async" aria-hidden="true" />
-        {!reducedMotion && (
-          <video ref={readerRef} className="tarot-reader tarot-reader-motion" data-playing={readerPlaying}
-            src={readerMotion} poster={readerHands} autoPlay muted loop playsInline preload="metadata"
-            onPlaying={() => setReaderPlaying(true)} onError={() => setReaderPlaying(false)}
-            aria-hidden="true" />
-        )}
-        {readerPlaying && !reducedMotion && <TarotPalmLights videoRef={readerRef} burst={lightBurst} />}
-        {!readerPlaying && revealed.length > 0 && (
-          <div className="tarot-light-show" key={revealed.length} aria-hidden="true">
-            <span className="tarot-light-rays" />
-            <span className="tarot-palm-glow tarot-palm-glow-left" />
-            <span className="tarot-palm-glow tarot-palm-glow-right" />
-          </div>
-        )}
-        <div className="tarot-deck">
-          {cards.map((card, index) => {
-            const isRevealed = revealed.includes(index);
-            return (
-              <button key={card.name} type="button" className="tarot-card" data-lifted={selectedIndex === index}
-                aria-label={isRevealed ? `${positions[index]}: ${card.name}. ${card.reading}` : `Revelar carta: ${positions[index]}`}
-                onClick={() => openCard(index)}>
-                <span className="tarot-card-flip" data-revealed={isRevealed} aria-hidden="true"
-                  ref={(node) => { tableCards.current[index] = node; }}>
-                  <span className="tarot-card-face tarot-card-back"><Sparkles /><span>Destino</span></span>
-                  <span className="tarot-card-face tarot-card-front">
-                    {isRevealed && <img src={getArtwork(card)} alt="" />}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
+    <>
+      <div className="tarot-sanctuary" aria-hidden="true">
+        <div className="tarot-sanctuary-mist" />
+        <div className="tarot-sanctuary-arch tarot-sanctuary-arch-west">
+          <MoonStar className="tarot-sanctuary-moon" />
+          <span className="tarot-sanctuary-spirit" />
+        </div>
+        <div className="tarot-sanctuary-arch tarot-sanctuary-arch-east">
+          <Sparkles className="tarot-sanctuary-moon" />
+          <span className="tarot-sanctuary-spirit" />
         </div>
       </div>
-      <div className="tarot-reading" aria-live="polite">
-        {cards.map((card, index) => revealed.includes(index) && (
-          <div key={card.name}>
-            <h2>{positions[index]} · {card.name}</h2>
-            <p>{card.reading}</p>
-            <p><strong>Consejo del lector:</strong> {card.action}</p>
-          </div>
-        ))}
-      </div>
-      <dialog ref={detailRef} className="tarot-detail" aria-label="Lectura de la carta"
-        onClose={() => {
-          stopNarration();
-          closingRef.current = false;
-          if (detailRef.current) {
-            delete detailRef.current.dataset.returning;
-            delete detailRef.current.dataset.visible;
-          }
-          setAudioMessage('');
-          setSelectedIndex(null);
-        }}
-        onCancel={(event) => { event.preventDefault(); returnToTable(); }}
-        onClick={(event) => { if (event.target === event.currentTarget) returnToTable(); }}>
-        {activeCard && selectedIndex !== null && (
-          <div className="tarot-detail-content">
-            <button type="button" className="tarot-detail-close" aria-label="Cerrar carta"
-              onClick={returnToTable}><X aria-hidden="true" size={23} /></button>
-            <button ref={previewRef} className="tarot-detail-card" type="button"
-              onClick={returnToTable} aria-label={`${activeCard.name}: volver a la mesa`}>
-              <img className="tarot-detail-art" src={getArtwork(activeCard)} alt="" />
-            </button>
-            <div className="tarot-detail-text">
-              <p>{positions[selectedIndex]}</p>
-              <h2 className="font-editorial">{activeCard.name}</h2>
-              <p>{activeCard.reading}</p>
-              <p><strong>Consejo del lector:</strong> {activeCard.action}</p>
-              <button type="button" className="tarot-listen" onClick={() => readCard(selectedIndex)}>
-                <Volume2 size={18} aria-hidden="true" /> Escuchar
-              </button>
-              {audioMessage && <p role="status">{audioMessage}</p>}
-              <button type="button" className="tarot-back tarot-return" onClick={returnToTable}>
-                <ArrowLeft size={17} aria-hidden="true" /> Volver a la mesa
-              </button>
+      <section className="tarot-room mx-auto max-w-2xl" aria-labelledby="tarot-title">
+        <div className="tarot-heading">
+          <button type="button" className="tarot-back" onClick={onBack}>
+            <ArrowLeft size={17} aria-hidden="true" /> Volver al muro
+          </button>
+          <h1 id="tarot-title" className="font-editorial"><MoonStar aria-hidden="true" /> Tarot del día</h1>
+          <p>Toca las tres cartas para descubrir tu lectura simbólica de hoy.</p>
+        </div>
+        <div className="tarot-table" data-revealing={revealed.length > 0} data-motion-video={readerPlaying}>
+          <img className="tarot-reader" src={reader} alt="El lector de tarot detrás de su mesa de cartas"
+            width={928} height={1152} fetchPriority="high" />
+          <img className="tarot-reader tarot-reader-hands" src={readerHands} alt=""
+            width={928} height={1152} decoding="async" aria-hidden="true" />
+          {!reducedMotion && (
+            <video ref={readerRef} className="tarot-reader tarot-reader-motion" data-playing={readerPlaying}
+              src={readerMotion} poster={readerHands} autoPlay muted loop playsInline preload="metadata"
+              onPlaying={() => setReaderPlaying(true)} onError={() => setReaderPlaying(false)}
+              aria-hidden="true" />
+          )}
+          {readerPlaying && !reducedMotion && <TarotPalmLights videoRef={readerRef} burst={lightBurst} />}
+          {!readerPlaying && revealed.length > 0 && (
+            <div className="tarot-light-show" key={revealed.length} aria-hidden="true">
+              <span className="tarot-light-rays" />
+              <span className="tarot-palm-glow tarot-palm-glow-left" />
+              <span className="tarot-palm-glow tarot-palm-glow-right" />
             </div>
+          )}
+          <div className="tarot-deck">
+            {cards.map((card, index) => {
+              const isRevealed = revealed.includes(index);
+              return (
+                <button key={card.name} type="button" className="tarot-card" data-lifted={selectedIndex === index}
+                  aria-label={isRevealed ? `${positions[index]}: ${card.name}. ${card.reading}` : `Revelar carta: ${positions[index]}`}
+                  onClick={() => openCard(index)}>
+                  <span className="tarot-card-flip" data-revealed={isRevealed} aria-hidden="true"
+                    ref={(node) => { tableCards.current[index] = node; }}>
+                    <span className="tarot-card-face tarot-card-back"><Sparkles /><span>Destino</span></span>
+                    <span className="tarot-card-face tarot-card-front">
+                      {isRevealed && <img src={getArtwork(card)} alt="" />}
+                    </span>
+                  </span>
+                </button>
+              );
+            })}
           </div>
-        )}
-      </dialog>
-      <p className="px-4 pb-3 pt-2 text-center text-xs text-[#f1d9a8]">
-        Ilustraciones de Pamela Colman Smith · Rider–Waite–Smith
-      </p>
-    </section>
+        </div>
+        <div className="tarot-reading" aria-live="polite">
+          {cards.map((card, index) => revealed.includes(index) && (
+            <div key={card.name}>
+              <h2>{positions[index]} · {card.name}</h2>
+              <p>{card.reading}</p>
+              <p><strong>Consejo del lector:</strong> {card.action}</p>
+            </div>
+          ))}
+        </div>
+        <dialog ref={detailRef} className="tarot-detail" aria-label="Lectura de la carta"
+          onClose={() => {
+            stopNarration();
+            closingRef.current = false;
+            if (detailRef.current) {
+              delete detailRef.current.dataset.returning;
+              delete detailRef.current.dataset.visible;
+            }
+            setAudioMessage('');
+            setSelectedIndex(null);
+          }}
+          onCancel={(event) => { event.preventDefault(); returnToTable(); }}
+          onClick={(event) => { if (event.target === event.currentTarget) returnToTable(); }}>
+          {activeCard && selectedIndex !== null && (
+            <div className="tarot-detail-content">
+              <button type="button" className="tarot-detail-close" aria-label="Cerrar carta"
+                onClick={returnToTable}><X aria-hidden="true" size={23} /></button>
+              <button ref={previewRef} className="tarot-detail-card" type="button"
+                onClick={returnToTable} aria-label={`${activeCard.name}: volver a la mesa`}>
+                <img className="tarot-detail-art" src={getArtwork(activeCard)} alt="" />
+              </button>
+              <div className="tarot-detail-text">
+                <p>{positions[selectedIndex]}</p>
+                <h2 className="font-editorial">{activeCard.name}</h2>
+                <p>{activeCard.reading}</p>
+                <p><strong>Consejo del lector:</strong> {activeCard.action}</p>
+                <button type="button" className="tarot-listen" onClick={() => readCard(selectedIndex)}>
+                  <Volume2 size={18} aria-hidden="true" /> Escuchar
+                </button>
+                {audioMessage && <p role="status">{audioMessage}</p>}
+                <button type="button" className="tarot-back tarot-return" onClick={returnToTable}>
+                  <ArrowLeft size={17} aria-hidden="true" /> Volver a la mesa
+                </button>
+              </div>
+            </div>
+          )}
+        </dialog>
+        <p className="px-4 pb-3 pt-2 text-center text-xs text-[#f1d9a8]">
+          Ilustraciones de Pamela Colman Smith · Rider–Waite–Smith
+        </p>
+      </section>
+    </>
   );
 }

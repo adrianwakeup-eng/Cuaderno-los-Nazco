@@ -535,3 +535,32 @@
 @media (prefers-reduced-motion: reduce) {
   .tarot-sanctuary::after { animation: none; }
 }
+
+@media (min-width: 760px) {
+  .tarot-room-wing-west::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset: 45.5% 0 auto;
+    height: 8%;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 61% 67%, #eaffed 0 1px, #4effb886 2px, transparent 7px),
+      radial-gradient(circle at 69% 81%, #fff9b7 0 1px, #dcff4b98 2px, transparent 8px),
+      radial-gradient(circle at 78% 62%, #fff2ff 0 1px, #dc73ff8a 2px, transparent 8px),
+      radial-gradient(circle at 86% 73%, #edfeff 0 1px, #73eaff94 2px, transparent 8px),
+      radial-gradient(circle at 94% 87%, #fff5d8 0 1px, #ff985a9c 2px, transparent 7px);
+    mix-blend-mode: screen;
+    animation: tarot-elixir-bubbles 3.6s ease-in-out infinite;
+  }
+}
+
+@keyframes tarot-elixir-bubbles {
+  0%, 100% { opacity: 0; transform: perspective(280px) translate3d(0, 9%, -20px); }
+  42% { opacity: .95; }
+  82% { opacity: .62; transform: perspective(280px) translate3d(0, -28%, 12px); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarot-room-wing-west::before { animation: none; opacity: .65; }
+}

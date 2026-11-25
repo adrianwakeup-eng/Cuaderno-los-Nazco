@@ -407,36 +407,38 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               </button>
             </div>
 
-            {/* Storage Mini Widget */}
-            <div className="card-crochet rounded-3xl p-4">
-              <div className="flex items-center justify-between text-xs font-bold text-forest-900">
-                <span className="flex items-center gap-1.5">
-                  <HardDrive className="h-4 w-4 text-brazil-500" />
-                  Álbum familiar
-                </span>
-                <span>{formatBytes(storageUsage.totalBytes)}</span>
-              </div>
-              <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-cotton-200 p-0.5">
-                <div
-                  className="h-full rounded-full bg-gradient-to-r from-solar-400 via-brazil-500 to-forest-700 transition-all"
-                  style={{
-                    width: `${Math.min(
-                      100,
-                      Math.max(
-                        12,
-                        Math.round(
-                          (storageUsage.totalBytes / Math.max(1, storageUsage.quotaBytes)) * 100
+            {/* Storage Mini Widget (Admin only) */}
+            {isAdmin && (
+              <div className="card-crochet rounded-3xl p-4">
+                <div className="flex items-center justify-between text-xs font-bold text-forest-900">
+                  <span className="flex items-center gap-1.5">
+                    <HardDrive className="h-4 w-4 text-brazil-500" />
+                    Álbum familiar
+                  </span>
+                  <span>{formatBytes(storageUsage.totalBytes)}</span>
+                </div>
+                <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-cotton-200 p-0.5">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-solar-400 via-brazil-500 to-forest-700 transition-all"
+                    style={{
+                      width: `${Math.min(
+                        100,
+                        Math.max(
+                          12,
+                          Math.round(
+                            (storageUsage.totalBytes / Math.max(1, storageUsage.quotaBytes)) * 100
+                          )
                         )
-                      )
-                    )}%`,
-                  }}
-                />
+                      )}%`,
+                    }}
+                  />
+                </div>
+                <p className="mt-2 flex items-center gap-1 text-[11px] font-medium text-espresso-600">
+                  <Sparkles className="h-3 w-3 text-solar-500" />
+                  Nube familiar: {snapshot.cloudOwnerEmail}
+                </p>
               </div>
-              <p className="mt-2 flex items-center gap-1 text-[11px] font-medium text-espresso-600">
-                <Sparkles className="h-3 w-3 text-solar-500" />
-                Nube familiar: {snapshot.cloudOwnerEmail}
-              </p>
-            </div>
+            )}
           </aside>
         )}
 

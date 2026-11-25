@@ -35,12 +35,8 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
   const [registering, setRegistering] = useState(false);
   const [regName, setRegName] = useState('');
   const [regUsername, setRegUsername] = useState('');
-  const [regEmail, setRegEmail] = useState('');
-  const [regRel, setRegRel] = useState('Familiar');
   const [regLocation, setRegLocation] = useState('');
   const [regPassword, setRegPassword] = useState('');
-  const [regConfirm, setRegConfirm] = useState('');
-  const [regInvite, setRegInvite] = useState('NAZCO-FAM-2026');
   const [regAvatarUrl, setRegAvatarUrl] = useState<string | undefined>(undefined);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -108,7 +104,7 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
               )}
 
               <form onSubmit={handleLoginSubmit} className="mt-7 space-y-3.5">
-                {/* Correo familiar */}
+                {/* Usuario o correo familiar */}
                 <div className="relative">
                   <User
                     strokeWidth={1.75}
@@ -121,7 +117,7 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
                       setIdentifier(e.target.value);
                       setError(null);
                     }}
-                    placeholder="Correo familiar"
+                    placeholder="Usuario o correo familiar"
                     autoComplete="username"
                     className="h-[48px] w-full rounded-[14px] border border-[#D4D2DF] bg-[#F7F6FA] pl-11 pr-4 text-[14.5px] text-[#1D1B29] placeholder:text-[#767387] transition focus:border-[#763CD2] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#763CD2]/15"
                   />
@@ -263,22 +259,17 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
                 onSubmit={async (e) => {
                   e.preventDefault();
                   if (registering) return;
-                  if (regPassword !== regConfirm) {
-                    setError('Las contraseñas no coinciden.');
-                    return;
-                  }
                   setError(null);
                   setRegistering(true);
                   const res = await registerMember({
                     name: regName,
                     username: regUsername,
-                    email: regEmail,
+                    email: '',
                     password: regPassword,
-                    relationship: regRel,
+                    relationship: 'Familiar',
                     location: regLocation,
                     bio: '',
                     avatarUrl: regAvatarUrl,
-                    inviteCode: regInvite,
                   });
                   setRegistering(false);
                   if (!res.ok) setError(res.error ?? 'No se pudo crear la cuenta.');
@@ -334,52 +325,21 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
                 </div>
 
                 <input
-                  type="email"
-                  value={regEmail}
-                  onChange={(e) => setRegEmail(e.target.value)}
-                  placeholder="Correo familiar (ej. lucas@familia.com)"
+                  value={regLocation}
+                  onChange={(e) => setRegLocation(e.target.value)}
+                  placeholder="Ciudad / País (opcional)"
                   className="w-full rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2.5 text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none"
                 />
-
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    value={regRel}
-                    onChange={(e) => setRegRel(e.target.value)}
-                    placeholder="Parentesco"
-                    className="rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2.5 text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none"
-                  />
-                  <input
-                    value={regLocation}
-                    onChange={(e) => setRegLocation(e.target.value)}
-                    placeholder="Ciudad / País"
-                    className="rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2.5 text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <input
-                    required
-                    type="password"
-                    value={regPassword}
-                    onChange={(e) => setRegPassword(e.target.value)}
-                    placeholder="Contraseña *"
-                    className="rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2.5 text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none"
-                  />
-                  <input
-                    required
-                    type="password"
-                    value={regConfirm}
-                    onChange={(e) => setRegConfirm(e.target.value)}
-                    placeholder="Repetir clave *"
-                    className="rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2.5 text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none"
-                  />
-                </div>
-
                 <input
-                  value={regInvite}
-                  onChange={(e) => setRegInvite(e.target.value.toUpperCase())}
-                  placeholder="Código familiar"
-                  className="w-full rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2 font-mono text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none"
+                  required
+                  type="password"
+                  minLength={4}
+                  maxLength={128}
+                  autoComplete="new-password"
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                  placeholder="Contraseña *"
+                  className="w-full rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2.5 text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none"
                 />
 
                 <button

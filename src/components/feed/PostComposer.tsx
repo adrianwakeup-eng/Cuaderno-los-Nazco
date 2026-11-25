@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import { useAppearance } from '../../context/AppearanceContext';
 import { useFamilyApp } from '../../context/FamilyAppContext';
+import { uploadAttachmentWithProgress } from '../../services/firebaseSyncService';
 import { formatBytes, formatDuration, prepareAndStoreAttachment } from '../../services/storageService';
 import type { FamilyPost, MediaAttachment, MediaKind } from '../../types';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
@@ -35,6 +36,7 @@ export const PostComposer: React.FC = () => {
   const [isAnnouncement, setIsAnnouncement] = useState(false);
   const [pinned, setPinned] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [cloudUploadPct, setCloudUploadPct] = useState<number | null>(null);
 
   const [recording, setRecording] = useState(false);
   const [recordSeconds, setRecordSeconds] = useState(0);
@@ -138,8 +140,9 @@ export const PostComposer: React.FC = () => {
     recorderRef.current?.stop();
   };
 
-  const handlePublish = (e: React.FormEvent) => {
+  const handlePublish = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (uploading) return;
     if (!text.trim() && attachments.length === 0 && !selectedStickerId) return;
 
     let category: FamilyPost['category'] = 'UPDATE';
@@ -147,6 +150,39 @@ export const PostComposer: React.FC = () => {
     else if (attachments.some((a) => a.kind === 'VIDEO')) category = 'VIDEO';
     else if (attachments.some((a) => a.kind === 'AUDIO')) category = 'VOICE';
     else if (attachments.some((a) => a.kind === 'IMAGE')) category = 'PHOTO';
+
+    let readyAttachments = attachments;
+    const needsChunkUpload = attachments.some(
+      (a) => !a.cloudMediaId && (a.kind === 'VIDEO' || a.sizeBytes > 480_000)
+    );
+
+    if (needsChunkUpload) {
+      setUploading(true);
+      setCloudUploadPct(5);
+      try {
+        const uploaded: MediaAttachment[] = [];
+        for (const att of attachments) {
+          if (!att.cloudMediaId && (att.kind === 'VIDEO' || att.sizeBytes > 480_000)) {
+            const doneAtt = await uploadAttachmentWithProgress(att, currentUser.id, (pct) =>
+              setCloudUploadPct(pct)
+            );
+            uploaded.push(doneAtt);
+          } else {
+            uploaded.push(att);
+          }
+        }
+        readyAttachments = uploaded;
+      } catch (err) {
+        console.error('Video cloud upload error:', err);
+        notify('Error subiendo el video a la nube. Verifica tu conexión e intenta de nuevo.', 'warning');
+        setUploading(false);
+        setCloudUploadPct(null);
+        return;
+      } finally {
+        setUploading(false);
+        setCloudUploadPct(null);
+      }
+    }
 
     triggerFeedback('chime');
     createPost({
@@ -160,7 +196,7 @@ export const PostComposer: React.FC = () => {
               ? 'Video familiar compartido'
               : 'Nota de voz familiar'),
       category,
-      attachments,
+      attachments: readyAttachments,
       stickerId: selectedStickerId,
       pinned: isAdmin && pinned,
     });
@@ -427,6 +463,22 @@ export const PostComposer: React.FC = () => {
           )}
         </div>
 
+        {/* Cloud Video Upload Progress Bar */}
+        {cloudUploadPct !== null && (
+          <div className="mt-3 rounded-2xl border border-brazil-200 bg-brazil-50 px-4 py-3">
+            <div className="flex items-center justify-between text-xs font-extrabold text-forest-900">
+              <span>🎬 Subiendo video a la nube familiar…</span>
+              <span>{cloudUploadPct}%</span>
+            </div>
+            <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-white">
+              <div
+                className="h-full rounded-full bg-gradient-to-r from-forest-700 via-brazil-500 to-solar-400 transition-all duration-200"
+                style={{ width: `${cloudUploadPct}%` }}
+              />
+            </div>
+          </div>
+        )}
+
         {/* Golden Yarn Cord Divider + Centered 3D Forest-Green Crochet "Publicar" Button */}
         <div className="relative mt-3.5 flex items-center justify-center pt-1">
           <div className="pointer-events-none absolute inset-x-0 top-1/2 h-0.5 -translate-y-1/2 border-t-2 border-dashed border-artisanal-500/65" />
@@ -436,7 +488,11 @@ export const PostComposer: React.FC = () => {
             className="crochet-green-3d btn-yarn-press relative z-10 inline-flex min-h-[46px] items-center justify-center gap-2 rounded-full px-8 text-sm font-extrabold text-white disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Send className="h-4 w-4 text-solar-300" />
-            {uploading ? 'Procesando…' : 'Publicar'}
+            {cloudUploadPct !== null
+              ? `Subiendo ${cloudUploadPct}%…`
+              : uploading
+                ? 'Procesando…'
+                : 'Publicar'}
           </button>
         </div>
       </form>

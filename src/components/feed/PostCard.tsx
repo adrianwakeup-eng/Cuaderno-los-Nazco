@@ -64,19 +64,22 @@ const CloudVideoPlayer: React.FC<{ att: MediaAttachment }> = ({ att }) => {
   }, [att.id, att.previewUrl, att.cloudMediaId, att.storageKey]);
 
   if (videoUrl) {
+    const safariSrc = videoUrl.startsWith('blob:') ? `${videoUrl}#t=0.001` : videoUrl;
     return (
       <div
         className="photo-heirloom-frame overflow-hidden rounded-2xl bg-black"
         onClick={(e) => e.stopPropagation()}
       >
         <video
-          src={videoUrl}
+          key={safariSrc}
           poster={att.posterUrl}
           controls
           playsInline
           preload="metadata"
           className="max-h-[460px] w-full bg-black"
-        />
+        >
+          <source src={safariSrc} type={att.mimeType || 'video/mp4'} />
+        </video>
         <div className="flex items-center justify-between bg-forest-900/95 px-3.5 py-2 text-[11px] font-semibold text-cotton-50">
           <span className="truncate">
             🎬 {att.fileName}

@@ -101,7 +101,8 @@ async function resolveBlobFromAttachment(att: MediaAttachment): Promise<Blob | n
 async function uploadChunkedMediaToCloud(
   blob: Blob,
   att: MediaAttachment,
-  authorId: string
+  authorId: string,
+  onProgress?: (pct: number) => void
 ): Promise<string> {
   await ensureFirebaseSession();
   const mediaId = att.cloudMediaId || `cmed_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
@@ -112,13 +113,20 @@ async function uploadChunkedMediaToCloud(
 
   // Upload chunks in parallel batches of 4 for fast & reliable mobile uploads
   const batchSize = 4;
+  let uploaded = 0;
+  onProgress?.(5);
   for (let i = 0; i < chunkCount; i += batchSize) {
     const tasks: Promise<void>[] = [];
     for (let j = i; j < Math.min(chunkCount, i + batchSize); j++) {
       const slice = bytes.subarray(j * RAW_CHUNK_BYTES, Math.min(bytes.length, (j + 1) * RAW_CHUNK_BYTES));
       const b64 = uint8ToBase64(slice);
       const chunkRef = doc(firestoreDb, `${FAMILY_ROOT}/media/${mediaId}/chunks`, String(j));
-      tasks.push(setDoc(chunkRef, { index: j, data: b64 }));
+      tasks.push(
+        setDoc(chunkRef, { index: j, data: b64 }).then(() => {
+          uploaded += 1;
+          onProgress?.(Math.min(95, Math.round((uploaded / chunkCount) * 95)));
+        })
+      );
     }
     await Promise.all(tasks);
   }
@@ -133,8 +141,32 @@ async function uploadChunkedMediaToCloud(
     authorId,
     createdAt: new Date().toISOString(),
   });
+  onProgress?.(100);
 
   return mediaId;
+}
+
+/** Public helper so PostComposer can upload video/audio chunks with live % progress BEFORE publishing */
+export async function uploadAttachmentWithProgress(
+  att: MediaAttachment,
+  authorId: string,
+  onProgress?: (pct: number) => void
+): Promise<MediaAttachment> {
+  if (att.cloudMediaId) {
+    onProgress?.(100);
+    return att;
+  }
+  const blob = await resolveBlobFromAttachment(att);
+  if (!blob) return att;
+  if (att.kind !== 'VIDEO' && blob.size <= MAX_INLINE_BYTES) {
+    onProgress?.(100);
+    return att;
+  }
+  const cloudMediaId = await uploadChunkedMediaToCloud(blob, att, authorId, onProgress);
+  return {
+    ...att,
+    cloudMediaId,
+  };
 }
 
 const activeDownloads = new Map<string, Promise<string | null>>();

@@ -2,7 +2,7 @@
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Only caches public shell assets, crochet textures, icons, and offline fallback page.
  */
-const CACHE_NAME = 'los-nazco-shell-v4';
+const CACHE_NAME = 'los-nazco-shell-v5';
 const STATIC_ASSETS = [
   './offline.html',
   './manifest.webmanifest',

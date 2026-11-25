@@ -145,6 +145,7 @@ interface FamilyAppContextValue {
   toggleInviteActive: (code: string) => void;
   setMemberStatus: (memberId: string, status: AccountStatus) => Promise<void>;
   refreshMembers: () => Promise<void>;
+  deleteRetiredMember: (memberId: string) => Promise<void>;
   updateFeatureFlags: (patch: Partial<FeatureFlags>) => void;
   exportBackupJson: () => void;
   importBackupJson: (rawJson: string) => void;
@@ -1563,6 +1564,15 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     commitSnapshot((prev) => ({ ...prev, members }));
   }, [currentUser?.role, commitSnapshot]);
 
+  const deleteRetiredMember = useCallback(async (memberId: string) => {
+    if (currentUser?.role !== 'ADMIN') throw new Error('admin-required');
+    await firebaseSyncService.deleteRetiredMember(memberId);
+    commitSnapshot((prev) => ({
+      ...prev,
+      members: prev.members.filter((member) => member.id !== memberId),
+    }));
+  }, [currentUser?.role, commitSnapshot]);
+
   const setMemberStatus = useCallback(
     async (memberId: string, status: AccountStatus) => {
       if (currentUser?.role !== 'ADMIN' || memberId === 'nazco_adrian') return;
@@ -1690,6 +1700,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     toggleInviteActive,
     setMemberStatus,
     refreshMembers,
+    deleteRetiredMember,
     updateFeatureFlags,
     exportBackupJson,
     importBackupJson,

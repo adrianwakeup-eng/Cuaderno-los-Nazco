@@ -1,3 +1,11 @@
+import { deleteApp, initializeApp } from 'firebase/app';
+import {
+  browserPopupRedirectResolver,
+  GoogleAuthProvider,
+  initializeAuth,
+  inMemoryPersistence,
+  signInWithPopup,
+} from 'firebase/auth';
 import {
   collection,
   deleteDoc,
@@ -5,6 +13,7 @@ import {
   getDoc,
   getDocs,
   getDocsFromServer,
+  getFirestore,
   runTransaction,
   onSnapshot,
   setDoc,
@@ -24,7 +33,7 @@ import type {
   FeatureFlags,
   MediaAttachment,
 } from '../types';
-import { ensureFirebaseSession, firestoreDb } from './firebaseClient';
+import { ensureFirebaseSession, firebaseApp, firestoreDb } from './firebaseClient';
 import { getMediaBlob, getMediaBlobUrl, saveMediaBlob } from './storageService';
 
 const FAMILY_ROOT = 'families/los_nazco';
@@ -523,6 +532,32 @@ export const firebaseSyncService = {
   ): Promise<void> {
     if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
     await updateDoc(doc(firestoreDb, `${FAMILY_ROOT}/members`, memberId), fields);
+  },
+
+  async deleteRetiredMember(memberId: string): Promise<void> {
+    if (memberId === 'nazco_adrian') throw new Error('protected-member');
+
+    // Verify the owner without replacing the application's regular session.
+    const adminApp = initializeApp(firebaseApp.options, 'member-deletion');
+    try {
+      const auth = initializeAuth(adminApp, { persistence: inMemoryPersistence });
+      const provider = new GoogleAuthProvider();
+      provider.setCustomParameters({ prompt: 'select_account' });
+      await signInWithPopup(auth, provider, browserPopupRedirectResolver);
+
+      const db = getFirestore(adminApp);
+      const ref = doc(db, `${FAMILY_ROOT}/members`, memberId);
+      await runTransaction(db, async (tx) => {
+        const member = await tx.get(ref);
+        if (!member.exists()) return;
+        if (member.data().role !== 'MEMBER' || member.data().status !== 'DISABLED') {
+          throw new Error('member-not-retired');
+        }
+        tx.delete(ref);
+      });
+    } finally {
+      await deleteApp(adminApp);
+    }
   },
 
   async setMemberAccess(memberId: string, status: FamilyMember['status']): Promise<void> {

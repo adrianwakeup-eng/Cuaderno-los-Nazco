@@ -34,6 +34,7 @@ export const AdminPanelView: React.FC = () => {
     toggleInviteActive,
     setMemberStatus,
     refreshMembers,
+    deleteRetiredMember,
     openProfile,
     togglePinPost,
     toggleFeaturePost,
@@ -106,6 +107,30 @@ export const AdminPanelView: React.FC = () => {
       notify(removing ? 'Acceso eliminado.' : 'Acceso restaurado.', 'success');
     } catch {
       notify('La nube no confirmó el cambio. Actualiza la lista e inténtalo de nuevo.', 'warning');
+    } finally {
+      setSavingMemberId(null);
+    }
+  };
+
+  const removeAccount = async (member: (typeof snapshot.members)[number]) => {
+    if (!window.confirm(`¿Eliminar definitivamente el perfil de ${member.name}? No se podrá restaurar. Sus publicaciones y mensajes se conservarán. Confirma con tu cuenta de Google de administrador.`)) return;
+    setSavingMemberId(member.id);
+    try {
+      await deleteRetiredMember(member.id);
+      notify('Perfil eliminado definitivamente.', 'success');
+    } catch (error) {
+      const code = (error as { code?: string }).code;
+      const message = (error as Error).message;
+      if (code === 'auth/popup-closed-by-user' || code === 'auth/cancelled-popup-request') return;
+      if (code === 'auth/operation-not-allowed' || code === 'auth/unauthorized-domain') {
+        notify('Firebase debe habilitar el inicio de sesión con Google y autorizar este dominio.', 'warning');
+      } else if (code === 'permission-denied') {
+        notify('Firebase requiere la cuenta de Google verificada del administrador.', 'warning');
+      } else if (message === 'member-not-retired') {
+        notify('Solo se pueden eliminar perfiles retirados. Actualiza la lista.', 'warning');
+      } else {
+        notify('No se confirmó la eliminación. Actualiza la lista antes de reintentar.', 'warning');
+      }
     } finally {
       setSavingMemberId(null);
     }
@@ -457,7 +482,7 @@ export const AdminPanelView: React.FC = () => {
                       </p>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span
                       className={`rounded-xl px-3 py-1.5 text-xs font-bold ${
                         member.role === 'ADMIN'
@@ -484,6 +509,18 @@ export const AdminPanelView: React.FC = () => {
                       {showRemoved ? <RotateCcw className="h-3.5 w-3.5" /> : <Trash2 className="h-3.5 w-3.5" />}
                       {savingMemberId === member.id ? 'Guardando…' : showRemoved ? 'Restaurar acceso' : 'Eliminar acceso'}
                     </button>
+                    {showRemoved && (
+                      <button
+                        type="button"
+                        onClick={() => void removeAccount(member)}
+                        disabled={savingMemberId !== null || refreshingMembers}
+                        className="flex items-center gap-1 rounded-xl bg-red-100 px-3 py-1.5 text-xs font-bold text-red-800 disabled:opacity-50"
+                        aria-label={`Eliminar definitivamente a ${member.name}`}
+                      >
+                        <Trash2 className="h-3.5 w-3.5" />
+                        Eliminar definitivamente
+                      </button>
+                    )}
                   </div>
                 </div>
               ))}

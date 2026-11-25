@@ -2,6 +2,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 're
 import { ArrowLeft, MoonStar, Sparkles, Volume2, X } from 'lucide-react';
 import reader from './lector.webp';
 import readerHands from './lector-manos.webp';
+import readerMotion from './lector-animado.mp4';
 import './tarot.css';
 
 const deck = [
@@ -45,6 +46,20 @@ export function TarotView({ onBack }: { onBack: () => void }) {
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [audioMessage, setAudioMessage] = useState('');
+  const [readerPlaying, setReaderPlaying] = useState(false);
+  const [reducedMotion, setReducedMotion] = useState(() =>
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  );
+
+  useEffect(() => {
+    const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => {
+      setReducedMotion(preference.matches);
+      if (preference.matches) setReaderPlaying(false);
+    };
+    preference.addEventListener('change', update);
+    return () => preference.removeEventListener('change', update);
+  }, []);
   const detailRef = useRef<HTMLDialogElement>(null);
   const previewRef = useRef<HTMLButtonElement>(null);
   const tableCards = useRef<(HTMLSpanElement | null)[]>([]);
@@ -144,11 +159,17 @@ export function TarotView({ onBack }: { onBack: () => void }) {
         <h1 id="tarot-title" className="font-editorial"><MoonStar aria-hidden="true" /> Tarot del día</h1>
         <p>Toca las tres cartas para descubrir tu lectura simbólica de hoy.</p>
       </div>
-      <div className="tarot-table" data-revealing={revealed.length > 0}>
+      <div className="tarot-table" data-revealing={revealed.length > 0} data-motion-video={readerPlaying}>
         <img className="tarot-reader" src={reader} alt="El lector de tarot detrás de su mesa de cartas"
           width={928} height={1152} fetchPriority="high" />
         <img className="tarot-reader tarot-reader-hands" src={readerHands} alt=""
           width={928} height={1152} decoding="async" aria-hidden="true" />
+        {!reducedMotion && (
+          <video className="tarot-reader tarot-reader-motion" data-playing={readerPlaying}
+            src={readerMotion} poster={readerHands} autoPlay muted loop playsInline preload="metadata"
+            onPlaying={() => setReaderPlaying(true)} onError={() => setReaderPlaying(false)}
+            aria-hidden="true" />
+        )}
         {revealed.length > 0 && (
           <div className="tarot-light-show" key={revealed.length} aria-hidden="true">
             <span className="tarot-light-rays" />

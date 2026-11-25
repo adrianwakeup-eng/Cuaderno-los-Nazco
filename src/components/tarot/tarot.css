@@ -68,6 +68,14 @@
 
 .tarot-table[data-revealing='true'] .tarot-reader-hands { opacity: 1; }
 
+.tarot-reader-motion {
+  opacity: 0;
+  transition: opacity 400ms ease;
+  pointer-events: none;
+}
+
+.tarot-reader-motion[data-playing='true'] { opacity: 1; }
+
 .tarot-light-show {
   position: absolute;
   inset: 0;
@@ -79,7 +87,7 @@
   position: absolute;
   inset: 0;
 
-  filter: blur(7px);
+  filter: blur(12px);
   mix-blend-mode: screen;
 }
 
@@ -87,8 +95,10 @@
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, transparent 69%, #fff1adcc 79%, #f3ba4d48 100%);
+  background: linear-gradient(180deg, transparent 69%, #fff1ad70 79%, #f3ba4d25 100%);
 }
+
+.tarot-table[data-motion-video='true'] .tarot-light-rays { opacity: .22; }
 
 .tarot-light-rays::before { clip-path: polygon(23% 76%, 27% 76%, 62% 100%, 19% 100%); }
 .tarot-light-rays::after { clip-path: polygon(74% 76%, 78% 76%, 81% 100%, 36% 100%); }
@@ -292,7 +302,7 @@
 @media (prefers-reduced-motion: reduce) {
   .tarot-room, .tarot-card, .tarot-light-show, .tarot-detail-content { animation: none; }
   .tarot-light-show { opacity: .55; }
-  .tarot-reader-hands { transition: none; }
+  .tarot-reader-hands, .tarot-reader-motion { transition: none; }
   .tarot-card-flip { transition: none; }
   .tarot-detail::backdrop { animation: none; }
 }

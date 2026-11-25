@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import tarotMageMotion from '../tarot/mago-tarot.mp4';
+import tarotMageMotion from '../tarot/mago-loop.webp';
 import tarotMagePoster from '../tarot/lector-manos.webp';
 import {
   Bell,
@@ -268,14 +268,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               onClick={() => handleSelectSection('TAROT')}
               aria-current={activeSection === 'TAROT' ? 'page' : undefined}
               className="tarot-mage-button"
+              aria-label="Tarot del día"
             >
-              {animateTarotButton ? (
-                <video src={tarotMageMotion} poster={tarotMagePoster} autoPlay muted loop playsInline
-                  className="tarot-mage-portrait" aria-hidden="true" disablePictureInPicture />
-              ) : (
-                <img src={tarotMagePoster} className="tarot-mage-portrait" alt="" />
-              )}
-              <span className="tarot-mage-label">Tarot del día</span>
+              <img src={animateTarotButton ? tarotMageMotion : tarotMagePoster}
+                className="tarot-mage-portrait" alt="" />
             </button>
           </div>
 

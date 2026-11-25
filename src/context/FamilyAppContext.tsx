@@ -110,10 +110,10 @@ interface FamilyAppContextValue {
     patch: Partial<
       Pick<
         FamilyMember,
-        'name' | 'username' | 'email' | 'password' | 'relationship' | 'location' | 'bio' | 'avatarUrl' | 'coverUrl'
+        'name' | 'username' | 'email' | 'password' | 'relationship' | 'location' | 'bio' | 'avatarUrl' | 'coverUrl' | 'avatarColor'
       >
     >
-  ) => void;
+  ) => Promise<boolean>;
   updateAdminPassword: (currentPassword: string, newPassword: string) => { ok: boolean; error?: string };
 
   // Feed
@@ -886,25 +886,30 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   );
 
   const updateMemberProfile = useCallback(
-    (
+    async (
       memberId: string,
       patch: Partial<
         Pick<
           FamilyMember,
-          'name' | 'username' | 'email' | 'password' | 'relationship' | 'location' | 'bio' | 'avatarUrl' | 'coverUrl'
+          'name' | 'username' | 'email' | 'password' | 'relationship' | 'location' | 'bio' | 'avatarUrl' | 'coverUrl' | 'avatarColor'
         >
       >
     ) => {
-      commitSnapshot((prev) => {
-        const nextMembers = prev.members.map((m) => (m.id === memberId ? { ...m, ...patch } : m));
-        return { ...prev, members: nextMembers };
-      });
-      void firebaseSyncService.updateMemberFields(memberId, patch).then(
-        () => notify('Perfil actualizado en la nube.', 'success'),
-        () => notify('El perfil cambió en este dispositivo. La nube no confirmó el cambio.', 'warning')
-      );
+      if (!currentUser || (currentUser.role !== 'ADMIN' && currentUser.id !== memberId)) return false;
+      try {
+        await firebaseSyncService.updateMemberFields(memberId, patch);
+        commitSnapshot((prev) => ({
+          ...prev,
+          members: prev.members.map((member) => member.id === memberId ? { ...member, ...patch } : member),
+        }));
+        notify('Perfil actualizado en la nube.', 'success');
+        return true;
+      } catch {
+        notify('La nube no confirmó los cambios del perfil.', 'warning');
+        return false;
+      }
     },
-    [commitSnapshot, notify]
+    [currentUser, commitSnapshot, notify]
   );
 
   const updateAdminPassword = useCallback(

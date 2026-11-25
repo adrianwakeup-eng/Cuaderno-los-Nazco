@@ -519,7 +519,7 @@ export const firebaseSyncService = {
   async updateMemberFields(
     memberId: string,
     fields: Partial<Pick<FamilyMember, 'presence' | 'lastActiveAt' | 'name' | 'username' | 'email' | 'password' |
-      'relationship' | 'location' | 'bio' | 'avatarUrl' | 'coverUrl'>>
+      'relationship' | 'location' | 'bio' | 'avatarUrl' | 'coverUrl' | 'avatarColor'>>
   ): Promise<void> {
     if (!(await ensureFirebaseSession())) throw new Error('firebase-auth-unavailable');
     await updateDoc(doc(firestoreDb, `${FAMILY_ROOT}/members`, memberId), fields);

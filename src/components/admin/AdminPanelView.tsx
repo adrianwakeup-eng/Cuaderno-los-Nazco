@@ -34,6 +34,7 @@ export const AdminPanelView: React.FC = () => {
     toggleInviteActive,
     setMemberStatus,
     refreshMembers,
+    openProfile,
     togglePinPost,
     toggleFeaturePost,
     toggleHidePost,
@@ -466,6 +467,13 @@ export const AdminPanelView: React.FC = () => {
                     >
                       {member.role === 'ADMIN' ? '👑 Administrador único' : `Miembro (@${member.username})`}
                     </span>
+                    <button
+                      type="button"
+                      onClick={() => openProfile(member.id)}
+                      className="rounded-xl bg-olive-100 px-3 py-1.5 text-xs font-semibold text-olive-700"
+                    >
+                      Editar perfil
+                    </button>
                     <button
                       type="button"
                       onClick={() => void changeMemberAccess(member)}

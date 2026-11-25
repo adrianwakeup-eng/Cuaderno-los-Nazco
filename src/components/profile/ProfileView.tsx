@@ -25,6 +25,7 @@ export const ProfileView: React.FC = () => {
     startCall,
     updateMemberProfile,
     logout,
+    notify,
   } = useFamilyApp();
 
   if (!currentUser) return null;
@@ -43,6 +44,11 @@ export const ProfileView: React.FC = () => {
   const canEdit = isOwn || currentUser.role === 'ADMIN';
 
   const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [username, setUsername] = useState(member.username);
+  const [avatarColor, setAvatarColor] = useState(member.avatarColor);
+  const [removeAvatar, setRemoveAvatar] = useState(false);
+  const [removeCover, setRemoveCover] = useState(false);
   const [name, setName] = useState(member.name);
   const [relationship, setRelationship] = useState(member.relationship);
   const [location, setLocation] = useState(member.location);
@@ -73,6 +79,10 @@ export const ProfileView: React.FC = () => {
   };
 
   const openEditor = () => {
+    setUsername(member.username);
+    setAvatarColor(member.avatarColor);
+    setRemoveAvatar(false);
+    setRemoveCover(false);
     setName(member.name);
     setRelationship(member.relationship);
     setLocation(member.location);
@@ -270,51 +280,98 @@ export const ProfileView: React.FC = () => {
           {/* Inline Profile Editor */}
           {editing && (
             <form
-              onSubmit={(e) => {
+              onSubmit={async (e) => {
                 e.preventDefault();
-                updateMemberProfile(member.id, {
+                if (saving) return;
+                const nextUsername = username.trim().toLowerCase();
+                const nextEmail = email.trim().toLowerCase();
+                if (snapshot.members.some((other) => other.id !== member.id &&
+                    (other.username.toLowerCase() === nextUsername || other.email.toLowerCase() === nextEmail))) {
+                  notify('Ese usuario o correo ya pertenece a otro familiar.', 'warning');
+                  return;
+                }
+                if (password.trim() && password.trim().length < 4) {
+                  notify('La contraseña debe tener al menos 4 caracteres.', 'warning');
+                  return;
+                }
+                setSaving(true);
+                const saved = await updateMemberProfile(member.id, {
                   name: name.trim() || member.name,
-                  relationship: relationship.trim() || member.relationship,
-                  location: location.trim() || member.location,
-                  email: email.trim() || member.email,
+                  username: nextUsername,
+                  relationship: relationship.trim(),
+                  location: location.trim(),
+                  email: nextEmail,
                   bio: bio.trim(),
-                  ...(password.trim().length >= 4 ? { password: password.trim() } : {}),
+                  avatarColor,
+                  ...(removeAvatar ? { avatarUrl: '' } : {}),
+                  ...(removeCover ? { coverUrl: '' } : {}),
+                  ...(member.role !== 'ADMIN' && password.trim() ? { password: password.trim() } : {}),
                 });
-                setPassword('');
-                setEditing(false);
+                setSaving(false);
+                if (saved) {
+                  setPassword('');
+                  setEditing(false);
+                }
               }}
               className="mt-5 space-y-3 rounded-2xl border border-linen-300 bg-linen-50 p-4"
             >
               <p className="text-sm font-bold text-espresso-900">Editar información del perfil</p>
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <input
-                  value={name}
+                  maxLength={100} value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="Nombre"
                   className="rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm"
                 />
                 <input
-                  value={relationship}
+                  maxLength={80} value={relationship}
                   onChange={(e) => setRelationship(e.target.value)}
                   placeholder="Parentesco"
                   className="rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm"
                 />
                 <input
-                  value={location}
+                  maxLength={100} value={location}
                   onChange={(e) => setLocation(e.target.value)}
                   placeholder="Ciudad / País"
                   className="rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm"
                 />
                 <input
+                  type="email"
+                  required
+                  maxLength={160}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Correo"
                   className="rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm"
                 />
               </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <label className="flex flex-col gap-1 text-sm font-semibold">
+                  Nombre de usuario
+                  <input required minLength={3} maxLength={50} pattern="[^\s]+" value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="rounded-xl border border-linen-300 bg-white px-3.5 py-2" />
+                </label>
+                <label className="flex items-center gap-2 text-sm font-semibold">
+                  Color del avatar
+                  <input type="color" value={avatarColor} onChange={(e) => setAvatarColor(e.target.value)} />
+                </label>
+                {member.avatarUrl && (
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" checked={removeAvatar} onChange={(e) => setRemoveAvatar(e.target.checked)} />
+                    Quitar foto de perfil
+                  </label>
+                )}
+                {member.coverUrl && (
+                  <label className="flex items-center gap-2 text-sm">
+                    <input type="checkbox" checked={removeCover} onChange={(e) => setRemoveCover(e.target.checked)} />
+                    Quitar portada
+                  </label>
+                )}
+              </div>
               <textarea
                 rows={2}
-                value={bio}
+                maxLength={500} value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Biografía familiar"
                 className="w-full rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm"
@@ -322,7 +379,7 @@ export const ProfileView: React.FC = () => {
               {member.role !== 'ADMIN' && (
                 <input
                   type="password"
-                  value={password}
+                  maxLength={128} value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Nueva contraseña personal (opcional, mín. 4 caracteres)"
                   className="w-full rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm"
@@ -338,9 +395,10 @@ export const ProfileView: React.FC = () => {
                 </button>
                 <button
                   type="submit"
+                  disabled={saving}
                   className="rounded-xl bg-terracotta-600 px-5 py-2 text-xs font-semibold text-white hover:bg-terracotta-700"
                 >
-                  Guardar cambios
+                  {saving ? 'Guardando…' : 'Guardar cambios'}
                 </button>
               </div>
             </form>

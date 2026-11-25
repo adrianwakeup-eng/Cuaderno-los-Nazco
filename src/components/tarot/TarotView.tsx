@@ -3,6 +3,7 @@ import { ArrowLeft, MoonStar, Sparkles, Volume2, X } from 'lucide-react';
 import reader from './lector.webp';
 import readerHands from './lector-manos.webp';
 import readerMotion from './lector-bucle.mp4';
+import { TarotPalmLights } from './TarotPalmLights';
 import './tarot.css';
 
 const deck = [
@@ -21,6 +22,10 @@ const deck = [
 ];
 
 const artworkFiles = import.meta.glob<string>('./cartas/*.webp', {
+  eager: true, import: 'default', query: '?url',
+});
+
+const narrationFiles = import.meta.glob<string>('./voz/*.mp3', {
   eager: true, import: 'default', query: '?url',
 });
 
@@ -46,6 +51,8 @@ export function TarotView({ onBack }: { onBack: () => void }) {
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [audioMessage, setAudioMessage] = useState('');
+  const readerRef = useRef<HTMLVideoElement>(null);
+  const [lightBurst, setLightBurst] = useState(0);
   const [readerPlaying, setReaderPlaying] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(() =>
     window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -60,6 +67,7 @@ export function TarotView({ onBack }: { onBack: () => void }) {
     preference.addEventListener('change', update);
     return () => preference.removeEventListener('change', update);
   }, []);
+  const narrationRef = useRef<HTMLAudioElement | null>(null);
   const detailRef = useRef<HTMLDialogElement>(null);
   const previewRef = useRef<HTMLButtonElement>(null);
   const tableCards = useRef<(HTMLSpanElement | null)[]>([]);
@@ -67,37 +75,33 @@ export function TarotView({ onBack }: { onBack: () => void }) {
   const closingRef = useRef(false);
   const activeCard = selectedIndex === null ? null : cards[selectedIndex];
 
+  const stopNarration = () => {
+    narrationRef.current?.pause();
+    narrationRef.current = null;
+  };
+
   const readCard = (index: number) => {
-    const card = cards[index];
-    if (!('speechSynthesis' in window) || !('SpeechSynthesisUtterance' in window)) {
-      setAudioMessage('Este navegador no admite la lectura en voz alta.');
+    stopNarration();
+    const track = narrationFiles[`./voz/${cards[index].artwork}.mp3`];
+    if (!track) {
+      setAudioMessage('La narración de esta carta no está disponible.');
       return;
     }
-    window.speechSynthesis.cancel();
-    const narration = new SpeechSynthesisUtterance(
-      `${positions[index]}. ${card.name}. ${card.reading} Mi consejo. ${card.action}`
-    );
-    const voices = window.speechSynthesis.getVoices();
-    const spanish = voices.filter((voice) => /^es(?:[-_]|$)/i.test(voice.lang));
-    const voice = spanish.find((item) => /natural|premium|enhanced|mejorada/i.test(item.name))
-      ?? spanish.find((item) => /^es[-_](MX|US)$/i.test(item.lang)) ?? spanish[0];
-    if (voice) narration.voice = voice;
-    narration.lang = voice?.lang ?? 'es-MX';
-    narration.rate = .89;
-    narration.onstart = () => setAudioMessage('');
-    narration.onerror = (event) => {
-      if (event.error !== 'interrupted' && event.error !== 'canceled') {
+    const audio = new Audio(track);
+    narrationRef.current = audio;
+    setAudioMessage('');
+    void audio.play().catch(() => {
+      if (narrationRef.current === audio) {
         setAudioMessage('No se pudo reproducir la voz. Puedes volver a pulsar Escuchar.');
       }
-    };
-    setAudioMessage('');
-    window.speechSynthesis.speak(narration);
+    });
   };
 
   const openCard = (index: number) => {
     if (selectedIndex !== null) return;
     setRevealed((current) => current.includes(index) ? current : [...current, index]);
     setSelectedIndex(index);
+    setLightBurst((value) => value + 1);
     readCard(index);
   };
 
@@ -140,7 +144,7 @@ export function TarotView({ onBack }: { onBack: () => void }) {
     const dialog = detailRef.current;
     const preview = previewRef.current;
     if (!dialog?.open || !preview || selectedIndex === null || closingRef.current) return;
-    window.speechSynthesis?.cancel();
+    stopNarration();
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const startingTransform = getComputedStyle(preview).transform;
     flightRef.current?.cancel();
@@ -158,10 +162,7 @@ export function TarotView({ onBack }: { onBack: () => void }) {
     flight.finished.then(() => dialog.close(), () => {});
   };
 
-  useEffect(() => {
-    window.speechSynthesis?.getVoices();
-    return () => window.speechSynthesis?.cancel();
-  }, []);
+  useEffect(() => () => narrationRef.current?.pause(), []);
 
   return (
     <section className="tarot-room mx-auto max-w-2xl" aria-labelledby="tarot-title">
@@ -178,12 +179,13 @@ export function TarotView({ onBack }: { onBack: () => void }) {
         <img className="tarot-reader tarot-reader-hands" src={readerHands} alt=""
           width={928} height={1152} decoding="async" aria-hidden="true" />
         {!reducedMotion && (
-          <video className="tarot-reader tarot-reader-motion" data-playing={readerPlaying}
+          <video ref={readerRef} className="tarot-reader tarot-reader-motion" data-playing={readerPlaying}
             src={readerMotion} poster={readerHands} autoPlay muted loop playsInline preload="metadata"
             onPlaying={() => setReaderPlaying(true)} onError={() => setReaderPlaying(false)}
             aria-hidden="true" />
         )}
-        {revealed.length > 0 && (
+        {readerPlaying && !reducedMotion && <TarotPalmLights videoRef={readerRef} burst={lightBurst} />}
+        {!readerPlaying && revealed.length > 0 && (
           <div className="tarot-light-show" key={revealed.length} aria-hidden="true">
             <span className="tarot-light-rays" />
             <span className="tarot-palm-glow tarot-palm-glow-left" />
@@ -220,7 +222,7 @@ export function TarotView({ onBack }: { onBack: () => void }) {
       </div>
       <dialog ref={detailRef} className="tarot-detail" aria-label="Lectura de la carta"
         onClose={() => {
-          window.speechSynthesis?.cancel();
+          stopNarration();
           closingRef.current = false;
           if (detailRef.current) {
             delete detailRef.current.dataset.returning;

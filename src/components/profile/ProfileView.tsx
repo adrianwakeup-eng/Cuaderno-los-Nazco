@@ -47,7 +47,10 @@ export const ProfileView: React.FC = () => {
   const [relationship, setRelationship] = useState(member.relationship);
   const [location, setLocation] = useState(member.location);
   const [email, setEmail] = useState(member.email);
-  const [bio, setBio] = useState(member.bio);
+  const displayBio = /^Feliz de estar en Cuaderno los Nazco\s*💛?$/iu.test(member.bio.trim())
+    ? 'Feliz de estar en Cuaderno Social de la Familia 💛'
+    : member.bio;
+  const [bio, setBio] = useState(displayBio);
   const [password, setPassword] = useState('');
 
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
@@ -74,7 +77,7 @@ export const ProfileView: React.FC = () => {
     setRelationship(member.relationship);
     setLocation(member.location);
     setEmail(member.email);
-    setBio(member.bio);
+    setBio(displayBio);
     setPassword('');
     setEditing(true);
   };
@@ -250,7 +253,7 @@ export const ProfileView: React.FC = () => {
               )}
             </div>
 
-            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-espresso-700">{member.bio}</p>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-espresso-700">{displayBio}</p>
 
             <div className="mt-3 flex flex-wrap gap-4 text-xs font-medium text-espresso-500">
               <span className="inline-flex items-center gap-1">

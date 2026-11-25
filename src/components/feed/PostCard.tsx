@@ -439,7 +439,7 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
                       src={att.previewUrl}
                       alt={att.fileName}
                       loading="lazy"
-                      className="max-h-[440px] w-full object-cover transition duration-300 group-hover:scale-[1.015]"
+                      className="max-h-[540px] w-full object-cover transition duration-300 group-hover:scale-[1.015]"
                     />
                   </button>
                 );

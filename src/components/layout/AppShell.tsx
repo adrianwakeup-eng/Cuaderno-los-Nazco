@@ -22,8 +22,6 @@ import { formatBytes } from '../../services/storageService';
 import type { AppSection } from '../../types';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
 import {
-  BrazilianCrochetThrow,
-  CrochetButterfly,
   CrochetSunflower,
   MacrameRosetteHanging,
   TropicalCanopyLights,
@@ -175,24 +173,6 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             }}
           >
             <GiantRealisticSunflower className="w-60 2xl:w-72" />
-          </div>
-
-          <div
-            className="pointer-events-none fixed bottom-0 right-0 z-10 hidden xl:block"
-            style={{
-              transform: `translate3d(${parallax.x * -8}px, ${parallax.y * 6}px, 0)`,
-              transition: 'transform 0.25s ease-out',
-            }}
-          >
-            <div className="relative">
-              <CrochetSunflower className="absolute -left-6 bottom-28 h-16 w-16 animate-float-gentle" />
-              <CrochetSunflower className="absolute left-8 bottom-36 h-20 w-20 animate-leaf-sway" />
-              <BrazilianCrochetThrow className="w-48" />
-            </div>
-          </div>
-
-          <div className="pointer-events-none fixed right-6 top-24 z-10 hidden lg:block">
-            <CrochetButterfly className="h-9 w-9 opacity-85" />
           </div>
         </>
       )}
@@ -349,9 +329,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         </div>
       </header>
 
-      {/* ================= MAIN ADAPTIVE LAYOUT (PHONE / TABLET / DESKTOP 3-COL) ================= */}
+      {/* ================= MAIN ADAPTIVE LAYOUT (PHONE / TABLET / WIDE DESKTOP 2-COL) ================= */}
       <div
-        className={`relative z-20 mx-auto max-w-[1380px] px-2.5 pt-3.5 sm:px-5 sm:pt-5 ${
+        className={`relative z-20 mx-auto max-w-[1520px] px-2.5 pt-3.5 sm:px-5 sm:pt-5 ${
           showSidebars ? 'grid grid-cols-1 gap-5 md:grid-cols-12' : ''
         }`}
       >
@@ -453,55 +433,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               </button>
             </div>
 
-            {/* Storage Mini Widget (Admin only) */}
-            {isAdmin && (
-              <div className="card-crochet rounded-3xl p-4">
-                <div className="flex items-center justify-between text-xs font-bold text-forest-900">
-                  <span className="flex items-center gap-1.5">
-                    <HardDrive className="h-4 w-4 text-brazil-500" />
-                    Álbum familiar
-                  </span>
-                  <span>{formatBytes(storageUsage.totalBytes)}</span>
-                </div>
-                <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-cotton-200 p-0.5">
-                  <div
-                    className="h-full rounded-full bg-gradient-to-r from-solar-400 via-brazil-500 to-forest-700 transition-all"
-                    style={{
-                      width: `${Math.min(
-                        100,
-                        Math.max(
-                          12,
-                          Math.round(
-                            (storageUsage.totalBytes / Math.max(1, storageUsage.quotaBytes)) * 100
-                          )
-                        )
-                      )}%`,
-                    }}
-                  />
-                </div>
-                <p className="mt-2 flex items-center gap-1 text-[11px] font-medium text-espresso-600">
-                  <Sparkles className="h-3 w-3 text-solar-500" />
-                  Nube familiar: {snapshot.cloudOwnerEmail}
-                </p>
-              </div>
-            )}
-          </aside>
-        )}
-
-        {/* CENTER MAIN WORKSPACE */}
-        <main
-          className={
-            showSidebars
-              ? 'md:col-span-8 lg:col-span-6'
-              : 'w-full'
-          }
-        >
-          {children}
-        </main>
-
-        {/* RIGHT COLUMN (Desktop Feed: Familia Conectada) */}
-        {showSidebars && (
-          <aside className="hidden space-y-4 lg:col-span-3 lg:block">
+            {/* Familia conectada (placed cleanly in Left Sidebar so Muro posts expand wide on PC) */}
             <div className="card-crochet rounded-3xl p-4 sm:p-5">
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="flex items-center gap-2 text-sm font-extrabold text-forest-900">
@@ -573,8 +505,52 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                   ))}
               </div>
             </div>
+
+            {/* Storage Mini Widget (Admin only) */}
+            {isAdmin && (
+              <div className="card-crochet rounded-3xl p-4">
+                <div className="flex items-center justify-between text-xs font-bold text-forest-900">
+                  <span className="flex items-center gap-1.5">
+                    <HardDrive className="h-4 w-4 text-brazil-500" />
+                    Álbum familiar
+                  </span>
+                  <span>{formatBytes(storageUsage.totalBytes)}</span>
+                </div>
+                <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-cotton-200 p-0.5">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-solar-400 via-brazil-500 to-forest-700 transition-all"
+                    style={{
+                      width: `${Math.min(
+                        100,
+                        Math.max(
+                          12,
+                          Math.round(
+                            (storageUsage.totalBytes / Math.max(1, storageUsage.quotaBytes)) * 100
+                          )
+                        )
+                      )}%`,
+                    }}
+                  />
+                </div>
+                <p className="mt-2 flex items-center gap-1 text-[11px] font-medium text-espresso-600">
+                  <Sparkles className="h-3 w-3 text-solar-500" />
+                  Nube familiar: {snapshot.cloudOwnerEmail}
+                </p>
+              </div>
+            )}
           </aside>
         )}
+
+        {/* WIDE MAIN WORKSPACE (Elongated Wall Posts on PC) */}
+        <main
+          className={
+            showSidebars
+              ? 'md:col-span-8 lg:col-span-9'
+              : 'w-full'
+          }
+        >
+          {children}
+        </main>
       </div>
 
       {/* ================= PERMANENT MOBILE & TABLET-PORTRAIT GREEN CROCHET BOTTOM NAV ================= */}

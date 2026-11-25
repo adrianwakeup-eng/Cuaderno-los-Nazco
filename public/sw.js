@@ -2,7 +2,7 @@
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Handles Web Push notifications for incoming calls & messages even when app is closed.
  */
-const CACHE_NAME = 'los-nazco-shell-v6';
+const CACHE_NAME = 'los-nazco-shell-v7';
 const STATIC_ASSETS = [
   './offline.html',
   './manifest.webmanifest',

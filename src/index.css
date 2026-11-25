@@ -145,9 +145,15 @@ html[data-mode='LIGHT'] .card-crochet {
   pointer-events: none;
 }
 
-/* Flat green knit bar for mobile bottom nav (without tall 3D drop offset) */
+/* Flat green knit bar for mobile bottom nav (pinned fixed to bottom viewport) */
 .crochet-nav-bar {
-  position: relative;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  transform: translate3d(0, 0, 0);
+  -webkit-transform: translate3d(0, 0, 0);
   background-color: #164d32;
   background-image:
     linear-gradient(180deg, rgba(44, 118, 63, 0.76) 0%, rgba(16, 58, 37, 0.94) 100%),

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
+  Edit3,
   EyeOff,
   Megaphone,
   MessageCircle,
@@ -223,6 +224,7 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
     toggleReaction,
     togglePinPost,
     toggleHidePost,
+    updatePostText,
     deletePost,
     openProfile,
     notify,
@@ -237,6 +239,8 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
   const [demoVoicePlaying, setDemoVoicePlaying] = useState(false);
   const [optionsOpen, setOptionsOpen] = useState(false);
   const [doubleTapHeart, setDoubleTapHeart] = useState(false);
+  const [editingText, setEditingText] = useState(false);
+  const [editDraft, setEditDraft] = useState(post.text);
 
   const lastTapRef = useRef<number>(0);
   const lightboxTouchY = useRef<number | null>(null);
@@ -404,10 +408,43 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
           </div>
         </div>
 
-        {/* Post Copy */}
-        <p className="mt-3.5 whitespace-pre-wrap text-[15px] leading-relaxed text-espresso-900">
-          {post.text}
-        </p>
+        {/* Post Copy (or Inline Editor for Ghost Admin / Author) */}
+        {editingText ? (
+          <div className="mt-3.5 space-y-2" onClick={(e) => e.stopPropagation()}>
+            <textarea
+              value={editDraft}
+              onChange={(e) => setEditDraft(e.target.value)}
+              rows={3}
+              className="w-full rounded-2xl border border-amber-300 bg-white/95 p-3 text-sm text-espresso-900 focus:border-forest-700 focus:outline-none"
+            />
+            <div className="flex items-center justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  setEditDraft(post.text);
+                  setEditingText(false);
+                }}
+                className="rounded-full border border-cotton-300 bg-white px-3.5 py-1.5 text-xs font-bold text-espresso-700"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  updatePostText(post.id, editDraft);
+                  setEditingText(false);
+                }}
+                className="crochet-green-3d rounded-full px-4 py-1.5 text-xs font-bold text-white"
+              >
+                Guardar cambio
+              </button>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-3.5 whitespace-pre-wrap text-[15px] leading-relaxed text-espresso-900">
+            {post.text}
+          </p>
+        )}
 
         {/* Sticker / Animated GIF */}
         {post.stickerId && (
@@ -536,6 +573,21 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
             <Share2 className="h-4 w-4 text-brazil-600" />
             Compartir recuerdo
           </button>
+
+          {canDelete && (
+            <button
+              type="button"
+              onClick={() => {
+                setEditDraft(post.text);
+                setEditingText(true);
+                setOptionsOpen(false);
+              }}
+              className="btn-yarn-press flex min-h-[48px] w-full items-center gap-3 rounded-2xl border border-cotton-300 bg-white px-4 text-sm font-bold text-forest-900"
+            >
+              <Edit3 className="h-4 w-4 text-forest-700" />
+              Editar publicación
+            </button>
+          )}
 
           {isAdmin && (
             <>

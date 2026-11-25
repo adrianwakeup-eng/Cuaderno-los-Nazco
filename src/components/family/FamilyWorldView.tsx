@@ -568,7 +568,7 @@ export const FamilyWorldView: React.FC = () => {
   const pinElsRef = useRef<Map<string, HTMLButtonElement>>(new Map());
 
   const activeMembers = useMemo(
-    () => snapshot.members.filter((m) => m.status === 'ACTIVE'),
+    () => snapshot.members.filter((m) => m.status === 'ACTIVE' && m.role !== 'ADMIN'),
     [snapshot.members]
   );
 

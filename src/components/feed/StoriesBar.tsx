@@ -85,7 +85,8 @@ export const StoriesBar: React.FC = () => {
 
   if (!currentUser) return null;
 
-  const activeMembers = snapshot.members.filter((m) => m.status === 'ACTIVE');
+  const isGhostAdmin = currentUser.role === 'ADMIN';
+  const activeMembers = snapshot.members.filter((m) => m.status === 'ACTIVE' && m.role !== 'ADMIN');
 
   const openMemberStory = (memberId: string) => {
     triggerFeedback('tap');
@@ -93,7 +94,8 @@ export const StoriesBar: React.FC = () => {
     if (idx >= 0) {
       setViewerIndex(idx);
       const target = stories[idx];
-      if (!target.viewedBy.includes(currentUser.id)) {
+      // Ghost Admin never records "viewedBy" when inspecting family stories
+      if (!isGhostAdmin && !target.viewedBy.includes(currentUser.id)) {
         const updated = { ...target, viewedBy: [...target.viewedBy, currentUser.id] };
         setLocalStories((prev) => prev.map((st) => (st.id === target.id ? updated : st)));
         publishCloudStory(updated);
@@ -146,7 +148,8 @@ export const StoriesBar: React.FC = () => {
       {/* Horizontal Touch-Scrollable Stories Row with Crochet Circular Frames */}
       <div className="card-crochet rounded-3xl px-3.5 py-3">
         <div className="no-scrollbar flex items-center gap-3 overflow-x-auto pb-0.5">
-          {/* 1. Mi historia (+) */}
+          {/* 1. Mi historia (+) — hidden for Ghost Admin so admin never publishes visibly */}
+          {!isGhostAdmin && (
           <button
             type="button"
             onClick={() => {
@@ -165,6 +168,7 @@ export const StoriesBar: React.FC = () => {
               Mi historia
             </span>
           </button>
+          )}
 
           {/* 2. Active Family Members with Crochet Frames & Story Indicators */}
           {activeMembers

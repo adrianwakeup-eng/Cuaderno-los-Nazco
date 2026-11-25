@@ -18,7 +18,7 @@ const FILTERS: { id: PostFilter; label: string; icon: React.ComponentType<{ clas
 ];
 
 export const FeedView: React.FC = () => {
-  const { snapshot, currentUser, notify } = useFamilyApp();
+  const { snapshot, currentUser, setActiveSection, notify } = useFamilyApp();
   const { triggerFeedback } = useAppearance();
   const [filter, setFilter] = useState<PostFilter>('ALL');
   const [refreshing, setRefreshing] = useState(false);
@@ -89,8 +89,29 @@ export const FeedView: React.FC = () => {
         <StoriesBar />
       </div>
 
-      {/* Tactile Crochet Post Composer */}
-      <PostComposer />
+      {/* Tactile Crochet Post Composer (Regular members) OR Ghost Admin Moderation Strip */}
+      {isAdmin ? (
+        <div className="card-crochet flex flex-wrap items-center justify-between gap-3 rounded-3xl px-4 py-3.5 sm:px-5">
+          <div className="min-w-0 flex-1">
+            <p className="text-sm font-extrabold text-forest-900">
+              👻 Modo Administrador Fantasma activo
+            </p>
+            <p className="text-xs text-espresso-700">
+              Nadie sabe que estás aquí. Puedes revisar, editar, fijar, ocultar o eliminar cualquier
+              publicación, comentario, mensaje o perfil en total silencio.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setActiveSection('ADMIN')}
+            className="crochet-green-3d btn-yarn-press shrink-0 rounded-full px-4 py-2 text-xs font-extrabold text-white"
+          >
+            Abrir Panel Admin
+          </button>
+        </div>
+      ) : (
+        <PostComposer />
+      )}
 
       {/* Reference-Fidelity Crochet Filter Bar (Active = Solar Yellow 3D, Inactive = Forest Green) */}
       <div className="no-scrollbar flex items-center gap-2 overflow-x-auto py-1">

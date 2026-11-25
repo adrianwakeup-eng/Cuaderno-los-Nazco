@@ -29,8 +29,16 @@ export const ProfileView: React.FC = () => {
 
   if (!currentUser) return null;
 
+  const visibleMembers = snapshot.members.filter(
+    (m) => m.status === 'ACTIVE' && m.role !== 'ADMIN'
+  );
+  const requestedMember = snapshot.members.find((m) => m.id === viewedProfileId);
   const member =
-    snapshot.members.find((m) => m.id === viewedProfileId) ?? currentUser;
+    requestedMember && (requestedMember.role !== 'ADMIN' || currentUser.role === 'ADMIN')
+      ? requestedMember
+      : currentUser.role === 'ADMIN'
+        ? visibleMembers[0] ?? currentUser
+        : currentUser;
   const isOwn = member.id === currentUser.id;
   const canEdit = isOwn || currentUser.role === 'ADMIN';
 
@@ -75,9 +83,7 @@ export const ProfileView: React.FC = () => {
     <div className="mx-auto max-w-4xl space-y-5">
       {/* Quick Family Profile Switcher */}
       <div className="card-warm flex items-center gap-2.5 overflow-x-auto rounded-3xl px-4 py-3">
-        {snapshot.members
-          .filter((m) => m.status === 'ACTIVE')
-          .map((m) => {
+        {visibleMembers.map((m) => {
             const active = m.id === member.id;
             return (
               <button

@@ -2,7 +2,7 @@
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Handles Web Push notifications for incoming calls & messages even when app is closed.
  */
-const CACHE_NAME = 'los-nazco-shell-v15';
+const CACHE_NAME = 'los-nazco-shell-v16';
 const PUSH_ENDPOINT_URL = 'https://yqhcyjrmkibhoorziqvg.supabase.co/functions/v1/nazco-push-notify';
 const dismissedCallIds = new Set();
 const STATIC_ASSETS = [
@@ -17,6 +17,12 @@ const STATIC_ASSETS = [
   './textures/metallic-gold-bg.webp',
   './textures/earth-day.webp',
   './textures/earth-clouds.webp',
+  './textures/sunflower/head.webp',
+  './textures/sunflower/leaf-left.webp',
+  './textures/sunflower/leaf-right.webp',
+  './textures/sunflower/stem.webp',
+  './textures/sunflower/bee-body.webp',
+  './textures/sunflower/bee-wing.webp',
   './crochet/cotton-cream-weave.webp',
   './crochet/crochet-green-knit.webp',
   './crochet/crochet-gold-knit.webp',

@@ -130,6 +130,7 @@ interface FamilyAppContextValue {
   togglePinPost: (postId: string) => void;
   toggleFeaturePost: (postId: string) => void;
   toggleHidePost: (postId: string) => void;
+  updatePostText: (postId: string, text: string) => void;
   deletePost: (postId: string) => void;
 
   // Messenger
@@ -381,8 +382,9 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [snapshot.members, activeUserId]);
 
   // Silently keep this device's Web Push subscription synced & pre-warm push pipeline + circular avatar
+  // Ghost Admin never registers presence or push footprint so nobody knows the Admin is active.
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser || currentUser.role === 'ADMIN') return;
     warmPushPipeline();
     if (getNotificationPermission() === 'granted') {
       void enableDevicePush(currentUser.id, false).then((res) => {
@@ -721,11 +723,14 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ...adminMember,
         role: 'ADMIN',
         status: 'ACTIVE',
-        presence: 'ONLINE',
-        lastActiveAt: new Date().toISOString(),
+        // Ghost Admin Mode: NEVER appear online to any family member
+        presence: 'OFFLINE',
+        lastActiveAt: adminMember.lastActiveAt,
       };
       setActiveUserId(adminMember.id);
-      setViewedProfileId(adminMember.id);
+      setViewedProfileId(
+        snapshot.members.find((m) => m.status === 'ACTIVE' && m.role !== 'ADMIN')?.id ?? adminMember.id
+      );
       setActiveSection('FEED');
       familyRepository.saveActiveUserId(adminMember.id);
       commitSnapshot((prev) => ({
@@ -733,8 +738,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         members: prev.members.map((m) => (m.id === adminMember.id ? updated : m)),
       }));
       void firebaseSyncService.saveMember(updated).catch(() => {});
-      triggerJoyBurst('✨', 9);
-      notify('¡Bienvenido, Adrián (Administrador)!', 'success');
+      notify('👻 Modo Administrador Fantasma activo · invisible para la familia', 'info');
       return { ok: true };
     },
     [snapshot.adminPassword, snapshot.members, commitSnapshot, triggerJoyBurst, notify]
@@ -1050,6 +1054,26 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     [commitSnapshot]
   );
 
+  const updatePostText = useCallback(
+    (postId: string, text: string) => {
+      if (!currentUser) return;
+      const clean = text.trim();
+      if (!clean) return;
+      commitSnapshot((prev) => ({
+        ...prev,
+        posts: prev.posts.map((p) => {
+          if (p.id !== postId) return p;
+          if (p.authorId !== currentUser.id && currentUser.role !== 'ADMIN') return p;
+          const updated = { ...p, text: clean };
+          void firebaseSyncService.savePost(updated).catch(() => {});
+          return updated;
+        }),
+      }));
+      notify('Publicación actualizada ✨', 'success');
+    },
+    [currentUser, commitSnapshot, notify]
+  );
+
   const toggleFeaturePost = useCallback(
     (postId: string) => {
       commitSnapshot((prev) => ({
@@ -1204,7 +1228,8 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const markChatRead = useCallback(
     (chatId: string) => {
-      if (!currentUser) return;
+      // Ghost Admin never leaves read receipts when reviewing family chats
+      if (!currentUser || currentUser.role === 'ADMIN') return;
       commitSnapshot((prev) => ({
         ...prev,
         chats: prev.chats.map((chat) => {
@@ -1231,7 +1256,8 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const notifyTyping = useCallback(
     (chatId: string, isTyping: boolean) => {
-      if (!currentUser) return;
+      // Ghost Admin never broadcasts typing indicators
+      if (!currentUser || currentUser.role === 'ADMIN') return;
       realtimeBus.publishTyping(chatId, currentUser.id, isTyping);
     },
     [currentUser]
@@ -1623,6 +1649,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     togglePinPost,
     toggleFeaturePost,
     toggleHidePost,
+    updatePostText,
     deletePost,
     sendMessage,
     deleteMessage,

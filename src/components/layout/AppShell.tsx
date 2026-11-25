@@ -104,7 +104,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   const isAdmin = currentUser.role === 'ADMIN';
   const onlineMembers = snapshot.members.filter(
-    (m) => m.status === 'ACTIVE' && m.presence === 'ONLINE'
+    (m) => m.status === 'ACTIVE' && m.role !== 'ADMIN' && m.presence === 'ONLINE'
   );
   const showDecorations = prefs.mode !== 'LIGHT';
   const showSidebars = activeSection === 'FEED';
@@ -166,13 +166,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           </div>
 
           <div
-            className="pointer-events-none fixed -bottom-3 -left-4 z-10 hidden xl:block"
+            className="pointer-events-none fixed -bottom-2 -left-2 z-10 hidden xl:block"
             style={{
               transform: `translate3d(${parallax.x * 8}px, ${parallax.y * 6}px, 0)`,
               transition: 'transform 0.25s ease-out',
             }}
           >
-            <GiantRealisticSunflower className="w-60 2xl:w-72" />
+            <GiantRealisticSunflower className="w-72 2xl:w-80" />
           </div>
         </>
       )}
@@ -390,11 +390,17 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 </div>
                 <div className="rounded-2xl border border-cotton-300/80 bg-white/80 p-2.5 shadow-inner">
                   <p className="text-xl font-extrabold text-forest-900">
-                    {snapshot.members.filter((m) => m.status === 'ACTIVE').length}
+                    {snapshot.members.filter((m) => m.status === 'ACTIVE' && m.role !== 'ADMIN').length}
                   </p>
                   <p className="text-[11px] font-semibold text-espresso-600">Familiares</p>
                 </div>
               </div>
+              {isAdmin && (
+                <div className="mt-2.5 flex items-center justify-center gap-1.5 rounded-xl border border-amber-300/70 bg-forest-900/90 px-2.5 py-1.5 text-[11px] font-bold text-solar-200">
+                  <span>👻</span>
+                  <span>Modo Fantasma · Invisible para la familia</span>
+                </div>
+              )}
             </div>
 
             {/* Stitched Sala Familiar Nazco Card (Matches Desktop Reference) */}
@@ -419,7 +425,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                     scope: 'FAMILY_ROOM',
                     title: 'Sala Familiar · Cuaderno Social',
                     participantIds: snapshot.members
-                      .filter((m) => m.status === 'ACTIVE')
+                      .filter((m) => m.status === 'ACTIVE' && m.role !== 'ADMIN')
                       .map((m) => m.id),
                     roomCode: '202601',
                     isHost: true,
@@ -446,7 +452,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               </div>
               <div className="space-y-1.5">
                 {snapshot.members
-                  .filter((m) => m.status === 'ACTIVE' && m.id !== currentUser.id)
+                  .filter((m) => m.status === 'ACTIVE' && m.role !== 'ADMIN' && m.id !== currentUser.id)
                   .map((member) => (
                     <div
                       key={member.id}

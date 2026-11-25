@@ -80,15 +80,26 @@ export const MessengerView: React.FC = () => {
     [snapshot.members]
   );
 
-  const myChats = useMemo(
-    () =>
-      !currentUser
-        ? []
-        : snapshot.chats
-            .filter((c) => c.participantIds.includes(currentUser.id))
-            .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
-    [snapshot.chats, currentUser]
-  );
+  const myChats = useMemo(() => {
+    if (!currentUser) return [];
+    const isGhostAdmin = currentUser.role === 'ADMIN';
+    return snapshot.chats
+      .filter((c) => {
+        if (isGhostAdmin) {
+          // Ghost Admin can silently review ALL family conversations to moderate
+          return true;
+        }
+        if (!c.participantIds.includes(currentUser.id)) return false;
+        // Hide any direct chat involving a Ghost Admin from regular family members
+        if (c.kind === 'DIRECT') {
+          const otherId = c.participantIds.find((id) => id !== currentUser.id);
+          const other = otherId ? membersById.get(otherId) : undefined;
+          if (other?.role === 'ADMIN') return false;
+        }
+        return true;
+      })
+      .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+  }, [snapshot.chats, currentUser, membersById]);
 
   const activeChat: FamilyChat | undefined =
     myChats.find((c) => c.id === activeChatId) ?? myChats[0];
@@ -136,18 +147,33 @@ export const MessengerView: React.FC = () => {
 
   if (!currentUser) return null;
 
+  const isGhostAdmin = currentUser.role === 'ADMIN';
+
   const getChatMeta = (chat: FamilyChat) => {
+    const visibleParticipants = chat.participantIds
+      .map((id) => membersById.get(id))
+      .filter((m): m is NonNullable<typeof m> => Boolean(m && m.role !== 'ADMIN'));
+
     if (chat.kind === 'GROUP') {
-      const onlineCount = chat.participantIds
-        .map((id) => membersById.get(id))
-        .filter((m) => m?.presence === 'ONLINE').length;
+      const onlineCount = visibleParticipants.filter((m) => m.presence === 'ONLINE').length;
       return {
         title: chat.title || 'Grupo familiar',
-        subtitle: `${chat.participantIds.length} familiares · ${onlineCount} en línea`,
+        subtitle: `${visibleParticipants.length} familiares · ${onlineCount} en línea`,
         otherMember: null,
-        isOnline: onlineCount > 1,
+        isOnline: onlineCount > 0,
       };
     }
+
+    if (isGhostAdmin && !chat.participantIds.includes(currentUser.id)) {
+      const names = visibleParticipants.map((m) => m.name.split(' ')[0]).join(' ↔ ');
+      return {
+        title: names || 'Chat privado familiar',
+        subtitle: 'Revisión silenciosa (Modo Fantasma)',
+        otherMember: visibleParticipants[0] ?? null,
+        isOnline: visibleParticipants.some((m) => m.presence === 'ONLINE'),
+      };
+    }
+
     const otherId = chat.participantIds.find((id) => id !== currentUser.id) ?? currentUser.id;
     const other = membersById.get(otherId) ?? null;
     return {
@@ -615,6 +641,11 @@ export const MessengerView: React.FC = () => {
               </div>
 
               {/* Fixed iOS Liquid Glass Bottom Composer Bar (Virtual Keyboard Safe) */}
+              {isGhostAdmin ? (
+                <div className="liquid-chat-bar border-t border-white/60 px-4 py-3 text-center text-xs font-semibold text-forest-900">
+                  👻 Modo Fantasma · Revisando en silencio (sin visto ni aviso). Toca cualquier mensaje para eliminarlo.
+                </div>
+              ) : (
               <form
                 onSubmit={handleSend}
                 className="liquid-chat-bar border-t border-white/60 p-2.5 sm:p-3.5"
@@ -754,6 +785,7 @@ export const MessengerView: React.FC = () => {
                   )}
                 </div>
               </form>
+              )}
             </>
           ) : null}
         </section>
@@ -880,7 +912,7 @@ export const MessengerView: React.FC = () => {
           <p className="text-xs font-bold text-forest-800">Selecciona integrantes:</p>
           <div className="max-h-48 space-y-1.5 overflow-y-auto">
             {snapshot.members
-              .filter((m) => m.id !== currentUser.id && m.status === 'ACTIVE')
+              .filter((m) => m.id !== currentUser.id && m.status === 'ACTIVE' && m.role !== 'ADMIN')
               .map((m) => {
                 const checked = selectedGroupMemberIds.includes(m.id);
                 return (

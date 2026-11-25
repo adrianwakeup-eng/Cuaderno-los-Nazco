@@ -143,12 +143,26 @@ export const AdminPanelView: React.FC = () => {
         </div>
 
         <div className="p-6">
+        {/* Ghost Mode Status Banner */}
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-2 rounded-2xl border border-amber-300/75 bg-forest-900/95 px-4 py-3 text-xs text-solar-100 shadow-sm">
+          <div className="flex items-center gap-2.5">
+            <span className="text-lg">👻</span>
+            <div>
+              <p className="font-extrabold text-solar-200">Cuenta de Administrador Fantasma activa</p>
+              <p className="text-[11px] text-solar-100/85">
+                Eres 100% invisible para la familia (sin estado en línea, sin recibos de lectura ni presencia en el mapa, chats o llamadas). Puedes revisar, editar, eliminar y gestionar toda la web en silencio.
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* KPI Cards */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <div className="rounded-2xl border border-amber-200/60 bg-white/75 p-4">
             <p className="text-xs font-semibold text-espresso-500">Miembros activos</p>
             <p className="mt-1 text-2xl font-bold text-espresso-900">
-              {snapshot.members.filter((m) => m.status === 'ACTIVE').length} / {snapshot.members.length}
+              {snapshot.members.filter((m) => m.status === 'ACTIVE' && m.role !== 'ADMIN').length} /{' '}
+              {snapshot.members.filter((m) => m.role !== 'ADMIN').length}
             </p>
           </div>
           <div className="rounded-2xl border border-amber-200/60 bg-white/75 p-4">
@@ -348,7 +362,9 @@ export const AdminPanelView: React.FC = () => {
               Asigna permisos de Administrador o activa/desactiva el acceso de cualquier cuenta.
             </p>
             <div className="mt-4 space-y-2.5">
-              {snapshot.members.map((member) => (
+              {snapshot.members
+                .filter((m) => m.role !== 'ADMIN')
+                .map((member) => (
                 <div
                   key={member.id}
                   className={`flex flex-wrap items-center justify-between gap-3 rounded-2xl border p-3.5 ${

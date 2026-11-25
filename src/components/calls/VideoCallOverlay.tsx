@@ -72,7 +72,7 @@ export const VideoCallOverlay: React.FC = () => {
   const otherParticipants = useMemo(() => {
     if (!activeCall || !currentUser) return [];
     return snapshot.members.filter(
-      (m) => activeCall.participantIds.includes(m.id) && m.id !== currentUser.id
+      (m) => activeCall.participantIds.includes(m.id) && m.id !== currentUser.id && m.role !== 'ADMIN'
     );
   }, [activeCall, snapshot.members, currentUser]);
 

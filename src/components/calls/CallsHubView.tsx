@@ -40,7 +40,7 @@ export const CallsHubView: React.FC = () => {
 
   const enabled = snapshot.featureFlags.videoCallsEnabled;
   const activeRelatives = snapshot.members.filter(
-    (m) => m.status === 'ACTIVE' && m.id !== currentUser.id
+    (m) => m.status === 'ACTIVE' && m.role !== 'ADMIN' && m.id !== currentUser.id
   );
 
   const launchAndLogCall = (params: Parameters<typeof startCall>[0]) => {
@@ -152,7 +152,7 @@ export const CallsHubView: React.FC = () => {
                   scope: 'FAMILY_ROOM',
                   title: 'Sala Familiar · Cuaderno Social',
                   participantIds: snapshot.members
-                    .filter((m) => m.status === 'ACTIVE')
+                    .filter((m) => m.status === 'ACTIVE' && m.role !== 'ADMIN')
                     .map((m) => m.id),
                   roomCode: '202601',
                   isHost: true,
@@ -173,7 +173,7 @@ export const CallsHubView: React.FC = () => {
                   scope: 'FAMILY_ROOM',
                   title: 'Sala de Audio · Cuaderno Social',
                   participantIds: snapshot.members
-                    .filter((m) => m.status === 'ACTIVE')
+                    .filter((m) => m.status === 'ACTIVE' && m.role !== 'ADMIN')
                     .map((m) => m.id),
                   roomCode: '202602',
                   isHost: true,

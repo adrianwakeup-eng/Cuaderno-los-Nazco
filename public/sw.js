@@ -2,7 +2,9 @@
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Handles Web Push notifications for incoming calls & messages even when app is closed.
  */
-const CACHE_NAME = 'los-nazco-shell-v10';
+const CACHE_NAME = 'los-nazco-shell-v11';
+const PUSH_ENDPOINT_URL = 'https://yqhcyjrmkibhoorziqvg.supabase.co/functions/v1/nazco-push-notify';
+const dismissedCallIds = new Set();
 const STATIC_ASSETS = [
   './offline.html',
   './manifest.webmanifest',
@@ -97,6 +99,7 @@ self.addEventListener('push', (event) => {
     callerId: '',
     callerName: '',
     iconUrl: '',
+    declineSig: '',
   };
 
   if (event.data) {
@@ -108,57 +111,145 @@ self.addEventListener('push', (event) => {
   }
 
   const isCall = payload.kind === 'CALL';
+  const isCancel = payload.kind === 'CALL_CANCEL';
   const baseScope = self.registration.scope || './';
-  let targetUrl = payload.url || baseScope;
-  if (isCall && payload.roomCode) {
-    const u = new URL(baseScope);
-    u.searchParams.set('incomingCall', payload.roomCode);
-    u.searchParams.set('mode', payload.callMode || 'VIDEO');
-    if (payload.callId) u.searchParams.set('callId', payload.callId);
-    if (payload.callerId) u.searchParams.set('callerId', payload.callerId);
-    if (payload.callerName) u.searchParams.set('callerName', payload.callerName);
-    u.searchParams.set('title', payload.title || 'Llamada familiar');
-    targetUrl = u.toString();
-  }
 
   const resolvedIcon =
     typeof payload.iconUrl === 'string' && payload.iconUrl.startsWith('https://')
       ? payload.iconUrl
       : new URL('./icons/notif-circle-192.png', baseScope).toString();
+  const badgeUrl = new URL('./icons/badge-96.png', baseScope).toString();
 
-  const options = {
-    body: payload.body,
-    icon: resolvedIcon,
-    badge: new URL('./icons/badge-96.png', baseScope).toString(),
-    tag: payload.tag || (isCall ? `nazco-call-${payload.roomCode}` : 'nazco-msg'),
-    renotify: true,
-    requireInteraction: isCall,
-    vibrate: isCall ? [320, 140, 320, 140, 420, 140, 320] : [180, 80, 180],
-    data: {
-      url: targetUrl,
-      kind: payload.kind,
-      roomCode: payload.roomCode,
-      callMode: payload.callMode,
-    },
-    actions: isCall
-      ? [
-          { action: 'answer', title: '✅ Contestar' },
-          { action: 'dismiss', title: '❌ Colgar' },
-        ]
-      : [{ action: 'open', title: '💬 Abrir' }],
-  };
+  // Caller hung up before receiver answered: stop ringing alert & replace with quiet missed-call notice
+  if (isCancel) {
+    const callTag = payload.roomCode ? `nazco-call-${payload.roomCode}` : payload.tag;
+    if (payload.callId) dismissedCallIds.add(payload.callId);
+    event.waitUntil(
+      self.registration.getNotifications({ tag: callTag }).then((list) => {
+        list.forEach((n) => n.close());
+        return self.registration.showNotification(payload.title || '📵 Llamada perdida', {
+          body: payload.body || 'Te llamaron en Cuaderno los Nazco',
+          icon: resolvedIcon,
+          badge: badgeUrl,
+          tag: `nazco-missed-${payload.callId || payload.roomCode || Date.now()}`,
+          silent: true,
+          renotify: false,
+          requireInteraction: false,
+          data: { url: baseScope, kind: 'CALL_CANCEL' },
+        });
+      })
+    );
+    return;
+  }
 
-  event.waitUntil(self.registration.showNotification(payload.title, options));
+  // Incoming call pulse: repeats every ~4.5s until answered or hung up
+  if (isCall) {
+    if (payload.callId && dismissedCallIds.has(payload.callId)) {
+      return;
+    }
+
+    let targetUrl = payload.url || baseScope;
+    if (payload.roomCode) {
+      const u = new URL(baseScope);
+      u.searchParams.set('incomingCall', payload.roomCode);
+      u.searchParams.set('mode', payload.callMode || 'VIDEO');
+      if (payload.callId) u.searchParams.set('callId', payload.callId);
+      if (payload.callerId) u.searchParams.set('callerId', payload.callerId);
+      if (payload.callerName) u.searchParams.set('callerName', payload.callerName);
+      u.searchParams.set('title', payload.title || 'Llamada familiar');
+      targetUrl = u.toString();
+    }
+
+    const callTag = payload.roomCode ? `nazco-call-${payload.roomCode}` : payload.tag || 'nazco-call';
+
+    event.waitUntil(
+      self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
+        // If user already has the app visibly open on screen, the in-app IncomingCallModal is already ringing!
+        const hasVisibleApp = clients.some(
+          (c) => c.url.startsWith(baseScope) && c.visibilityState === 'visible'
+        );
+        if (hasVisibleApp) {
+          return self.registration.getNotifications({ tag: callTag }).then((list) => {
+            list.forEach((n) => n.close());
+          });
+        }
+
+        return self.registration.showNotification(payload.title, {
+          body: payload.body,
+          icon: resolvedIcon,
+          badge: badgeUrl,
+          tag: callTag,
+          renotify: true,
+          requireInteraction: true,
+          vibrate: [500, 220, 500, 220, 500, 220, 500],
+          data: {
+            url: targetUrl,
+            kind: 'CALL',
+            roomCode: payload.roomCode,
+            callMode: payload.callMode,
+            callId: payload.callId,
+            declineSig: payload.declineSig,
+          },
+          actions: [
+            { action: 'answer', title: '✅ Contestar' },
+            { action: 'dismiss', title: '❌ Colgar' },
+          ],
+        });
+      })
+    );
+    return;
+  }
+
+  // Regular MESSAGE / TEST notification: rings ONCE (never repeats)
+  const targetUrl = payload.url || baseScope;
+  event.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: resolvedIcon,
+      badge: badgeUrl,
+      tag: payload.tag || `nazco-msg-${Date.now()}`,
+      renotify: false,
+      requireInteraction: false,
+      vibrate: [180, 80, 180],
+      data: {
+        url: targetUrl,
+        kind: payload.kind,
+      },
+      actions: [{ action: 'open', title: '💬 Abrir' }],
+    })
+  );
 });
 
 self.addEventListener('notificationclick', (event) => {
+  const notifData = event.notification.data || {};
   event.notification.close();
-  if (event.action === 'dismiss') return;
 
-  let targetUrl =
-    (event.notification.data && event.notification.data.url) ||
-    self.registration.scope ||
-    './';
+  // Tapping "❌ Colgar" directly on the lock-screen notification ends the call immediately!
+  if (event.action === 'dismiss') {
+    if (notifData.callId) {
+      dismissedCallIds.add(notifData.callId);
+      if (notifData.declineSig) {
+        event.waitUntil(
+          fetch(PUSH_ENDPOINT_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              action: 'decline_call',
+              callId: notifData.callId,
+              declineSig: notifData.declineSig,
+            }),
+          }).catch(() => {})
+        );
+      }
+    }
+    return;
+  }
+
+  if (notifData.callId) {
+    dismissedCallIds.add(notifData.callId);
+  }
+
+  let targetUrl = notifData.url || self.registration.scope || './';
 
   // Only auto-answer if user explicitly tapped the "✅ Contestar" action button;
   // tapping the notification body opens the Contestar / Colgar screen first!

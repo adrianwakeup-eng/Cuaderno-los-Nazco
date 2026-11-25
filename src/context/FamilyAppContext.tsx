@@ -7,6 +7,7 @@ import {
   type LiveCallSignal,
 } from '../services/firebaseSyncService';
 import {
+  closeCallNotificationBanner,
   dispatchPushNotification,
   enableDevicePush,
   ensureSenderCircularAvatarMediaId,
@@ -79,6 +80,7 @@ interface FamilyAppContextValue {
     roomCode?: string;
     isHost?: boolean;
   }) => void;
+  markCallRemoteConnected: () => void;
   endCall: () => void;
   storageUsage: StorageUsageSummary;
   unreadMessageCount: number;
@@ -412,6 +414,10 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     window.history.replaceState(window.history.state, '', cleanUrl);
 
     if (autoAnswer) {
+      void closeCallNotificationBanner(incomingRoom);
+      if (params.get('callId')) {
+        void firebaseSyncService.updateCallSignalStatus(callIdParam, 'ACCEPTED').catch(() => {});
+      }
       setActiveCall({
         id: callIdParam,
         roomCode: incomingRoom,
@@ -1246,7 +1252,46 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     [currentUser, commitSnapshot, notify]
   );
 
-  // --- Calls with Real-Time Cross-Phone Cloud Ringing ---
+  // --- Calls with Real-Time Cross-Phone Cloud Ringing (Continuous Push Ring until Answered/Hung Up) ---
+  const outgoingRingRef = useRef<{
+    callId: string;
+    roomCode: string;
+    timerId: number | null;
+    payload: Parameters<typeof dispatchPushNotification>[0];
+  } | null>(null);
+
+  const stopOutgoingRing = useCallback(() => {
+    if (outgoingRingRef.current?.timerId !== null && outgoingRingRef.current?.timerId !== undefined) {
+      window.clearInterval(outgoingRingRef.current.timerId);
+    }
+    outgoingRingRef.current = null;
+  }, []);
+
+  // Stop repeating call push pulses the moment Firestore signals ACCEPTED or ENDED
+  useEffect(() => {
+    const activeRing = outgoingRingRef.current;
+    if (!activeRing) return;
+    const live = liveCalls.find((c) => c.id === activeRing.callId);
+    if (!live) return;
+    if (live.status === 'ACCEPTED') {
+      stopOutgoingRing();
+    } else if (live.status === 'ENDED') {
+      stopOutgoingRing();
+      notify('La llamada fue colgada.', 'info');
+    }
+  }, [liveCalls, stopOutgoingRing, notify]);
+
+  // Dismiss any lingering OS call notification once the in-app Contestar/Colgar modal is open
+  useEffect(() => {
+    if (incomingCall?.roomCode) {
+      void closeCallNotificationBanner(incomingCall.roomCode);
+    }
+  }, [incomingCall?.roomCode]);
+
+  useEffect(() => {
+    return () => stopOutgoingRing();
+  }, [stopOutgoingRing]);
+
   const startCall = useCallback(
     (params: {
       mode: CallMode;
@@ -1262,6 +1307,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         notify('Las videollamadas están desactivadas temporalmente desde el Panel Admin.', 'warning');
         return;
       }
+      stopOutgoingRing();
       const callId = `call_${Date.now()}`;
       const roomCode = params.roomCode?.trim() || generateFamilyRoomCode();
       const isHost = params.isHost ?? true;
@@ -1280,7 +1326,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         isHost,
       });
 
-      // Notify all invited family phones in real time via Firestore + closed-app Web Push!
+      // Notify all invited family phones in real time via Firestore + repeating closed-app Web Push!
       if (isHost) {
         const signal: LiveCallSignal = {
           id: callId,
@@ -1296,7 +1342,8 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           createdAt: nowIso,
         };
         void firebaseSyncService.publishCallSignal(signal).catch(() => {});
-        void dispatchPushNotification({
+
+        const pushPayload: Parameters<typeof dispatchPushNotification>[0] = {
           targetMemberIds: params.participantIds,
           excludeMemberId: currentUser.id,
           title:
@@ -1316,14 +1363,46 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             avatarUrl: currentUser.avatarUrl,
             avatarColor: currentUser.avatarColor,
           },
-        });
+        };
+
+        // First ring immediately + keep ringing every 4.5s (up to ~45s) until answered or hung up
+        void dispatchPushNotification(pushPayload);
+        let ringsSent = 1;
+        const MAX_RINGS = 10;
+        const timerId = window.setInterval(() => {
+          if (outgoingRingRef.current?.callId !== callId) {
+            window.clearInterval(timerId);
+            return;
+          }
+          if (ringsSent >= MAX_RINGS) {
+            stopOutgoingRing();
+            return;
+          }
+          ringsSent += 1;
+          void dispatchPushNotification(pushPayload);
+        }, 4500);
+
+        outgoingRingRef.current = {
+          callId,
+          roomCode,
+          timerId,
+          payload: pushPayload,
+        };
       }
     },
-    [snapshot.featureFlags.videoCallsEnabled, currentUser, notify]
+    [snapshot.featureFlags.videoCallsEnabled, currentUser, notify, stopOutgoingRing]
   );
+
+  const markCallRemoteConnected = useCallback(() => {
+    stopOutgoingRing();
+    if (activeCallRef.current) {
+      void firebaseSyncService.updateCallSignalStatus(activeCallRef.current.id, 'ACCEPTED').catch(() => {});
+    }
+  }, [stopOutgoingRing]);
 
   const acceptIncomingCall = useCallback(() => {
     if (!incomingCall || !currentUser) return;
+    void closeCallNotificationBanner(incomingCall.roomCode);
     setDeepLinkIncomingCall(null);
     setDismissedCallIds((prev) => [...prev, incomingCall.id]);
     void firebaseSyncService.updateCallSignalStatus(incomingCall.id, 'ACCEPTED').catch(() => {});
@@ -1343,6 +1422,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const rejectIncomingCall = useCallback(() => {
     if (!incomingCall) return;
+    void closeCallNotificationBanner(incomingCall.roomCode);
     setDeepLinkIncomingCall(null);
     setDismissedCallIds((prev) => [...prev, incomingCall.id]);
     if (incomingCall.scope === 'DIRECT') {
@@ -1352,11 +1432,22 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   }, [incomingCall, notify]);
 
   const endCall = useCallback(() => {
+    const pendingRing = outgoingRingRef.current;
+    stopOutgoingRing();
     if (activeCall) {
       void firebaseSyncService.updateCallSignalStatus(activeCall.id, 'ENDED').catch(() => {});
+      // If caller hung up while receiver's phone was still ringing, stop the push ring cleanly
+      if (pendingRing && pendingRing.callId === activeCall.id && currentUser) {
+        void dispatchPushNotification({
+          ...pendingRing.payload,
+          kind: 'CALL_CANCEL',
+          title: `📵 Llamada perdida de ${currentUser.name}`,
+          body: 'Intentó llamarte en Cuaderno los Nazco',
+        });
+      }
     }
     setActiveCall(null);
-  }, [activeCall]);
+  }, [activeCall, currentUser, stopOutgoingRing]);
 
   // --- Admin ---
   const createInvite = useCallback(
@@ -1501,6 +1592,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     setActiveChatId,
     activeCall,
     startCall,
+    markCallRemoteConnected,
     endCall,
     storageUsage,
     unreadMessageCount,

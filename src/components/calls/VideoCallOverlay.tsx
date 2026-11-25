@@ -21,7 +21,8 @@ import type { CallConnectionState } from '../../types';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
 
 export const VideoCallOverlay: React.FC = () => {
-  const { snapshot, currentUser, activeCall, endCall, notify } = useFamilyApp();
+  const { snapshot, currentUser, activeCall, markCallRemoteConnected, endCall, notify } =
+    useFamilyApp();
 
   const [connState, setConnState] = useState<CallConnectionState>('REQUESTING_PERMISSIONS');
   const [statusMessage, setStatusMessage] = useState('Preparando dispositivos…');
@@ -59,7 +60,10 @@ export const VideoCallOverlay: React.FC = () => {
         setStatusMessage(msg);
       },
       onLocalStream: (stream) => setLocalStream(stream),
-      onRemoteStream: (stream) => setRemoteStream(stream),
+      onRemoteStream: (stream) => {
+        setRemoteStream(stream);
+        markCallRemoteConnected();
+      },
       onScreenShareChange: (sharing) => setScreenSharing(sharing),
     });
     controllerRef.current = ctrl;

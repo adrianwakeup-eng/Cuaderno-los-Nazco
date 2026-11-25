@@ -341,7 +341,7 @@ export async function dispatchPushNotification(params: {
   excludeMemberId?: string;
   title: string;
   body: string;
-  kind: 'CALL' | 'MESSAGE' | 'TEST';
+  kind: 'CALL' | 'CALL_CANCEL' | 'MESSAGE' | 'TEST';
   roomCode?: string;
   callMode?: CallMode;
   callId?: string;
@@ -445,6 +445,19 @@ export async function sendTestPushToSelf(
     },
   });
   return res.sent > 0;
+}
+
+/** Closes any lingering OS call push notification banner for a room once answered/opened */
+export async function closeCallNotificationBanner(roomCode?: string): Promise<void> {
+  if (!roomCode || typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) return;
+    const list = await reg.getNotifications({ tag: `nazco-call-${roomCode}` });
+    list.forEach((n) => n.close());
+  } catch {
+    // ignore
+  }
 }
 
 /** Gentle warm repeating ringtone via Web Audio API while an incoming call rings */

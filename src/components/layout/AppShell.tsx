@@ -265,7 +265,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
           {/* CENTER: Desktop iOS Liquid Glass Crystal Nav Bar with Emerald-Gold Icons */}
           <nav
-            className="ios-liquid-nav-bar hidden items-center gap-1 rounded-full px-2 py-1.5 lg:flex"
+            className="ios-liquid-nav-bar crochet-nav-desktop hidden items-center gap-1 rounded-full px-2 py-1.5 lg:flex"
             aria-label="Navegación principal"
           >
             {desktopNavItems
@@ -278,14 +278,15 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                     key={item.id}
                     type="button"
                     onClick={() => handleSelectSection(item.id)}
-                    className={`btn-yarn-press relative z-10 flex flex-col items-center justify-center rounded-full px-4 py-1.5 text-xs font-bold transition ${
+                    aria-current={active ? 'page' : undefined}
+                    className={`crochet-nav-item btn-yarn-press relative z-10 flex flex-col items-center justify-center rounded-full px-4 py-1.5 text-xs font-bold transition ${
                       active
                         ? 'ios-liquid-tab-active'
                         : 'hover:bg-white/20'
                     }`}
                   >
                     <Icon
-                      stroke={active ? 'url(#emeraldGoldIconActiveGrad)' : 'url(#emeraldGoldIconGrad)'}
+                      stroke="currentColor"
                       strokeWidth={active ? 2.35 : 2.05}
                       className={`h-5 w-5 transition ${
                         active
@@ -293,7 +294,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                           : 'drop-shadow-[0_1px_2px_rgba(6,78,59,0.22)]'
                       }`}
                     />
-                    <span className="emerald-gold-label mt-0.5 text-[11px] font-extrabold">
+                    <span className="emerald-gold-label mt-0.5 text-xs font-extrabold">
                       {item.label}
                     </span>
                     {item.badge && item.badge > 0 ? (
@@ -613,14 +614,15 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 key={item.id}
                 type="button"
                 onClick={() => handleSelectSection(item.id)}
-                className={`btn-yarn-press relative z-10 flex min-h-[52px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2.5 py-1.5 transition ${
+                aria-current={active ? 'page' : undefined}
+                className={`crochet-nav-item btn-yarn-press relative z-10 flex min-h-[52px] min-w-[52px] flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-0.5 py-1.5 transition ${
                   active
                     ? 'ios-liquid-tab-active -translate-y-0.5'
                     : 'hover:bg-white/15'
                 }`}
               >
                 <Icon
-                  stroke={active ? 'url(#emeraldGoldIconActiveGrad)' : 'url(#emeraldGoldIconGrad)'}
+                  stroke="currentColor"
                   strokeWidth={active ? 2.4 : 2.05}
                   className={`h-5 w-5 transition ${
                     active
@@ -628,7 +630,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                       : 'drop-shadow-[0_1px_2px_rgba(6,78,59,0.22)]'
                   }`}
                 />
-                <span className="emerald-gold-label text-[10px] font-extrabold leading-none">
+                <span className="emerald-gold-label text-xs font-extrabold leading-tight">
                   {item.label}
                 </span>
                 {item.badge && item.badge > 0 ? (

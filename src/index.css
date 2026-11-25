@@ -285,13 +285,66 @@ html[data-mode='LIGHT'] .crochet-card {
   pointer-events: none;
 }
 
-/* Emerald-Gold Metallic Nav Label */
+/* Keep the navigation readable over both dark and bright page content. */
+.crochet-nav-bar,
+.crochet-nav-desktop {
+  background:
+    repeating-linear-gradient(135deg, rgba(116, 75, 18, 0.045) 0 1px, transparent 1px 4px),
+    linear-gradient(180deg, #fffae8, #f3dfa2);
+  border-color: #a87924;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.crochet-nav-bar::before,
+.crochet-nav-desktop::after {
+  display: none;
+}
+
+.crochet-nav-item {
+  color: #153d2c;
+  border: 1px solid transparent;
+}
+
+.crochet-nav-item.ios-liquid-tab-active {
+  background: linear-gradient(160deg, #fff8d8, #efd47c);
+  border-color: #a87924;
+}
+
+.crochet-nav-item:focus-visible {
+  outline: 2px solid #153d2c;
+  outline-offset: -2px;
+}
+
 .emerald-gold-label {
-  background: linear-gradient(125deg, #064e3b 0%, #047857 46%, #b45309 86%, #d97706 100%);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  filter: drop-shadow(0 0.5px 0 rgba(255, 252, 232, 0.72));
+  color: #153d2c;
+  text-shadow:
+    -0.5px 0 #b9872b,
+    0.5px 0 #b9872b,
+    0 -0.5px #d6ad52,
+    0 0.75px #fff5c6;
+}
+
+@supports (background-clip: text) {
+  .emerald-gold-label {
+    background: repeating-linear-gradient(170deg, #153d2c 0 2px, #254937 2px 3px);
+    background-clip: text;
+    color: transparent;
+    text-shadow: none;
+    filter:
+      drop-shadow(-0.45px 0 #b9872b)
+      drop-shadow(0.45px 0 #b9872b)
+      drop-shadow(0 0.65px #fff5c6);
+  }
+}
+
+@media (forced-colors: active) {
+  .emerald-gold-label {
+    background: none;
+    color: ButtonText;
+    filter: none;
+    text-shadow: none;
+  }
 }
 
 /* Liquid Solar Gold Jewel Glass Pill with bright luminous gold rim */

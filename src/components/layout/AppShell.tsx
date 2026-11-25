@@ -113,7 +113,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const desktopNavItems: {
     id: AppSection;
     label: string;
-    icon: React.ComponentType<{ className?: string }>;
+    icon: React.ComponentType<{ className?: string; stroke?: string; strokeWidth?: number }>;
     badge?: number;
     hidden?: boolean;
   }[] = [
@@ -129,7 +129,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const mobileBottomItems: {
     id: AppSection;
     label: string;
-    icon: React.ComponentType<{ className?: string }>;
+    icon: React.ComponentType<{ className?: string; stroke?: string; strokeWidth?: number }>;
     badge?: number;
   }[] = [
     { id: 'FEED', label: 'Muro', icon: Home },
@@ -177,6 +177,24 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         </>
       )}
 
+      {/* Reusable SVG Emerald-Gold Metallic Icon Gradients */}
+      <svg width="0" height="0" className="pointer-events-none absolute" aria-hidden="true">
+        <defs>
+          <linearGradient id="emeraldGoldIconGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#047857" />
+            <stop offset="48%" stopColor="#10B981" />
+            <stop offset="78%" stopColor="#D97706" />
+            <stop offset="100%" stopColor="#F59E0B" />
+          </linearGradient>
+          <linearGradient id="emeraldGoldIconActiveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#059669" />
+            <stop offset="40%" stopColor="#10B981" />
+            <stop offset="72%" stopColor="#F59E0B" />
+            <stop offset="100%" stopColor="#FDE047" />
+          </linearGradient>
+        </defs>
+      </svg>
+
       {/* ================= STICKY ARTISANAL CROCHET TOP HEADER ================= */}
       <header
         className={`header-crochet-shell pt-safe sticky top-0 z-30 transition-all duration-200 ${
@@ -192,10 +210,10 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 triggerFeedback('tap');
                 setDrawerOpen(true);
               }}
-              className="liquid-glass-pill btn-yarn-press flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-forest-900 lg:hidden"
+              className="ios-liquid-nav-bar btn-yarn-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full lg:hidden"
               aria-label="Abrir menú lateral"
             >
-              <Menu className="h-5 w-5" />
+              <Menu stroke="url(#emeraldGoldIconGrad)" strokeWidth={2.2} className="relative z-10 h-5 w-5" />
             </button>
 
             <button
@@ -234,9 +252,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             </button>
           </div>
 
-          {/* CENTER: Desktop Official Reference 6-Tab Pill Bar */}
+          {/* CENTER: Desktop iOS Liquid Glass Crystal Nav Bar with Emerald-Gold Icons */}
           <nav
-            className="card-crochet hidden items-center gap-1 rounded-full px-2 py-1.5 lg:flex"
+            className="ios-liquid-nav-bar hidden items-center gap-1 rounded-full px-2 py-1.5 lg:flex"
             aria-label="Navegación principal"
           >
             {desktopNavItems
@@ -249,18 +267,26 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                     key={item.id}
                     type="button"
                     onClick={() => handleSelectSection(item.id)}
-                    className={`btn-yarn-press relative flex flex-col items-center justify-center rounded-2xl px-4 py-1.5 text-xs font-bold transition ${
+                    className={`btn-yarn-press relative z-10 flex flex-col items-center justify-center rounded-full px-4 py-1.5 text-xs font-bold transition ${
                       active
-                        ? 'crochet-gold-3d text-forest-900'
-                        : 'text-forest-800 hover:bg-cotton-200/70'
+                        ? 'ios-liquid-tab-active'
+                        : 'hover:bg-white/20'
                     }`}
                   >
                     <Icon
-                      className={`h-5 w-5 ${active ? 'text-terracotta-600' : 'text-forest-700'}`}
+                      stroke={active ? 'url(#emeraldGoldIconActiveGrad)' : 'url(#emeraldGoldIconGrad)'}
+                      strokeWidth={active ? 2.35 : 2.05}
+                      className={`h-5 w-5 transition ${
+                        active
+                          ? 'scale-105 drop-shadow-[0_1px_6px_rgba(245,158,11,0.55)]'
+                          : 'drop-shadow-[0_1px_2px_rgba(6,78,59,0.22)]'
+                      }`}
                     />
-                    <span className="mt-0.5 text-[11px]">{item.label}</span>
+                    <span className="emerald-gold-label mt-0.5 text-[11px] font-extrabold">
+                      {item.label}
+                    </span>
                     {item.badge && item.badge > 0 ? (
-                      <span className="absolute right-1.5 top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-extrabold text-white shadow">
+                      <span className="absolute right-1.5 top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-extrabold text-solar-200 shadow">
                         {item.badge}
                       </span>
                     ) : null}
@@ -277,29 +303,29 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 triggerFeedback('tap');
                 setShowAppearanceModal(true);
               }}
-              className="btn-yarn-press hidden h-10 w-10 items-center justify-center rounded-full border border-artisanal-500/45 bg-cotton-50 text-forest-800 shadow-sm hover:bg-solar-100 sm:flex"
+              className="ios-liquid-nav-bar btn-yarn-press hidden h-10 w-10 items-center justify-center rounded-full sm:flex"
               title="Cambiar modo 3D / Artesanal / Ligero"
               aria-label="Apariencia"
             >
-              <Palette className="h-4 w-4" />
+              <Palette stroke="url(#emeraldGoldIconGrad)" strokeWidth={2.1} className="relative z-10 h-4 w-4" />
             </button>
 
             <button
               type="button"
               onClick={() => handleSelectSection('PROFILE')}
-              className="btn-yarn-press hidden items-center gap-2 rounded-full border border-artisanal-500/50 bg-cotton-50 py-1 pl-1.5 pr-3 text-left shadow-sm hover:bg-white md:flex"
+              className="ios-liquid-nav-bar btn-yarn-press hidden items-center gap-2 rounded-full py-1 pl-1.5 pr-3 text-left md:flex"
               title="Abrir mi perfil"
             >
               <MemberAvatar member={currentUser} size="xs" showPresence />
-              <div>
-                <p className="text-xs font-extrabold leading-tight text-forest-900">
+              <div className="relative z-10">
+                <p className="emerald-gold-label text-xs font-extrabold leading-tight">
                   {currentUser.name.split(' ')[0]}
                 </p>
-                <p className="text-[10px] font-semibold text-espresso-600">
-                  {isAdmin ? 'Administrador' : currentUser.relationship}
+                <p className="text-[10px] font-semibold text-forest-900/80">
+                  {isAdmin ? 'Fantasma' : currentUser.relationship}
                 </p>
               </div>
-              <ChevronDown className="h-3.5 w-3.5 text-espresso-500" />
+              <ChevronDown stroke="url(#emeraldGoldIconGrad)" className="relative z-10 h-3.5 w-3.5" />
             </button>
 
             <button
@@ -308,15 +334,11 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 triggerFeedback('chime');
                 setNotifSheetOpen(true);
               }}
-              className={`btn-yarn-press relative flex h-11 w-11 items-center justify-center rounded-full border shadow-sm transition ${
-                pushEnabled
-                  ? 'border-brazil-500 bg-brazil-50 text-forest-800'
-                  : 'border-artisanal-500/50 bg-cotton-50 text-forest-800 hover:bg-solar-100'
-              }`}
+              className="ios-liquid-nav-bar btn-yarn-press relative flex h-11 w-11 items-center justify-center rounded-full transition"
               aria-label="Notificaciones y avisos de llamadas"
               title={pushEnabled ? 'Notificaciones Push activas' : 'Activar avisos de llamadas fuera de la app'}
             >
-              <Bell className="h-5 w-5" />
+              <Bell stroke="url(#emeraldGoldIconGrad)" strokeWidth={2.15} className="relative z-10 h-5 w-5" />
               {(unreadMessageCount > 0 || !pushEnabled) && (
                 <span
                   className={`absolute right-2 top-2 h-2.5 w-2.5 rounded-full ring-2 ring-white ${
@@ -559,7 +581,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         </main>
       </div>
 
-      {/* ================= PERMANENT MOBILE & TABLET-PORTRAIT GREEN CROCHET BOTTOM NAV ================= */}
+      {/* ================= PERMANENT MOBILE & TABLET iOS LIQUID GLASS CRYSTAL BOTTOM NAV ================= */}
       <nav
         className="crochet-nav-bar pb-safe fixed bottom-0 left-0 right-0 z-30 pt-2 lg:hidden"
         aria-label="Navegación inferior familiar"
@@ -573,16 +595,26 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 key={item.id}
                 type="button"
                 onClick={() => handleSelectSection(item.id)}
-                className={`btn-yarn-press relative flex min-h-[52px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2.5 py-1.5 transition ${
+                className={`btn-yarn-press relative z-10 flex min-h-[52px] min-w-[56px] flex-col items-center justify-center gap-0.5 rounded-2xl px-2.5 py-1.5 transition ${
                   active
-                    ? 'crochet-gold-3d -translate-y-1 text-forest-900'
-                    : 'text-cotton-50/90 hover:text-solar-300'
+                    ? 'ios-liquid-tab-active -translate-y-0.5'
+                    : 'hover:bg-white/15'
                 }`}
               >
-                <Icon className={`h-5 w-5 ${active ? 'text-forest-900 stroke-[2.4]' : ''}`} />
-                <span className="text-[10px] font-extrabold leading-none">{item.label}</span>
+                <Icon
+                  stroke={active ? 'url(#emeraldGoldIconActiveGrad)' : 'url(#emeraldGoldIconGrad)'}
+                  strokeWidth={active ? 2.4 : 2.05}
+                  className={`h-5 w-5 transition ${
+                    active
+                      ? 'scale-105 drop-shadow-[0_1px_6px_rgba(245,158,11,0.55)]'
+                      : 'drop-shadow-[0_1px_2px_rgba(6,78,59,0.22)]'
+                  }`}
+                />
+                <span className="emerald-gold-label text-[10px] font-extrabold leading-none">
+                  {item.label}
+                </span>
                 {item.badge && item.badge > 0 ? (
-                  <span className="absolute right-1.5 top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] font-extrabold text-white shadow">
+                  <span className="absolute right-1.5 top-0.5 flex h-4 min-w-[16px] items-center justify-center rounded-full bg-emerald-600 px-1 text-[10px] font-extrabold text-solar-200 shadow">
                     {item.badge}
                   </span>
                 ) : null}

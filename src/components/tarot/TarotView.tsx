@@ -78,6 +78,10 @@ function PersonalTarot({ familyId, onBack }: { familyId: string; onBack: () => v
   const [sign, setSign] = useState(() => readSign(storageKey));
   const [draft, setDraft] = useState(sign);
   const [editing, setEditing] = useState(!sign);
+  useLayoutEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }, [editing]);
+
   const [date, setDate] = useState(() => new Date());
   useEffect(() => {
     const refreshDate = () => setDate((current) => {
@@ -260,7 +264,7 @@ function TarotReading({ date, familyId, sign, onEdit, onBack }: {
       <div className="tarot-sanctuary" aria-hidden="true">
         <div className="tarot-sanctuary-mist" />
       </div>
-      <section className="tarot-room mx-auto max-w-2xl" aria-labelledby="tarot-title">
+      <section className="tarot-room tarot-reading-room mx-auto max-w-2xl" aria-labelledby="tarot-title">
         <div className="tarot-heading">
           <button type="button" className="tarot-back" onClick={onBack}>
             <ArrowLeft size={17} aria-hidden="true" /> Volver al muro

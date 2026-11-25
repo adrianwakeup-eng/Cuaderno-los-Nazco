@@ -64,7 +64,7 @@ export const VideoCallOverlay: React.FC = () => {
 
   const controllerRef = useRef<FamilyWebRtcController | null>(null);
   const effectsEngineRef = useRef<CallVideoEffectsEngine | null>(null);
-  const rawCameraTrackRef = useRef<MediaStreamTrack | null>(null);
+  const [rawCameraTrack, setRawCameraTrack] = useState<MediaStreamTrack | null>(null);
   const localVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteVideoRef = useRef<HTMLVideoElement | null>(null);
   const remoteAudioRef = useRef<HTMLAudioElement | null>(null);
@@ -93,6 +93,7 @@ export const VideoCallOverlay: React.FC = () => {
     setEffectsOpen(false);
     setEffects(INITIAL_EFFECTS);
     setTrackerStatus('idle');
+    setRawCameraTrack(null);
 
     const ctrl = new FamilyWebRtcController({
       onStateChange: (state, msg) => {
@@ -106,8 +107,7 @@ export const VideoCallOverlay: React.FC = () => {
       },
       onScreenShareChange: (sharing) => setScreenSharing(sharing),
       onRawCameraTrackChange: (track) => {
-        rawCameraTrackRef.current = track;
-        effectsEngineRef.current?.setSourceTrack(track);
+        setRawCameraTrack(track);
       },
     });
     controllerRef.current = ctrl;
@@ -121,7 +121,6 @@ export const VideoCallOverlay: React.FC = () => {
       window.clearInterval(timer);
       effectsEngineRef.current?.destroy();
       effectsEngineRef.current = null;
-      rawCameraTrackRef.current = null;
       ctrl.hangUp();
       controllerRef.current = null;
     };
@@ -139,11 +138,11 @@ export const VideoCallOverlay: React.FC = () => {
     const ctrl = controllerRef.current;
     if (!ctrl || !activeCall || activeCall.mode !== 'VIDEO') return;
 
-    if (!anyEffectActive || !cameraOn) {
+    if (!anyEffectActive || !cameraOn || screenSharing || !rawCameraTrack) {
       if (effectsEngineRef.current) {
         effectsEngineRef.current.stop();
       }
-      void ctrl.setEffectVideoTrack(null);
+      void ctrl.setEffectVideoTrack(null).catch(() => {});
       return;
     }
 
@@ -151,17 +150,26 @@ export const VideoCallOverlay: React.FC = () => {
       effectsEngineRef.current = new CallVideoEffectsEngine((status) => {
         setTrackerStatus(status);
       });
-      if (rawCameraTrackRef.current) {
-        effectsEngineRef.current.setSourceTrack(rawCameraTrackRef.current);
-      }
     }
 
-    effectsEngineRef.current.updateState(effects);
-    const processedTrack = effectsEngineRef.current.start();
-    if (processedTrack) {
-      void ctrl.setEffectVideoTrack(processedTrack);
+    const engine = effectsEngineRef.current;
+    engine.setSourceTrack(rawCameraTrack);
+    engine.updateState(effects);
+
+    const showUnavailable = () => {
+      if (controllerRef.current !== ctrl) return;
+      setEffects(INITIAL_EFFECTS);
+      notify('El navegador no pudo enviar el video con efectos. La cámara sigue disponible.', 'warning');
+    };
+
+    try {
+      const processedTrack = engine.start();
+      if (processedTrack) void ctrl.setEffectVideoTrack(processedTrack).catch(showUnavailable);
+      else showUnavailable();
+    } catch {
+      showUnavailable();
     }
-  }, [effects, anyEffectActive, cameraOn, activeCall?.id, activeCall?.mode]);
+  }, [effects, anyEffectActive, cameraOn, screenSharing, rawCameraTrack, activeCall?.id, activeCall?.mode, notify]);
 
   useEffect(() => {
     if (localVideoRef.current && localStream) {
@@ -633,7 +641,7 @@ export const VideoCallOverlay: React.FC = () => {
 
               <button
                 onClick={() => {
-                  if (!cameraOn) {
+                  if (!cameraOn || !rawCameraTrack) {
                     notify('Enciende la cámara para usar máscaras y filtros ✨', 'info');
                     return;
                   }

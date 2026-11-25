@@ -31,12 +31,17 @@ import {
 } from '../crochet/CrochetArt';
 import { OfflineNoticeBar, PwaInstallSheet, usePwaInstall } from '../pwa/PwaInstallSheet';
 import { AppearanceModal } from '../settings/AppearanceModal';
+import { BottomSheet } from '../shared/BottomSheet';
 import { SideDrawer } from './SideDrawer';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const {
     snapshot,
     cloudStatus,
+    pushEnabled,
+    pushSupport,
+    enablePushNotifications,
+    testPushNotification,
     currentUser,
     activeSection,
     setActiveSection,
@@ -47,7 +52,6 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
     storageUsage,
     toasts,
     triggerJoyBurst,
-    notify,
   } = useFamilyApp();
 
   const { prefs, parallax, triggerFeedback, setShowAppearanceModal } = useAppearance();
@@ -55,6 +59,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [installOpen, setInstallOpen] = useState(false);
+  const [notifSheetOpen, setNotifSheetOpen] = useState(false);
+  const [enablingPush, setEnablingPush] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   // Smoothly compact top header height on mobile scroll down
@@ -288,15 +294,23 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               type="button"
               onClick={() => {
                 triggerFeedback('chime');
-                if (unreadMessageCount > 0) setActiveSection('MESSAGES');
-                else notify(`Todo al día · ${onlineMembers.length} familiares conectados 💛`, 'info');
+                setNotifSheetOpen(true);
               }}
-              className="btn-yarn-press relative flex h-11 w-11 items-center justify-center rounded-full border border-artisanal-500/50 bg-cotton-50 text-forest-800 shadow-sm hover:bg-solar-100"
-              aria-label="Notificaciones"
+              className={`btn-yarn-press relative flex h-11 w-11 items-center justify-center rounded-full border shadow-sm transition ${
+                pushEnabled
+                  ? 'border-brazil-500 bg-brazil-50 text-forest-800'
+                  : 'border-artisanal-500/50 bg-cotton-50 text-forest-800 hover:bg-solar-100'
+              }`}
+              aria-label="Notificaciones y avisos de llamadas"
+              title={pushEnabled ? 'Notificaciones Push activas' : 'Activar avisos de llamadas fuera de la app'}
             >
               <Bell className="h-5 w-5" />
-              {unreadMessageCount > 0 && (
-                <span className="absolute right-2 top-2 h-2.5 w-2.5 rounded-full bg-rose-600 ring-2 ring-white" />
+              {(unreadMessageCount > 0 || !pushEnabled) && (
+                <span
+                  className={`absolute right-2 top-2 h-2.5 w-2.5 rounded-full ring-2 ring-white ${
+                    unreadMessageCount > 0 ? 'bg-rose-600' : 'bg-solar-400 animate-pulse'
+                  }`}
+                />
               )}
             </button>
           </div>
@@ -572,6 +586,75 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       />
       <AppearanceModal />
       <PwaInstallSheet open={installOpen} onClose={() => setInstallOpen(false)} />
+
+      {/* Real Web Push Notifications Control Sheet */}
+      <BottomSheet
+        open={notifSheetOpen}
+        title="Avisos de llamadas y mensajes"
+        onClose={() => setNotifSheetOpen(false)}
+      >
+        <div className="space-y-4">
+          <div className="crochet-parchment rounded-2xl p-4">
+            <p className="text-sm font-extrabold text-forest-900">
+              {pushEnabled
+                ? '✅ Notificaciones Push activas en este dispositivo'
+                : '🔔 Activa las notificaciones fuera de la app'}
+            </p>
+            <p className="mt-1 text-xs leading-relaxed text-espresso-700">
+              {pushEnabled
+                ? 'Cuando un familiar te llame o te envíe un mensaje, recibirás una notificación en la pantalla aunque tengas cerrada la aplicación.'
+                : 'Al activarlas, tu teléfono vibrará y te avisará cuando recibas una videollamada o mensaje familiar, incluso con el navegador cerrado.'}
+            </p>
+          </div>
+
+          {pushSupport === 'ios-needs-install' && (
+            <div className="rounded-2xl border border-solar-400 bg-solar-50 p-3.5 text-xs leading-relaxed text-espresso-800">
+              <strong>Requisito en iPhone (iOS):</strong> primero toca{' '}
+              <strong>Compartir → Añadir a pantalla de inicio</strong> en Safari, abre{' '}
+              <strong>Los Nazco</strong> desde el ícono en tu pantalla y luego toca el botón verde de
+              abajo.
+            </div>
+          )}
+
+          {!pushEnabled ? (
+            <button
+              type="button"
+              disabled={enablingPush}
+              onClick={async () => {
+                setEnablingPush(true);
+                await enablePushNotifications();
+                setEnablingPush(false);
+              }}
+              className="crochet-green-3d btn-yarn-press flex min-h-[50px] w-full items-center justify-center gap-2 rounded-full text-sm font-extrabold text-white disabled:opacity-50"
+            >
+              <Bell className="h-4 w-4 text-solar-300" />
+              {enablingPush ? 'Activando…' : 'Activar avisos de llamadas en este teléfono'}
+            </button>
+          ) : (
+            <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+              <button
+                type="button"
+                onClick={() => void testPushNotification()}
+                className="crochet-gold-3d btn-yarn-press flex min-h-[46px] items-center justify-center gap-2 rounded-full text-xs font-extrabold text-forest-900"
+              >
+                <Bell className="h-4 w-4" />
+                Probar notificación Push
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setNotifSheetOpen(false);
+                  setActiveSection('MESSAGES');
+                }}
+                className="btn-yarn-press flex min-h-[46px] items-center justify-center gap-2 rounded-full border border-cotton-300 bg-white text-xs font-bold text-forest-800"
+              >
+                <MessageCircle className="h-4 w-4 text-brazil-500" />
+                Ir a mensajes ({unreadMessageCount})
+              </button>
+            </div>
+          )}
+        </div>
+      </BottomSheet>
 
       {/* Toast Notifications */}
       <div className="pointer-events-none fixed bottom-24 right-4 z-50 flex flex-col gap-2 lg:bottom-5">

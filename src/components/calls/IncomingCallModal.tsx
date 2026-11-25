@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Phone, PhoneOff, Video } from 'lucide-react';
 import { useAppearance } from '../../context/AppearanceContext';
+import { startIncomingRingtone } from '../../services/pushNotificationService';
 import type { CallMode, FamilyMember } from '../../types';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
 import { AmigurumiPhone } from '../crochet/CrochetArt';
@@ -13,7 +14,7 @@ interface IncomingCallModalProps {
   onReject: () => void;
 }
 
-/** Accessible incoming call screen with animated crochet frame & amigurumi phone */
+/** Accessible incoming call screen with animated crochet frame, audible ringtone & amigurumi phone */
 export const IncomingCallModal: React.FC<IncomingCallModalProps> = ({
   caller,
   mode,
@@ -22,6 +23,12 @@ export const IncomingCallModal: React.FC<IncomingCallModalProps> = ({
   onReject,
 }) => {
   const { triggerFeedback } = useAppearance();
+
+  useEffect(() => {
+    if (!caller) return;
+    const stopRing = startIncomingRingtone();
+    return () => stopRing();
+  }, [caller?.id]);
 
   if (!caller) return null;
 

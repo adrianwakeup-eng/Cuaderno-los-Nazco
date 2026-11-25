@@ -9,6 +9,7 @@ import {
   MonitorUp,
   PhoneOff,
   RefreshCw,
+  Share2,
   ShieldAlert,
   Video,
   VideoOff,
@@ -105,6 +106,32 @@ export const VideoCallOverlay: React.FC = () => {
     window.setTimeout(() => setCopiedCode(false), 2000);
   };
 
+  const handleShareInvite = async () => {
+    const inviteUrl = new URL(window.location.href);
+    inviteUrl.search = '';
+    inviteUrl.searchParams.set('joinCall', activeCall.roomCode);
+    inviteUrl.searchParams.set('mode', activeCall.mode);
+    inviteUrl.searchParams.set('title', activeCall.title);
+    const text = `📞 ${currentUser.name} te invita a una ${
+      activeCall.mode === 'VIDEO' ? 'videollamada' : 'llamada'
+    } en Cuaderno los Nazco (Sala #${activeCall.roomCode}): ${inviteUrl.toString()}`;
+
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: 'Llamada familiar · Cuaderno los Nazco',
+          text,
+          url: inviteUrl.toString(),
+        });
+        return;
+      } catch {
+        // cancelled
+      }
+    }
+    void navigator.clipboard?.writeText(text);
+    notify('Enlace directo a la llamada copiado · pégalo en WhatsApp 💛', 'success');
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-[#16110E] text-white">
       <audio ref={remoteAudioRef} autoPlay playsInline />
@@ -130,6 +157,15 @@ export const VideoCallOverlay: React.FC = () => {
         </div>
 
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => void handleShareInvite()}
+            className="inline-flex items-center gap-1.5 rounded-full bg-brazil-500 px-3 py-1.5 text-xs font-bold text-white shadow transition hover:bg-brazil-600"
+            title="Enviar enlace directo de llamada por WhatsApp o compartir"
+          >
+            <Share2 className="h-3.5 w-3.5 text-solar-200" />
+            <span>Invitar</span>
+          </button>
+
           <button
             onClick={handleCopyCode}
             className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-white/10 px-3 py-1.5 font-mono text-xs font-semibold text-amber-200 transition hover:bg-white/20"

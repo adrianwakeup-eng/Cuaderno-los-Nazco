@@ -20,11 +20,21 @@ function loadCallHistory(): CallHistoryEntry[] {
 }
 
 export const CallsHubView: React.FC = () => {
-  const { snapshot, currentUser, startCall, notify } = useFamilyApp();
+  const {
+    snapshot,
+    currentUser,
+    startCall,
+    notify,
+    pushEnabled,
+    pushSupport,
+    enablePushNotifications,
+    testPushNotification,
+  } = useFamilyApp();
   const { triggerFeedback } = useAppearance();
   const [joinCode, setJoinCode] = useState('');
   const [history, setHistory] = useState<CallHistoryEntry[]>(loadCallHistory);
   const [previewCaller, setPreviewCaller] = useState<FamilyMember | null>(null);
+  const [enablingPush, setEnablingPush] = useState(false);
 
   if (!currentUser) return null;
 
@@ -62,6 +72,61 @@ export const CallsHubView: React.FC = () => {
           El módulo de videollamadas está desactivado actualmente desde el Panel de Administración.
         </div>
       )}
+
+      {/* Push Notifications Activation Card for Closed-App Call Ringing */}
+      <div
+        className={`flex flex-wrap items-center justify-between gap-3 rounded-3xl border-2 p-4 ${
+          pushEnabled
+            ? 'border-brazil-400 bg-brazil-50/90'
+            : 'border-solar-400 bg-solar-50/95'
+        }`}
+      >
+        <div className="flex min-w-0 flex-1 items-start gap-3">
+          <span
+            className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl ${
+              pushEnabled ? 'bg-forest-700 text-solar-300' : 'bg-solar-400 text-forest-900'
+            }`}
+          >
+            <BellRing className="h-5 w-5" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-sm font-extrabold text-forest-900">
+              {pushEnabled
+                ? 'Avisos de llamada fuera de la app: ACTIVOS'
+                : 'Activa los avisos de llamada con la app cerrada'}
+            </p>
+            <p className="text-xs text-espresso-700">
+              {pushSupport === 'ios-needs-install'
+                ? 'En iPhone: instala la app (Compartir → Añadir a pantalla de inicio) y luego toca Activar.'
+                : pushEnabled
+                  ? 'Este teléfono recibirá notificaciones Push cuando te llamen, incluso con la pantalla bloqueada.'
+                  : 'Cada familiar debe tocar este botón una vez en su teléfono para recibir avisos al recibir llamadas.'}
+            </p>
+          </div>
+        </div>
+        {pushEnabled ? (
+          <button
+            type="button"
+            onClick={() => void testPushNotification()}
+            className="btn-yarn-press rounded-full border border-forest-700 bg-white px-4 py-2 text-xs font-extrabold text-forest-800 hover:bg-brazil-100"
+          >
+            Probar aviso
+          </button>
+        ) : (
+          <button
+            type="button"
+            disabled={enablingPush}
+            onClick={async () => {
+              setEnablingPush(true);
+              await enablePushNotifications();
+              setEnablingPush(false);
+            }}
+            className="crochet-green-3d btn-yarn-press rounded-full px-5 py-2.5 text-xs font-extrabold text-white disabled:opacity-50"
+          >
+            {enablingPush ? 'Activando…' : 'Activar avisos 🔔'}
+          </button>
+        )}
+      </div>
 
       {/* Hero: Senior-Friendly Huge Family Room Controls + Join by Code */}
       <div className="grid grid-cols-1 gap-5 md:grid-cols-2">

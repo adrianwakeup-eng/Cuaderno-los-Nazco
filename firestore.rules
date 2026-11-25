@@ -116,6 +116,15 @@ rules_version = '2';
 //   - index: int (required, immutable doc, 0..59)
 //   - data: string (required, 1..760000 chars)
 //
+// Collection: families/los_nazco/push_subs/{subId}
+//   - id: string (required, immutable, must equal subId, 2..120 chars)
+//   - memberId: string (required, immutable, 2..80 chars)
+//   - endpoint: string (required, 10..2048 chars, must start with https://)
+//   - p256dh: string (required, 10..256 chars)
+//   - auth: string (required, 6..128 chars)
+//   - platform: string (required, 1..60 chars)
+//   - updatedAt: timestamp | ISO-8601 string (required)
+//
 // ===============================================================
 
 service cloud.firestore {
@@ -545,6 +554,34 @@ service cloud.firestore {
         isValidString(data.data, 1, 760000);
     }
 
+    function isValidPushSub(data, subId) {
+      return hasOnlyAllowedFields([
+          'id',
+          'memberId',
+          'endpoint',
+          'p256dh',
+          'auth',
+          'platform',
+          'updatedAt'
+        ]) &&
+        hasRequiredFields([
+          'id',
+          'memberId',
+          'endpoint',
+          'p256dh',
+          'auth',
+          'platform',
+          'updatedAt'
+        ]) &&
+        isValidString(data.id, 2, 120) && data.id == subId &&
+        isValidString(data.memberId, 2, 80) &&
+        isValidString(data.endpoint, 10, 2048) && data.endpoint.matches("^https://.*") &&
+        isValidString(data.p256dh, 10, 256) &&
+        isValidString(data.auth, 6, 128) &&
+        isValidString(data.platform, 1, 60) &&
+        isValidDateOrTimestamp(data.updatedAt);
+    }
+
     // ===============================================================
     // Family Workspace Rules: /families/los_nazco
     // ===============================================================
@@ -643,6 +680,17 @@ service cloud.firestore {
         allow create: if isAuthenticated() &&
           isValidMediaChunk(request.resource.data);
         allow update: if false;
+        allow delete: if isAuthenticated();
+      }
+
+      // 10. Web Push notification subscriptions
+      match /push_subs/{subId} {
+        allow read: if isAuthenticated();
+        allow create: if isAuthenticated() &&
+          isValidPushSub(request.resource.data, subId);
+        allow update: if isAuthenticated() &&
+          isValidPushSub(request.resource.data, subId) &&
+          areImmutableFieldsUnchanged(['id', 'memberId']);
         allow delete: if isAuthenticated();
       }
     }

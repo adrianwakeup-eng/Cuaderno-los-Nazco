@@ -6,6 +6,14 @@ import {
   type CloudSyncState,
   type LiveCallSignal,
 } from '../services/firebaseSyncService';
+import {
+  dispatchPushNotification,
+  enableDevicePush,
+  getNotificationPermission,
+  getPushSupportState,
+  sendTestPushToSelf,
+  type PushSupportState,
+} from '../services/pushNotificationService';
 import { realtimeBus } from '../services/realtimeBus';
 import { computeStorageUsage, deleteMediaBlob } from '../services/storageService';
 import { generateFamilyRoomCode } from '../services/webrtcService';
@@ -39,6 +47,10 @@ export interface ToastNotice {
 interface FamilyAppContextValue {
   snapshot: FamilyAppSnapshot;
   cloudStatus: CloudSyncState;
+  pushEnabled: boolean;
+  pushSupport: PushSupportState;
+  enablePushNotifications: () => Promise<boolean>;
+  testPushNotification: () => Promise<void>;
   cloudStories: FamilyStory[];
   cloudAlbumPhotos: AlbumPhotoItem[];
   incomingCall: LiveCallSignal | null;
@@ -137,6 +149,10 @@ const AVATAR_PALETTE = ['#164D32', '#398B4B', '#BA9254', '#16466C', '#C85531', '
 export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [snapshot, setSnapshot] = useState<FamilyAppSnapshot>(() => familyRepository.loadSnapshot());
   const [cloudStatus, setCloudStatus] = useState<CloudSyncState>('CONNECTING');
+  const [pushEnabled, setPushEnabled] = useState<boolean>(
+    () => getNotificationPermission() === 'granted'
+  );
+  const pushSupport = useMemo(() => getPushSupportState(), []);
   const [cloudStories, setCloudStories] = useState<FamilyStory[]>([]);
   const [cloudAlbumPhotos, setCloudAlbumPhotos] = useState<AlbumPhotoItem[]>([]);
   const [liveCalls, setLiveCalls] = useState<LiveCallSignal[]>([]);
@@ -328,6 +344,64 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     const found = snapshot.members.find((m) => m.id === activeUserId && m.status === 'ACTIVE');
     return found ?? null;
   }, [snapshot.members, activeUserId]);
+
+  // Silently keep this device's Web Push subscription synced to the signed-in family member
+  useEffect(() => {
+    if (!currentUser) return;
+    if (getNotificationPermission() === 'granted') {
+      void enableDevicePush(currentUser.id, false).then((res) => {
+        if (res.ok) setPushEnabled(true);
+      });
+    }
+  }, [currentUser?.id]);
+
+  // Deep-link auto-join when user taps an incoming call Push Notification (?joinCall=...)
+  useEffect(() => {
+    if (!currentUser) return;
+    const params = new URLSearchParams(window.location.search);
+    const joinRoom = params.get('joinCall');
+    if (!joinRoom) return;
+    const modeParam = params.get('mode') === 'AUDIO' ? 'AUDIO' : 'VIDEO';
+    const titleParam = params.get('title') || `Sala Familiar #${joinRoom}`;
+
+    // Clean query params so reloading later won't re-join automatically
+    const cleanUrl = `${window.location.origin}${window.location.pathname}`;
+    window.history.replaceState({}, '', cleanUrl);
+
+    setActiveCall({
+      id: `call_join_${Date.now()}`,
+      roomCode: joinRoom,
+      title: titleParam,
+      mode: modeParam,
+      scope: 'FAMILY_ROOM',
+      participantIds: [currentUser.id],
+      startedById: currentUser.id,
+      startedAt: new Date().toISOString(),
+      isHost: false,
+    });
+  }, [currentUser?.id]);
+
+  const enablePushNotifications = useCallback(async (): Promise<boolean> => {
+    if (!currentUser) return false;
+    const res = await enableDevicePush(currentUser.id, true);
+    if (res.ok) {
+      setPushEnabled(true);
+      notify('🔔 ¡Listo! Recibirás avisos de llamadas y mensajes aunque cierres la app.', 'success');
+      return true;
+    }
+    notify(res.error || 'No se pudieron activar las notificaciones.', 'warning');
+    return false;
+  }, [currentUser, notify]);
+
+  const testPushNotification = useCallback(async (): Promise<void> => {
+    if (!currentUser) return;
+    const ok = await sendTestPushToSelf(currentUser.id, currentUser.name);
+    if (ok) {
+      notify('Notificación de prueba enviada al servidor Push 🔔', 'success');
+    } else {
+      notify('Primero activa las notificaciones en este dispositivo.', 'warning');
+    }
+  }, [currentUser, notify]);
 
   // Live incoming call detected from Firestore (ringing within last 90s for this relative)
   const incomingCall = useMemo(() => {
@@ -880,6 +954,22 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
               updatedAt: msg.createdAt,
             };
             void firebaseSyncService.saveChat(updated).catch(() => {});
+            void dispatchPushNotification({
+              targetMemberIds: updated.participantIds,
+              excludeMemberId: currentUser.id,
+              title:
+                updated.kind === 'GROUP'
+                  ? `💬 ${currentUser.name.split(' ')[0]} en ${updated.title || 'Familia'}`
+                  : `💬 ${currentUser.name}`,
+              body:
+                clean ||
+                (attachment?.kind === 'AUDIO'
+                  ? '🎙️ Nota de voz'
+                  : attachment?.kind === 'IMAGE'
+                    ? '📷 Envió una foto'
+                    : '✨ Envió un sticker'),
+              kind: 'MESSAGE',
+            });
             return updated;
           })
           .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()),
@@ -983,7 +1073,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         isHost,
       });
 
-      // Notify all invited family phones in real time via Firestore
+      // Notify all invited family phones in real time via Firestore + closed-app Web Push!
       if (isHost) {
         const signal: LiveCallSignal = {
           id: callId,
@@ -999,6 +1089,18 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           createdAt: nowIso,
         };
         void firebaseSyncService.publishCallSignal(signal).catch(() => {});
+        void dispatchPushNotification({
+          targetMemberIds: params.participantIds,
+          excludeMemberId: currentUser.id,
+          title:
+            params.mode === 'VIDEO'
+              ? `📹 Videollamada de ${currentUser.name}`
+              : `📞 Llamada de ${currentUser.name}`,
+          body: `Toca para contestar ahora en Cuaderno los Nazco (Sala #${roomCode})`,
+          kind: 'CALL',
+          roomCode,
+          callMode: params.mode,
+        });
       }
     },
     [snapshot.featureFlags.videoCallsEnabled, currentUser, notify]
@@ -1159,6 +1261,10 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const value: FamilyAppContextValue = {
     snapshot,
     cloudStatus,
+    pushEnabled,
+    pushSupport,
+    enablePushNotifications,
+    testPushNotification,
     cloudStories,
     cloudAlbumPhotos,
     incomingCall,

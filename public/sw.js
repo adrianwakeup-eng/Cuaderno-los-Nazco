@@ -2,11 +2,10 @@
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Handles Web Push notifications for incoming calls & messages even when app is closed.
  */
-const CACHE_NAME = 'los-nazco-shell-v18';
+const CACHE_NAME = 'los-nazco-shell-v19';
 const PUSH_ENDPOINT_URL = 'https://yqhcyjrmkibhoorziqvg.supabase.co/functions/v1/nazco-push-notify';
 const dismissedCallIds = new Set();
 const STATIC_ASSETS = [
-  './offline.html',
   './manifest.webmanifest',
   './icons/icon-192.png',
   './icons/icon-512.png',
@@ -34,7 +33,10 @@ self.addEventListener('install', (event) => {
   event.waitUntil(
     caches
       .open(CACHE_NAME)
-      .then((cache) => cache.addAll(STATIC_ASSETS))
+      .then(async (cache) => {
+        await cache.add('./offline.html');
+        await Promise.allSettled(STATIC_ASSETS.map((asset) => cache.add(asset)));
+      })
       .then(() => self.skipWaiting())
       .catch(() => self.skipWaiting())
   );
@@ -45,7 +47,7 @@ self.addEventListener('activate', (event) => {
     caches
       .keys()
       .then((keys) =>
-        Promise.all(keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k)))
+        Promise.all(keys.filter((k) => k.startsWith('los-nazco-shell-') && k !== CACHE_NAME).map((k) => caches.delete(k)))
       )
       .then(() => self.clients.claim())
   );
@@ -66,7 +68,12 @@ self.addEventListener('fetch', (event) => {
 
   if (request.mode === 'navigate') {
     event.respondWith(
-      fetch(request).catch(() => caches.match('./offline.html'))
+      fetch(request).catch(async () => {
+        const offline = await caches.match(new URL('./offline.html', self.registration.scope));
+        return offline || new Response('Cuaderno Social de la Familia · Sin conexión', {
+          headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+        });
+      })
     );
     return;
   }

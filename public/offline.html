@@ -15,6 +15,7 @@
         color: #1F1813;
         font-family: system-ui, -apple-system, sans-serif;
         padding: 24px;
+        box-sizing: border-box;
       }
       .card {
         max-width: 400px;
@@ -48,6 +49,12 @@
         line-height: 1.55;
         color: #493B32;
       }
+      .card.has-copy { max-width: 640px; text-align: left; }
+      #reading { margin: 20px 0; display: grid; gap: 10px; }
+      #reading article { border: 1px solid #e5d2b4; border-radius: 14px; padding: 12px 14px; }
+      #reading p { margin: 6px 0 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+      #reading time { color: #62492e; font-size: 12px; margin-left: 8px; }
+      #saved-at { margin: 0; }
       button {
         background: linear-gradient(135deg, #164D32, #398B4B);
         color: #FFFDF8;
@@ -61,14 +68,52 @@
     </style>
   </head>
   <body>
-    <div class="card">
-      <div class="badge">💛 Santuario Familiar Privado</div>
-      <h1>Sin conexión en este momento</h1>
-      <p>
-        Cuaderno Social de la Familia necesita conexión para sincronizar mensajes nuevos y videollamadas.
-        Tus recuerdos locales siguen protegidos en tu dispositivo.
-      </p>
-      <button onclick="window.location.reload()">Reintentar conexión</button>
-    </div>
+    <main class="card" id="card">
+      <div class="badge">Cuaderno Social de la Familia</div>
+      <h1 id="heading">Sin conexión</h1>
+      <p id="explanation">Conéctate a Internet para volver a abrir el cuaderno.</p>
+      <p id="saved-at" hidden></p>
+      <section id="reading" aria-label="Publicaciones guardadas"></section>
+      <button type="button" id="retry">Reintentar conexión</button>
+    </main>
+    <script>
+      document.getElementById('retry').addEventListener('click', () => window.top.location.reload());
+      try {
+        const id = localStorage.getItem('cuaderno_los_nazco_active_user_v2');
+        const copy = JSON.parse(localStorage.getItem('cuaderno_family_offline_reading_v1') || 'null');
+        if (id && copy && copy.memberId === id && Array.isArray(copy.posts)) {
+          const date = new Intl.DateTimeFormat('es', { dateStyle: 'short', timeStyle: 'short' });
+          document.getElementById('card').classList.add('has-copy');
+          document.getElementById('heading').textContent = 'Muro guardado sin conexión';
+          document.getElementById('explanation').textContent = copy.posts.length
+            ? 'Puedes leer las publicaciones guardadas. Los mensajes, las fotos y las llamadas requieren conexión.'
+            : 'Aún no hay publicaciones de texto guardadas.';
+          const savedAt = document.getElementById('saved-at');
+          if (Number.isFinite(Date.parse(copy.savedAt))) {
+            savedAt.textContent = 'Última copia: ' + date.format(new Date(copy.savedAt));
+            savedAt.hidden = false;
+          }
+          const reading = document.getElementById('reading');
+          for (const post of copy.posts.slice(0, 24)) {
+            const article = document.createElement('article');
+            const author = document.createElement('strong');
+            author.textContent = post.author;
+            article.append(author);
+            if (Number.isFinite(Date.parse(post.createdAt))) {
+              const time = document.createElement('time');
+              time.dateTime = post.createdAt;
+              time.textContent = date.format(new Date(post.createdAt));
+              article.append(time);
+            }
+            const text = document.createElement('p');
+            text.textContent = post.text;
+            article.append(text);
+            reading.append(article);
+          }
+        }
+      } catch {
+        // The generic reconnect view remains available if the copy cannot be read.
+      }
+    </script>
   </body>
 </html>

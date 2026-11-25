@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { JoyBurstItem } from '../components/shared/JoyBurstLayer';
+import { clearOfflineReading, queuePushTutorial } from '../services/localFamilyPreferences';
 import { familyRepository } from '../services/familyRepository';
 import {
   firebaseSyncService,
@@ -752,6 +753,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   );
 
   const logout = useCallback(() => {
+    clearOfflineReading();
     if (currentUser) {
       const offlineMember: FamilyMember = {
         ...currentUser,
@@ -875,6 +877,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
       if (updatedGeneralChat) void firebaseSyncService.addChatParticipant(updatedGeneralChat.id, member.id).catch(() => {});
 
+      queuePushTutorial(member.id);
       setActiveUserId(member.id);
       setViewedProfileId(member.id);
       setActiveSection('FEED');

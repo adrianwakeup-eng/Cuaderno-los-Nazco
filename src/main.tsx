@@ -12,7 +12,12 @@ window.addEventListener('vite:preloadError', (event) => {
 // Register safe static-shell PWA Service Worker and auto-refresh on new deployments
 if ('serviceWorker' in navigator && import.meta.env.PROD) {
   let refreshing = false;
+  let hadController = Boolean(navigator.serviceWorker.controller);
   navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController) {
+      hadController = true;
+      return;
+    }
     if (refreshing) return;
     refreshing = true;
     window.location.reload();

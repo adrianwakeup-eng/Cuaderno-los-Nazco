@@ -13,6 +13,7 @@ import { MessengerView } from './components/messenger/MessengerView';
 import { ProfileView } from './components/profile/ProfileView';
 import { JoyBurstLayer } from './components/shared/JoyBurstLayer';
 import { AppearanceProvider } from './context/AppearanceContext';
+import { clearOfflineReading, isCubaMember, saveOfflineReading } from './services/localFamilyPreferences';
 import { FamilyAppProvider, useFamilyApp } from './context/FamilyAppContext';
 
 interface SectionErrorBoundaryProps {
@@ -81,6 +82,7 @@ const CuadernoContent: React.FC = () => {
   const {
     snapshot,
     currentUser,
+    cloudStatus,
     activeSection,
     setActiveSection,
     openProfile,
@@ -126,6 +128,26 @@ const CuadernoContent: React.FC = () => {
     window.history.replaceState(window.history.state, '', url);
   }, [locationLink, currentUser, openProfile]);
 
+
+  const [online, setOnline] = React.useState(() => navigator.onLine);
+  React.useEffect(() => {
+    const update = () => setOnline(navigator.onLine);
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    return () => {
+      window.removeEventListener('online', update);
+      window.removeEventListener('offline', update);
+    };
+  }, []);
+
+  React.useEffect(() => {
+    if (!isCubaMember(currentUser)) clearOfflineReading();
+    else if (currentUser && online && cloudStatus === 'CONNECTED') saveOfflineReading(currentUser, snapshot);
+  }, [currentUser, online, cloudStatus, snapshot]);
+
+  if (!online) {
+    return <iframe src="./offline.html" title="Cuaderno sin conexión" className="block h-[100dvh] w-full border-0" />;
+  }
 
   return (
     <AppearanceProvider userId={currentUser?.id}>

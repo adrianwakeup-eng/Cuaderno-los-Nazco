@@ -56,16 +56,19 @@ export const AppearanceProvider: React.FC<{
   children: React.ReactNode;
 }> = ({ userId, children }) => {
   const [prefs, setPrefs] = useState<AppearancePreferences>(() => loadUserPrefs(userId));
+  const [prefsOwner, setPrefsOwner] = useState(userId);
   const [parallax, setParallax] = useState({ x: 0, y: 0 });
   const [showAppearanceModal, setShowAppearanceModal] = useState(false);
 
   // Reload preferences when switching family member
   useEffect(() => {
     setPrefs(loadUserPrefs(userId));
+    setPrefsOwner(userId);
   }, [userId]);
 
   // Persist & reflect preferences on <html>
   useEffect(() => {
+    if (prefsOwner !== userId) return;
     const key = `cuaderno_nazco_appearance_${userId || 'guest'}`;
     try {
       localStorage.setItem(key, JSON.stringify(prefs));
@@ -77,7 +80,7 @@ export const AppearanceProvider: React.FC<{
     root.dataset.animations = prefs.animationsEnabled && prefs.mode !== 'LIGHT' ? 'on' : 'off';
     root.dataset.effects3d = prefs.effects3dEnabled && prefs.mode === 'IMMERSIVE_3D' ? 'on' : 'off';
     root.dataset.textScale = prefs.textScale;
-  }, [prefs, userId]);
+  }, [prefs, prefsOwner, userId]);
 
   // Desktop-only gentle cursor parallax when IMMERSIVE_3D + 3D effects are active
   useEffect(() => {

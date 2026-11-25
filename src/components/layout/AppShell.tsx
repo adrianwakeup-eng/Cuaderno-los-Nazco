@@ -29,6 +29,7 @@ import { GiantRealisticSunflower } from '../crochet/GiantRealisticSunflower';
 import { OfflineNoticeBar, PwaInstallSheet, usePwaInstall } from '../pwa/PwaInstallSheet';
 import { AppearanceModal } from '../settings/AppearanceModal';
 import { BottomSheet } from '../shared/BottomSheet';
+import { completePushTutorial, hasPendingPushTutorial } from '../../services/localFamilyPreferences';
 import { SideDrawer } from './SideDrawer';
 
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -58,6 +59,20 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [installOpen, setInstallOpen] = useState(false);
   const [notifSheetOpen, setNotifSheetOpen] = useState(false);
+  const [pushTutorial, setPushTutorial] = useState(false);
+
+  useEffect(() => {
+    if (!currentUser || !hasPendingPushTutorial(currentUser.id)) return;
+    completePushTutorial(currentUser.id);
+    setPushTutorial(true);
+    setNotifSheetOpen(true);
+  }, [currentUser?.id]);
+
+  const closeNotificationSheet = () => {
+    setPushTutorial(false);
+    setNotifSheetOpen(false);
+  };
+
   const [enablingPush, setEnablingPush] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -65,7 +80,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   useEffect(() => {
     return registerBackHandler(() => {
       if (notifSheetOpen) {
-        setNotifSheetOpen(false);
+        closeNotificationSheet();
         return true;
       }
       if (showAppearanceModal) {
@@ -654,8 +669,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       {/* Real Web Push Notifications Control Sheet */}
       <BottomSheet
         open={notifSheetOpen}
-        title="Avisos de llamadas y mensajes"
-        onClose={() => setNotifSheetOpen(false)}
+        title={pushTutorial ? "Recibe avisos aunque cierres la app" : "Avisos de llamadas y mensajes"}
+        onClose={closeNotificationSheet}
       >
         <div className="space-y-4">
           <div className="crochet-parchment rounded-2xl p-4">
@@ -670,6 +685,14 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 : 'Al activarlas, tu teléfono vibrará y te avisará cuando recibas una videollamada o mensaje familiar, incluso con el navegador cerrado.'}
             </p>
           </div>
+
+          {pushTutorial && (
+            <ol className="list-decimal space-y-2 pl-5 text-sm text-espresso-800">
+              <li>En iPhone o iPad, añade el Cuaderno a la pantalla de inicio y ábrelo desde su icono.</li>
+              <li>Toca <strong>Activar avisos</strong> y elige <strong>Permitir</strong> cuando se te pregunte.</li>
+              <li>Usa <strong>Probar notificación Push</strong> para comprobar que funciona. También puedes activarla más tarde desde la campana.</li>
+            </ol>
+          )}
 
           {pushSupport === 'ios-needs-install' && (
             <div className="rounded-2xl border border-solar-400 bg-solar-50 p-3.5 text-xs leading-relaxed text-espresso-800">
@@ -686,8 +709,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               disabled={enablingPush}
               onClick={async () => {
                 setEnablingPush(true);
-                await enablePushNotifications();
+                const enabled = await enablePushNotifications();
                 setEnablingPush(false);
+                if (enabled) setPushTutorial(false);
               }}
               className="crochet-green-3d btn-yarn-press flex min-h-[50px] w-full items-center justify-center gap-2 rounded-full text-sm font-extrabold text-white disabled:opacity-50"
             >
@@ -707,7 +731,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               <button
                 type="button"
                 onClick={() => {
-                  setNotifSheetOpen(false);
+                  closeNotificationSheet();
                   setActiveSection('MESSAGES');
                 }}
                 className="btn-yarn-press flex min-h-[46px] items-center justify-center gap-2 rounded-full border border-cotton-300 bg-white text-xs font-bold text-forest-800"

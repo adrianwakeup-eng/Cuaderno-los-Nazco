@@ -361,9 +361,6 @@ function TarotReading({ date, familyId, sign, onEdit, onBack }: {
             </div>
           )}
         </dialog>
-        <p className="px-4 pb-3 pt-2 text-center text-xs text-[#f1d9a8]">
-          Ilustraciones de Pamela Colman Smith · Rider–Waite–Smith
-        </p>
       </section>
     </>
   );

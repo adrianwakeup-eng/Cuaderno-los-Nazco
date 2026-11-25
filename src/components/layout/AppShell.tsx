@@ -24,11 +24,11 @@ import { MemberAvatar } from '../auth/FamilyAuthModal';
 import {
   BrazilianCrochetThrow,
   CrochetButterfly,
-  CrochetHouseAmigurumi,
   CrochetSunflower,
   MacrameRosetteHanging,
   TropicalCanopyLights,
 } from '../crochet/CrochetArt';
+import { GiantRealisticSunflower } from '../crochet/GiantRealisticSunflower';
 import { OfflineNoticeBar, PwaInstallSheet, usePwaInstall } from '../pwa/PwaInstallSheet';
 import { AppearanceModal } from '../settings/AppearanceModal';
 import { BottomSheet } from '../shared/BottomSheet';
@@ -168,13 +168,13 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
           </div>
 
           <div
-            className="pointer-events-none fixed bottom-0 left-0 z-10 hidden xl:block"
+            className="pointer-events-none fixed -bottom-3 -left-4 z-10 hidden xl:block"
             style={{
               transform: `translate3d(${parallax.x * 8}px, ${parallax.y * 6}px, 0)`,
               transition: 'transform 0.25s ease-out',
             }}
           >
-            <CrochetHouseAmigurumi className="w-44" />
+            <GiantRealisticSunflower className="w-60 2xl:w-72" />
           </div>
 
           <div

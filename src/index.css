@@ -698,6 +698,108 @@ html[data-mode='LIGHT'] .crochet-card {
   animation: phoneRingAmigurumi 1.25s ease-in-out infinite;
 }
 
+/* ======================== GIANT REALISTIC SUNFLOWER LIVING BREEZE ======================== */
+
+@keyframes sunflowerStemSway {
+  0%, 100% {
+    transform: rotate(-3.2deg) translateY(0px);
+  }
+  35% {
+    transform: rotate(2.6deg) translateY(-2px);
+  }
+  70% {
+    transform: rotate(-1.4deg) translateY(1px);
+  }
+}
+
+@keyframes sunflowerHeadBreathe {
+  0%, 100% {
+    transform: rotate(-2.5deg) scale(1);
+  }
+  50% {
+    transform: rotate(3.8deg) scale(1.028);
+  }
+}
+
+@keyframes sunflowerLeafFlutterL {
+  0%, 100% {
+    transform: rotate(-3deg);
+  }
+  50% {
+    transform: rotate(5deg);
+  }
+}
+
+@keyframes sunflowerLeafFlutterR {
+  0%, 100% {
+    transform: rotate(3.5deg);
+  }
+  50% {
+    transform: rotate(-4.5deg);
+  }
+}
+
+@keyframes sunflowerAuraPulse {
+  0%, 100% {
+    opacity: 0.72;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+@keyframes sunflowerMoteDrift {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 14px) scale(0.7);
+  }
+  30% {
+    opacity: 0.92;
+  }
+  75% {
+    opacity: 0.75;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(14px, -28px) scale(1.15);
+  }
+}
+
+.sunflower-sway-root {
+  transform-origin: 42% 100%;
+  animation: sunflowerStemSway 6.8s ease-in-out infinite;
+  will-change: transform;
+}
+
+.sunflower-head-breathe {
+  animation: sunflowerHeadBreathe 5.2s ease-in-out infinite;
+}
+
+.sunflower-leaf-left {
+  animation: sunflowerLeafFlutterL 4.4s ease-in-out infinite;
+}
+
+.sunflower-leaf-right {
+  animation: sunflowerLeafFlutterR 4.9s ease-in-out infinite 0.5s;
+}
+
+.sunflower-aura-pulse {
+  transform-origin: 150px 148px;
+  animation: sunflowerAuraPulse 4.6s ease-in-out infinite;
+}
+
+.sunflower-mote-1 {
+  animation: sunflowerMoteDrift 5.4s ease-in-out infinite;
+}
+.sunflower-mote-2 {
+  animation: sunflowerMoteDrift 6.2s ease-in-out infinite 1.8s;
+}
+.sunflower-mote-3 {
+  animation: sunflowerMoteDrift 5.8s ease-in-out infinite 3.1s;
+}
+
 /* Respect user preference & appearance toggle */
 html[data-animations='off'] *,
 html[data-mode='LIGHT'] * {

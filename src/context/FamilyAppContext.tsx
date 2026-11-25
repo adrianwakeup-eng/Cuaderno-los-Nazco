@@ -131,6 +131,7 @@ interface FamilyAppContextValue {
 
   // Messenger
   sendMessage: (chatId: string, text: string, attachment?: MediaAttachment, stickerId?: string) => void;
+  deleteMessage: (chatId: string, messageId: string) => void;
   markChatRead: (chatId: string) => void;
   notifyTyping: (chatId: string, isTyping: boolean) => void;
   createGroupChat: (title: string, description: string, participantIds: string[]) => FamilyChat;
@@ -1149,6 +1150,42 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     [currentUser, commitSnapshot, triggerJoyBurst]
   );
 
+  const deleteMessage = useCallback(
+    (chatId: string, messageId: string) => {
+      if (!currentUser) return;
+      let deleted = false;
+      commitSnapshot((prev) => ({
+        ...prev,
+        chats: prev.chats.map((chat) => {
+          if (chat.id !== chatId) return chat;
+          const target = chat.messages.find((m) => m.id === messageId);
+          if (!target) return chat;
+          // Allow author (or sole Admin) to delete sent messages at will
+          if (target.senderId !== currentUser.id && currentUser.role !== 'ADMIN') return chat;
+          deleted = true;
+          if (target.attachment?.storageKey) {
+            void deleteMediaBlob(target.attachment.storageKey).catch(() => {});
+          }
+          const remaining = chat.messages.filter((m) => m.id !== messageId);
+          const updated: FamilyChat = {
+            ...chat,
+            messages: remaining,
+            updatedAt:
+              remaining.length > 0
+                ? remaining[remaining.length - 1].createdAt
+                : chat.updatedAt,
+          };
+          void firebaseSyncService.saveChat(updated).catch(() => {});
+          return updated;
+        }),
+      }));
+      if (deleted) {
+        notify('Mensaje eliminado 🗑️', 'info');
+      }
+    },
+    [currentUser, commitSnapshot, notify]
+  );
+
   const markChatRead = useCallback(
     (chatId: string) => {
       if (!currentUser) return;
@@ -1486,6 +1523,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     toggleHidePost,
     deletePost,
     sendMessage,
+    deleteMessage,
     markChatRead,
     notifyTyping,
     createGroupChat,

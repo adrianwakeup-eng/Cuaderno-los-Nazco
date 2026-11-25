@@ -13,6 +13,7 @@ import {
   Send,
   Smile,
   Square,
+  Trash2,
   Users,
   Video,
   X,
@@ -37,6 +38,7 @@ export const MessengerView: React.FC = () => {
     setActiveChatId,
     registerBackHandler,
     sendMessage,
+    deleteMessage,
     markChatRead,
     notifyTyping,
     createGroupChat,
@@ -57,6 +59,7 @@ export const MessengerView: React.FC = () => {
   const [groupDesc, setGroupDesc] = useState('');
   const [selectedGroupMemberIds, setSelectedGroupMemberIds] = useState<string[]>([]);
   const [selectedMessage, setSelectedMessage] = useState<ChatMessage | null>(null);
+  const [confirmDeleteMsgId, setConfirmDeleteMsgId] = useState<string | null>(null);
   const [msgReactions, setMsgReactions] = useState<Record<string, string>>({});
 
   // Voice recording inside Messenger
@@ -487,6 +490,12 @@ export const MessengerView: React.FC = () => {
                             setSelectedMessage(msg);
                           }, 520);
                         }}
+                        onTouchMove={() => {
+                          if (longPressTimerRef.current) {
+                            window.clearTimeout(longPressTimerRef.current);
+                            longPressTimerRef.current = null;
+                          }
+                        }}
                         onTouchEnd={() => {
                           if (longPressTimerRef.current) {
                             window.clearTimeout(longPressTimerRef.current);
@@ -539,6 +548,40 @@ export const MessengerView: React.FC = () => {
                           <p className="whitespace-pre-wrap text-[15px] leading-snug">{msg.text}</p>
                         )}
                         <div className="mt-1 flex items-center justify-end gap-2">
+                          {(isMine || currentUser.role === 'ADMIN') &&
+                            (confirmDeleteMsgId === msg.id ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  triggerFeedback('tap');
+                                  deleteMessage(activeChat.id, msg.id);
+                                  setConfirmDeleteMsgId(null);
+                                }}
+                                className="rounded-full bg-rose-600 px-2 py-0.5 text-[10px] font-bold text-white shadow-sm"
+                              >
+                                ¿Borrar?
+                              </button>
+                            ) : (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  triggerFeedback('tap');
+                                  setConfirmDeleteMsgId(msg.id);
+                                  window.setTimeout(() => {
+                                    setConfirmDeleteMsgId((cur) => (cur === msg.id ? null : cur));
+                                  }, 3200);
+                                }}
+                                className={`inline-flex items-center gap-0.5 text-[10px] transition ${
+                                  isMine
+                                    ? 'text-rose-200/90 hover:text-white'
+                                    : 'text-rose-600/80 hover:text-rose-700'
+                                }`}
+                                title="Eliminar mensaje"
+                                aria-label="Eliminar mensaje"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
+                            ))}
                           <button
                             type="button"
                             onClick={() => setSelectedMessage(msg)}
@@ -794,6 +837,21 @@ export const MessengerView: React.FC = () => {
               <Heart className="h-4 w-4 fill-current" />
               Me encanta
             </button>
+            {activeChat &&
+              (selectedMessage.senderId === currentUser.id || currentUser.role === 'ADMIN') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    triggerFeedback('tap');
+                    deleteMessage(activeChat.id, selectedMessage.id);
+                    setSelectedMessage(null);
+                  }}
+                  className="btn-yarn-press flex min-h-[48px] w-full items-center gap-3 rounded-2xl bg-rose-600 px-4 text-sm font-bold text-white shadow-sm hover:bg-rose-700"
+                >
+                  <Trash2 className="h-4 w-4" />
+                  Eliminar mensaje para todos
+                </button>
+              )}
           </div>
         )}
       </BottomSheet>

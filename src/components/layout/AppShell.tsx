@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
+import tarotMageMotion from '../tarot/mago-tarot.mp4';
+import tarotMagePoster from '../tarot/lector-manos.webp';
 import {
   Bell,
   ChevronDown,
@@ -74,6 +76,15 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
 
   const [enablingPush, setEnablingPush] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [animateTarotButton, setAnimateTarotButton] = useState(false);
+
+  useEffect(() => {
+    const motion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const update = () => setAnimateTarotButton(!motion.matches);
+    update();
+    motion.addEventListener('change', update);
+    return () => motion.removeEventListener('change', update);
+  }, []);
 
   // Close open drawers/sheets on Android Back button before leaving the current section
   useEffect(() => {
@@ -213,8 +224,8 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         }`}
       >
         <div className="mx-auto flex max-w-[1380px] items-center justify-between gap-2 px-3 sm:px-5">
-          {/* LEFT: Mobile Menu + Crochet Plaque Logo ("Cuaderno Social de la Familia") */}
-          <div className="flex items-center gap-2">
+          {/* LEFT: Menu, family name and tarot */}
+          <div className="flex min-w-0 items-center gap-2 xl:gap-5">
             <button
               type="button"
               onClick={() => {
@@ -251,16 +262,21 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 </div>
 
               </button>
-              <button
-                type="button"
-                onClick={() => handleSelectSection('TAROT')}
-                aria-current={activeSection === 'TAROT' ? 'page' : undefined}
-                className="tarot-launch relative z-10 ml-2 self-start sm:ml-3"
-              >
-                <Sparkles size={15} aria-hidden="true" />
-                Tarot del día
-              </button>
             </div>
+            <button
+              type="button"
+              onClick={() => handleSelectSection('TAROT')}
+              aria-current={activeSection === 'TAROT' ? 'page' : undefined}
+              className="tarot-mage-button"
+            >
+              {animateTarotButton ? (
+                <video src={tarotMageMotion} poster={tarotMagePoster} autoPlay muted loop playsInline
+                  className="tarot-mage-portrait" aria-hidden="true" disablePictureInPicture />
+              ) : (
+                <img src={tarotMagePoster} className="tarot-mage-portrait" alt="" />
+              )}
+              <span className="tarot-mage-label">Tarot del día</span>
+            </button>
           </div>
 
           {/* CENTER: Desktop iOS Liquid Glass Crystal Nav Bar with Emerald-Gold Icons */}
@@ -279,7 +295,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                     type="button"
                     onClick={() => handleSelectSection(item.id)}
                     aria-current={active ? 'page' : undefined}
-                    className={`crochet-nav-item btn-yarn-press relative z-10 flex flex-col items-center justify-center rounded-full px-4 py-1.5 text-xs font-bold transition ${
+                    className={`crochet-nav-item btn-yarn-press relative z-10 flex flex-col items-center justify-center rounded-full px-2.5 py-1.5 text-xs font-bold transition xl:px-4 ${
                       active
                         ? 'ios-liquid-tab-active'
                         : 'hover:bg-white/20'

@@ -606,3 +606,47 @@
 
 .tarot-sign-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .85rem; }
 .tarot-sign-edit { min-height: 40px; color: #f4d38f; font-size: .8rem; text-decoration: underline; }
+
+.tarot-mage-button {
+  position: relative;
+  isolation: isolate;
+  flex: 0 0 auto;
+  width: clamp(3.1rem, 6.6vw, 6.6rem);
+  height: clamp(3rem, 5.1vw, 4.75rem);
+  overflow: hidden;
+  display: grid;
+  align-items: end;
+  border: 1px solid #e6c57b;
+  border-radius: .85rem;
+  background: #142e25;
+  color: #fff2cb;
+  box-shadow: 0 3px 8px #38280648, 0 0 0 2px #fff2c681;
+}
+
+.tarot-mage-button[aria-current], .tarot-mage-button:hover {
+  border-color: #fff1b4;
+  box-shadow: 0 3px 11px #38280669, 0 0 0 2px #edb953;
+}
+
+.tarot-mage-button:focus-visible { outline: 2px solid #204d40; outline-offset: 4px; }
+
+.tarot-mage-portrait {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 28%;
+  pointer-events: none;
+}
+
+.tarot-mage-label {
+  z-index: 1;
+  padding: .4rem .1rem .18rem;
+  background: linear-gradient(transparent, #0b211af5 75%);
+  font-size: clamp(.54rem, .95vw, .69rem);
+  font-weight: 850;
+  line-height: 1;
+  white-space: nowrap;
+  text-shadow: 0 1px 2px #11281e;
+}

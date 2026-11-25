@@ -68,7 +68,7 @@ export const AdminPanelView: React.FC = () => {
           Acceso exclusivo del Administrador
         </h2>
         <p className="mt-2 text-sm text-espresso-500">
-          Solo el dueño de Cuaderno Social de la familia puede ingresar al Panel de Administración con su
+          Solo el dueño de Cuaderno Social de la Familia puede ingresar al Panel de Administración con su
           contraseña maestra.
         </p>
       </div>
@@ -133,7 +133,7 @@ export const AdminPanelView: React.FC = () => {
                 <Shield className="h-3.5 w-3.5" /> Panel Centralizado de Administración
               </span>
               <h2 className="mt-2 font-editorial text-3xl font-bold text-espresso-900">
-                Control de Cuaderno Social de la familia
+                Control de Cuaderno Social de la Familia
               </h2>
               <p className="mt-0.5 text-sm text-espresso-800">
                 Administra cuentas familiares, modera publicaciones y comentarios, controla el

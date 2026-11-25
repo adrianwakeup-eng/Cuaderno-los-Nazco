@@ -65,7 +65,7 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ open, onClose, onOpenIns
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label="Menú lateral de Cuaderno Social de la familia"
+      aria-label="Menú lateral de Cuaderno Social de la Familia"
     >
       <aside
         onClick={(e) => e.stopPropagation()}

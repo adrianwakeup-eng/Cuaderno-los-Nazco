@@ -82,7 +82,7 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
       {/* Full-bleed exact sunset family background photograph */}
       <img
         src="./textures/welcome-sunset-clean.jpg"
-        alt="Nuestra Familia — La red social privada que nos mantiene unidos, estemos donde estemos."
+        alt="Social de la Familia — La red social privada que nos mantiene unidos, estemos donde estemos."
         className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-[22%_bottom] md:object-left-bottom"
       />
 
@@ -98,7 +98,7 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
               <h1 className="text-center text-[27px] font-bold leading-[1.22] tracking-[-0.02em] text-[#111118] sm:text-[29px]">
                 Bienvenidos a
                 <br />
-                Nuestra Familia <span className="inline-block">💛</span>
+                Social de la Familia <span className="inline-block">💛</span>
               </h1>
 
               {error && (

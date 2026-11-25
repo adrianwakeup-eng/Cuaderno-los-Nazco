@@ -202,12 +202,12 @@ export const VideoCallOverlay: React.FC = () => {
     inviteUrl.searchParams.set('title', activeCall.title);
     const text = `📞 ${currentUser.name} te invita a una ${
       activeCall.mode === 'VIDEO' ? 'videollamada' : 'llamada'
-    } en Cuaderno Social de la familia (Sala #${activeCall.roomCode}): ${inviteUrl.toString()}`;
+    } en Cuaderno Social de la Familia (Sala #${activeCall.roomCode}): ${inviteUrl.toString()}`;
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Llamada familiar · Cuaderno Social de la familia',
+          title: 'Llamada familiar · Cuaderno Social de la Familia',
           text,
           url: inviteUrl.toString(),
         });

@@ -288,7 +288,7 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Cuaderno Social de la familia · ${author?.name ?? 'Familia'}`,
+          title: `Cuaderno Social de la Familia · ${author?.name ?? 'Familia'}`,
           text: post.text,
         });
         return;

@@ -815,7 +815,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         password: cleanPassword,
         relationship: input.relationship.trim() || 'Familiar',
         location: input.location.trim() || 'Brasil',
-        bio: input.bio.trim() || 'Feliz de estar en Cuaderno Social de la familia 💛',
+        bio: input.bio.trim() || 'Feliz de estar en Cuaderno Social de la Familia 💛',
         role: 'MEMBER',
         status: 'ACTIVE',
         presence: 'ONLINE',
@@ -1412,7 +1412,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
             params.mode === 'VIDEO'
               ? `📹 Videollamada de ${currentUser.name}`
               : `📞 Llamada de ${currentUser.name}`,
-          body: 'Toca para contestar o colgar en Cuaderno Social de la familia',
+          body: 'Toca para contestar o colgar en Cuaderno Social de la Familia',
           kind: 'CALL',
           roomCode,
           callMode: params.mode,
@@ -1504,7 +1504,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           ...pendingRing.payload,
           kind: 'CALL_CANCEL',
           title: `📵 Llamada perdida de ${currentUser.name}`,
-          body: 'Intentó llamarte en Cuaderno Social de la familia',
+          body: 'Intentó llamarte en Cuaderno Social de la Familia',
         });
       }
     }

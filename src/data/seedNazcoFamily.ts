@@ -7,7 +7,7 @@ const daysAgo = (d: number) => new Date(now - d * 86_400_000).toISOString();
 export function createSeedNazcoSnapshot(): FamilyAppSnapshot {
   return {
     version: 3,
-    familyName: 'Cuaderno Social de la familia',
+    familyName: 'Cuaderno Social de la Familia',
     cloudOwnerEmail: 'adrianwakeup@gmail.com',
     adminPassword: 'nazco2026',
     members: [
@@ -19,7 +19,7 @@ export function createSeedNazcoSnapshot(): FamilyAppSnapshot {
         password: 'nazco2026',
         relationship: 'Fundador · Administrador',
         location: 'Brasil',
-        bio: 'Creador de Cuaderno Social de la familia. Nuestro rincón privado lleno de cariño, fotos, videos, notas de voz y videollamadas en familia.',
+        bio: 'Creador de Cuaderno Social de la Familia. Nuestro rincón privado lleno de cariño, fotos, videos, notas de voz y videollamadas en familia.',
         role: 'ADMIN',
         status: 'ACTIVE',
         presence: 'ONLINE',

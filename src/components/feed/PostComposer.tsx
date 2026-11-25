@@ -191,7 +191,7 @@ export const PostComposer: React.FC = () => {
         (selectedStickerId
           ? '¡Un mensajito con cariño para toda la familia! 💛'
           : category === 'PHOTO'
-            ? 'Foto compartida en Cuaderno Social de la familia'
+            ? 'Foto compartida en Cuaderno Social de la Familia'
             : category === 'VIDEO'
               ? 'Video familiar compartido'
               : 'Nota de voz familiar'),

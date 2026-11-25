@@ -1,8 +1,8 @@
-/* Cuaderno los Nazco — Safe Static App-Shell + Real Web Push Service Worker (v6)
+/* Cuaderno Social de la Familia — Safe Static App-Shell + Real Web Push Service Worker (v6)
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Handles Web Push notifications for incoming calls & messages even when app is closed.
  */
-const CACHE_NAME = 'los-nazco-shell-v16';
+const CACHE_NAME = 'los-nazco-shell-v17';
 const PUSH_ENDPOINT_URL = 'https://yqhcyjrmkibhoorziqvg.supabase.co/functions/v1/nazco-push-notify';
 const dismissedCallIds = new Set();
 const STATIC_ASSETS = [
@@ -99,7 +99,7 @@ self.addEventListener('fetch', (event) => {
 
 self.addEventListener('push', (event) => {
   let payload = {
-    title: 'Cuaderno Social de la familia',
+    title: 'Cuaderno Social de la Familia',
     body: 'Tienes una notificación familiar 💛',
     url: './',
     tag: 'nazco-general',
@@ -139,7 +139,7 @@ self.addEventListener('push', (event) => {
       self.registration.getNotifications({ tag: callTag }).then((list) => {
         list.forEach((n) => n.close());
         return self.registration.showNotification(payload.title || '📵 Llamada perdida', {
-          body: payload.body || 'Te llamaron en Cuaderno Social de la familia',
+          body: payload.body || 'Te llamaron en Cuaderno Social de la Familia',
           icon: resolvedIcon,
           badge: badgeUrl,
           tag: `nazco-missed-${payload.callId || payload.roomCode || Date.now()}`,

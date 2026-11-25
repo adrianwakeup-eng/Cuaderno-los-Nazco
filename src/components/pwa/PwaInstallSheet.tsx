@@ -82,17 +82,17 @@ export const PwaInstallSheet: React.FC<{
   const { canPromptInstall, isInstalled, isIos, triggerInstall } = usePwaInstall();
 
   return (
-    <BottomSheet open={open} title="Instalar Cuaderno Social de la familia" onClose={onClose}>
+    <BottomSheet open={open} title="Instalar Cuaderno Social de la Familia" onClose={onClose}>
       <div className="space-y-4">
         <div className="crochet-parchment flex items-center gap-3.5 rounded-2xl p-4">
           <img
             src="./icons/icon-192.png"
-            alt="Icono Cuaderno Social de la familia"
+            alt="Icono Cuaderno Social de la Familia"
             className="h-14 w-14 rounded-2xl shadow-md"
           />
           <div>
             <p className="font-editorial text-lg font-bold text-forest-800">
-              Cuaderno Social de la familia
+              Cuaderno Social de la Familia
             </p>
             <p className="text-xs text-espresso-700">
               Instálala en tu teléfono como una app nativa sin pasar por tiendas.
@@ -102,7 +102,7 @@ export const PwaInstallSheet: React.FC<{
 
         {isInstalled ? (
           <div className="rounded-2xl bg-brazil-50 p-4 text-center text-sm font-bold text-forest-700">
-            ✅ ¡Ya tienes instalada Cuaderno Social de la familia en tu dispositivo!
+            ✅ ¡Ya tienes instalada Cuaderno Social de la Familia en tu dispositivo!
           </div>
         ) : canPromptInstall ? (
           <button
@@ -126,7 +126,7 @@ export const PwaInstallSheet: React.FC<{
           </p>
           <ol className="mt-2 list-decimal space-y-1.5 pl-5 text-xs leading-relaxed text-espresso-700">
             <li>
-              Abre <strong>Cuaderno Social de la familia</strong> en <strong>Safari</strong>.
+              Abre <strong>Cuaderno Social de la Familia</strong> en <strong>Safari</strong>.
             </li>
             <li>
               Toca el botón <Share className="inline h-3.5 w-3.5 text-ocean-600" />{' '}

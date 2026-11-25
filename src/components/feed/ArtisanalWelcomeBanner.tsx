@@ -77,7 +77,7 @@ export const ArtisanalWelcomeBanner: React.FC = () => {
               <span className="absolute -top-2.5 left-1/2 h-4 w-2 -translate-x-1/2 rounded-sm bg-artisanal-500 shadow" />
               <img
                 src="./textures/family-album-hero.jpg"
-                alt="Recuerdo familiar · Cuaderno Social de la familia"
+                alt="Recuerdo familiar · Cuaderno Social de la Familia"
                 className="h-24 w-36 rounded object-cover"
               />
             </div>

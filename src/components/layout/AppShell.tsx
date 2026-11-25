@@ -213,7 +213,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         }`}
       >
         <div className="mx-auto flex max-w-[1380px] items-center justify-between gap-2 px-3 sm:px-5">
-          {/* LEFT: Mobile Menu + Crochet Plaque Logo ("Cuaderno los Nazco" + "Santuario Familiar Privado") */}
+          {/* LEFT: Mobile Menu + Crochet Plaque Logo ("Cuaderno Social de la Familia" + "Santuario Familiar Privado") */}
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -242,7 +242,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                     scrolled ? 'text-base sm:text-xl' : 'text-[19px] sm:text-[25px]'
                   }`}
                 >
-                  Cuaderno Social de la familia
+                  Cuaderno Social de la Familia
                 </span>
                 <CrochetSunflower className="h-6 w-6 shrink-0 transition group-hover:rotate-12" />
               </div>

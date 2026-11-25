@@ -209,7 +209,7 @@ export const AlbumsView: React.FC = () => {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: `Cuaderno Social de la familia · ${photo.title}`,
+          title: `Cuaderno Social de la Familia · ${photo.title}`,
           text: photo.title,
         });
         return;

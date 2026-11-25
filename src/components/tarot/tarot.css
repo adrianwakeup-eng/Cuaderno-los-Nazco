@@ -564,3 +564,45 @@
 @media (prefers-reduced-motion: reduce) {
   .tarot-room-wing-west::before { animation: none; opacity: .65; }
 }
+
+.tarot-launch {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: .45rem;
+  padding: .3rem .85rem;
+  border: 1px solid #d8b468;
+  border-radius: 999px;
+  background: radial-gradient(ellipse at 22% 0%, #346451, transparent 70%), #142e25;
+  box-shadow: inset 0 0 0 2px #e9c98432, 0 3px 7px #3b332244;
+  color: #fff0c7;
+  font-size: .8rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.tarot-launch[aria-current], .tarot-launch:hover { border-color: #ffe3a3; background-color: #214c3d; }
+.tarot-launch:disabled { opacity: .55; }
+.tarot-launch:focus-visible, .tarot-sign-edit:focus-visible { outline: 2px solid #bb822e; outline-offset: 3px; }
+
+.tarot-sign-setup {
+  padding: clamp(1.1rem, 4vw, 2rem);
+  background: radial-gradient(ellipse at 50% 0%, #245344, transparent 74%), #12261e;
+}
+
+.tarot-sign-setup h1 { color: #f4d38f; font-size: clamp(1.6rem, 5vw, 2.4rem); }
+.tarot-sign-icon { margin-top: .9rem; color: #f4d38f; }
+.tarot-sign-setup form { display: grid; gap: .6rem; margin-top: 1.25rem; }
+.tarot-sign-setup select {
+  width: 100%;
+  min-height: 44px;
+  padding-inline: .7rem;
+  border: 1px solid #d8b468;
+  border-radius: .65rem;
+  background: #fdf6e1;
+  color: #173128;
+}
+
+.tarot-sign-actions { display: flex; flex-wrap: wrap; align-items: center; gap: .85rem; }
+.tarot-sign-edit { min-height: 40px; color: #f4d38f; font-size: .8rem; text-decoration: underline; }

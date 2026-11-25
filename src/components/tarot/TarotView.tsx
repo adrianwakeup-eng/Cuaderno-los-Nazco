@@ -1,5 +1,6 @@
 import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, MoonStar, Sparkles, Volume2, X } from 'lucide-react';
+import { useFamilyApp } from '../../context/FamilyAppContext';
 import reader from './lector.webp';
 import readerHands from './lector-manos.webp';
 import readerMotion from './lector-bucle.mp4';
@@ -33,20 +34,110 @@ const getArtwork = (card: (typeof deck)[number]) => artworkFiles[`./cartas/${car
 
 const positions = ['Energía de hoy', 'El desafío', 'Tu guía'];
 
-function drawDailyCards(date: Date) {
+const signs = ['Aries', 'Tauro', 'Géminis', 'Cáncer', 'Leo', 'Virgo', 'Libra', 'Escorpio', 'Sagitario', 'Capricornio', 'Acuario', 'Piscis'] as const;
+type Sign = (typeof signs)[number];
+
+// The zodiac repeats in the order fire, earth, air, water.
+const elementCards = [[0, 3, 11], [4, 6, 7], [2, 8, 10], [1, 5, 9]];
+
+function drawDailyCards(date: Date, familyId: string, sign: Sign) {
   const day = Math.floor(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / 86_400_000);
-  let seed = day;
+  let seed = 2_166_136_261;
+  for (const character of `${day}/${familyId}/${sign}`) {
+    seed = Math.imul(seed ^ character.charCodeAt(0), 16_777_619) >>> 0;
+  }
   const cards = [...deck];
   for (let i = cards.length - 1; i > 0; i--) {
     seed = (Math.imul(1_664_525, seed) + 1_013_904_223) >>> 0;
     const j = Math.floor((seed / 4_294_967_296) * (i + 1));
     [cards[i], cards[j]] = [cards[j], cards[i]];
   }
-  return cards.slice(0, positions.length);
+  const element = elementCards[signs.indexOf(sign) % elementCards.length];
+  const guide = cards.find((card) => element.includes(card.artwork))!;
+  return [...cards.filter((card) => card !== guide).slice(0, positions.length - 1), guide];
+}
+
+function readSign(key: string): Sign | '' {
+  try {
+    const value = localStorage.getItem(key);
+    return signs.find((sign) => sign === value) ?? '';
+  } catch {
+    return '';
+  }
 }
 
 export function TarotView({ onBack }: { onBack: () => void }) {
-  const cards = useMemo(() => drawDailyCards(new Date()), []);
+  const { currentUser } = useFamilyApp();
+  if (!currentUser) return null;
+  const familyId = String(currentUser.id);
+  return <PersonalTarot key={familyId} familyId={familyId} onBack={onBack} />;
+}
+
+function PersonalTarot({ familyId, onBack }: { familyId: string; onBack: () => void }) {
+  const storageKey = `nazco-tarot-sign:${familyId}`;
+  const [sign, setSign] = useState(() => readSign(storageKey));
+  const [draft, setDraft] = useState(sign);
+  const [editing, setEditing] = useState(!sign);
+  const [date, setDate] = useState(() => new Date());
+  useEffect(() => {
+    const refreshDate = () => setDate((current) => {
+      const now = new Date();
+      return current.toDateString() === now.toDateString() ? current : now;
+    });
+    const timer = window.setInterval(refreshDate, 30_000);
+    window.addEventListener('focus', refreshDate);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', refreshDate);
+    };
+  }, []);
+
+  if (!editing && sign) {
+    return <TarotReading key={`${sign}/${date.toDateString()}`} date={date} familyId={familyId} sign={sign}
+      onEdit={() => setEditing(true)} onBack={onBack} />;
+  }
+
+  return (
+    <section className="tarot-room tarot-sign-setup mx-auto max-w-2xl" aria-labelledby="tarot-sign-title">
+      <button type="button" className="tarot-back" onClick={onBack}>
+        <ArrowLeft size={17} aria-hidden="true" /> Volver al muro
+      </button>
+      <MoonStar aria-hidden="true" className="tarot-sign-icon" />
+      <h1 id="tarot-sign-title" className="font-editorial">Tu tarot del día</h1>
+      <p>Elige tu signo para recibir tu tirada simbólica de tres cartas cada día.</p>
+      <form onSubmit={(event) => {
+        event.preventDefault();
+        if (!draft) return;
+        try { localStorage.setItem(storageKey, draft); } catch { /* Keep the preference for this visit. */ }
+        setSign(draft);
+        setEditing(false);
+      }}>
+        <label htmlFor="tarot-zodiac">Signo zodiacal</label>
+        <select id="tarot-zodiac" required value={draft}
+          onChange={(event) => setDraft(signs.find((option) => option === event.target.value) ?? '')}>
+          <option value="">Elige tu signo</option>
+          {signs.map((option) => <option key={option} value={option}>{option}</option>)}
+        </select>
+        <div className="tarot-sign-actions">
+          <button className="tarot-launch" type="submit" disabled={!draft}>Ver mi tirada</button>
+          {sign && <button className="tarot-back" type="button" onClick={() => {
+            setDraft(sign);
+            setEditing(false);
+          }}>Cancelar</button>}
+        </div>
+      </form>
+    </section>
+  );
+}
+
+function TarotReading({ date, familyId, sign, onEdit, onBack }: {
+  date: Date;
+  familyId: string;
+  sign: Sign;
+  onEdit: () => void;
+  onBack: () => void;
+}) {
+  const cards = useMemo(() => drawDailyCards(date, familyId, sign), [date, familyId, sign]);
   const [revealed, setRevealed] = useState<number[]>([]);
 
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
@@ -176,6 +267,7 @@ export function TarotView({ onBack }: { onBack: () => void }) {
           </button>
           <h1 id="tarot-title" className="font-editorial"><MoonStar aria-hidden="true" /> Tarot del día</h1>
           <p>Toca las tres cartas para descubrir tu lectura simbólica de hoy.</p>
+          <button type="button" className="tarot-sign-edit" onClick={onEdit}>{sign} · Cambiar signo</button>
         </div>
         <div className="tarot-scene">
           <div className="tarot-room-wing tarot-room-wing-west" aria-hidden="true">

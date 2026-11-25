@@ -255,9 +255,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
                 type="button"
                 onClick={() => handleSelectSection('TAROT')}
                 aria-current={activeSection === 'TAROT' ? 'page' : undefined}
-                className="crochet-green-3d relative z-10 -mt-1 ml-3 inline-flex min-h-6 items-center self-start gap-1.5 rounded-full px-3 text-[11px] font-extrabold text-white"
+                className="tarot-launch relative z-10 ml-2 self-start sm:ml-3"
               >
-                <span aria-hidden="true" className="text-solar-300">✦</span>
+                <Sparkles size={15} aria-hidden="true" />
                 Tarot del día
               </button>
             </div>

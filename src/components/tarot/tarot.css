@@ -83,7 +83,7 @@
 .tarot-card-flip {
   position: relative;
   display: block;
-  aspect-ratio: 5 / 7;
+  aspect-ratio: 104 / 182;
   transform-style: preserve-3d;
   transition: transform 620ms cubic-bezier(.2,.75,.22,1);
 }
@@ -115,11 +115,12 @@
 
 .tarot-card-front {
   color: #322315;
-  background: radial-gradient(circle at 50% 38%, #fff2c7, #d6a854);
+  background-color: #d6a854;
+  background-repeat: no-repeat;
+  border-radius: .35rem;
   transform: rotateY(180deg);
 }
 
-.tarot-symbol { font-size: clamp(1.6rem, 7vw, 3.8rem); line-height: 1; }
 .tarot-position { font-size: clamp(.65rem, 2.5vw, .85rem); font-weight: 800; }
 .tarot-card:focus-visible, .tarot-back:focus-visible { outline: 2px solid #ffe2a1; outline-offset: 4px; }
 

@@ -240,7 +240,22 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         },
         onPosts: (posts) => {
           setSnapshot((prev) => {
-            const next = { ...prev, posts };
+            // Preserve live local blob: URLs for attachments that are still playing locally
+            const prevBlobByAttId = new Map<string, string>();
+            prev.posts.forEach((p) =>
+              p.attachments.forEach((a) => {
+                if (a.previewUrl?.startsWith('blob:')) prevBlobByAttId.set(a.id, a.previewUrl);
+              })
+            );
+            const mergedPosts = posts.map((p) => ({
+              ...p,
+              attachments: p.attachments.map((a) =>
+                !a.previewUrl && prevBlobByAttId.has(a.id)
+                  ? { ...a, previewUrl: prevBlobByAttId.get(a.id) }
+                  : a
+              ),
+            }));
+            const next = { ...prev, posts: mergedPosts };
             familyRepository.saveSnapshot(next);
             return next;
           });
@@ -663,10 +678,21 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         ...prev,
         posts: [post, ...prev.posts],
       }));
-      void firebaseSyncService.savePost(post).catch((err) => {
-        console.error('Firestore savePost failed:', err);
-        notify('Guardado local — activa Acceso Anónimo en Firebase Auth para sincronizar en la nube.', 'warning');
-      });
+      const hasVideo = input.attachments.some((a) => a.kind === 'VIDEO');
+      if (hasVideo) {
+        notify('Subiendo video a la nube familiar para todos los teléfonos… 🎬', 'info');
+      }
+      void firebaseSyncService
+        .savePost(post)
+        .then(() => {
+          if (hasVideo) {
+            notify('¡Video sincronizado en la nube! Ya se puede reproducir en todos los teléfonos 🎬✨', 'success');
+          }
+        })
+        .catch((err) => {
+          console.error('Firestore savePost failed:', err);
+          notify('No se pudo subir el archivo completo a la nube (máx. 25 MB).', 'warning');
+        });
       triggerJoyBurst(input.category === 'ANNOUNCEMENT' ? '🎉' : '❤️', 8);
       notify(
         post.pinned

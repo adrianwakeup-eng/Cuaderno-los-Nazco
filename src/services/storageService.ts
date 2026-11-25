@@ -50,7 +50,7 @@ export async function saveMediaBlob(
   });
 }
 
-export async function getMediaBlobUrl(key: string): Promise<string | null> {
+export async function getMediaBlob(key: string): Promise<Blob | null> {
   try {
     const db = await openMediaDb();
     const record = await new Promise<StoredBlobRecord | undefined>((resolve, reject) => {
@@ -59,11 +59,85 @@ export async function getMediaBlobUrl(key: string): Promise<string | null> {
       req.onsuccess = () => resolve(req.result as StoredBlobRecord | undefined);
       req.onerror = () => reject(req.error);
     });
-    if (!record?.blob) return null;
-    return URL.createObjectURL(record.blob);
+    return record?.blob ?? null;
   } catch {
     return null;
   }
+}
+
+export async function getMediaBlobUrl(key: string): Promise<string | null> {
+  const blob = await getMediaBlob(key);
+  return blob ? URL.createObjectURL(blob) : null;
+}
+
+/** Extracts real video duration & a lightweight JPEG poster thumbnail from a local video Blob */
+export function extractVideoMetadata(
+  blob: Blob
+): Promise<{ durationSec?: number; posterUrl?: string }> {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(blob);
+    const video = document.createElement('video');
+    video.preload = 'metadata';
+    video.muted = true;
+    video.playsInline = true;
+
+    let done = false;
+    const finish = (res: { durationSec?: number; posterUrl?: string }) => {
+      if (done) return;
+      done = true;
+      URL.revokeObjectURL(url);
+      resolve(res);
+    };
+
+    const timeout = window.setTimeout(() => finish({}), 4000);
+
+    video.onloadedmetadata = () => {
+      const durationSec =
+        Number.isFinite(video.duration) && video.duration > 0
+          ? Math.round(video.duration)
+          : undefined;
+      try {
+        video.currentTime = Math.min(0.6, Math.max(0.05, (video.duration || 1) * 0.1));
+      } catch {
+        window.clearTimeout(timeout);
+        finish({ durationSec });
+      }
+    };
+
+    video.onseeked = () => {
+      window.clearTimeout(timeout);
+      const durationSec =
+        Number.isFinite(video.duration) && video.duration > 0
+          ? Math.round(video.duration)
+          : undefined;
+      try {
+        const maxW = 540;
+        const scale = video.videoWidth > maxW ? maxW / video.videoWidth : 1;
+        const w = Math.max(1, Math.round((video.videoWidth || 480) * scale));
+        const h = Math.max(1, Math.round((video.videoHeight || 270) * scale));
+        const canvas = document.createElement('canvas');
+        canvas.width = w;
+        canvas.height = h;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, w, h);
+          const posterUrl = canvas.toDataURL('image/jpeg', 0.72);
+          finish({ durationSec, posterUrl });
+          return;
+        }
+      } catch {
+        // ignore canvas error
+      }
+      finish({ durationSec });
+    };
+
+    video.onerror = () => {
+      window.clearTimeout(timeout);
+      finish({});
+    };
+
+    video.src = url;
+  });
 }
 
 export async function deleteMediaBlob(key: string): Promise<void> {
@@ -208,6 +282,14 @@ export async function prepareAndStoreAttachment(
     mimeType: finalMime,
   });
 
+  let durationSec = options.durationSec;
+  let posterUrl: string | undefined;
+  if (options.kind === 'VIDEO') {
+    const meta = await extractVideoMetadata(finalBlob);
+    if (!durationSec && meta.durationSec) durationSec = meta.durationSec;
+    posterUrl = meta.posterUrl;
+  }
+
   const previewUrl = URL.createObjectURL(finalBlob);
   return {
     id,
@@ -215,8 +297,9 @@ export async function prepareAndStoreAttachment(
     fileName: options.fileName,
     mimeType: finalMime,
     sizeBytes: finalBlob.size,
-    durationSec: options.durationSec,
+    durationSec,
     storageKey,
+    posterUrl,
     previewUrl,
   };
 }

@@ -3,6 +3,7 @@ import {
   deleteDoc,
   doc,
   getDoc,
+  getDocs,
   onSnapshot,
   setDoc,
   updateDoc,
@@ -19,10 +20,15 @@ import type {
   FamilyPost,
   FamilyStory,
   FeatureFlags,
+  MediaAttachment,
 } from '../types';
 import { ensureFirebaseSession, firestoreDb } from './firebaseClient';
+import { getMediaBlob, getMediaBlobUrl, saveMediaBlob } from './storageService';
 
 const FAMILY_ROOT = 'families/los_nazco';
+const RAW_CHUNK_BYTES = 480_000; // ~640 KB base64 per chunk — comfortably under Firestore 1 MiB doc limit
+const MAX_INLINE_BYTES = 480_000;
+const MAX_CLOUD_DATA_URL_LEN = 700_000;
 
 export interface CloudMetaConfig {
   familyName: string;
@@ -53,23 +59,199 @@ function stripUndefined<T>(value: T): T {
   return JSON.parse(JSON.stringify(value)) as T;
 }
 
-const MAX_CLOUD_DATA_URL_LEN = 700_000;
+function uint8ToBase64(bytes: Uint8Array): string {
+  let binary = '';
+  const step = 0x8000;
+  for (let i = 0; i < bytes.length; i += step) {
+    const sub = bytes.subarray(i, i + step);
+    binary += String.fromCharCode(...sub);
+  }
+  return btoa(binary);
+}
+
+function base64ToUint8(b64: string): Uint8Array {
+  const binary = atob(b64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes;
+}
+
+async function resolveBlobFromAttachment(att: MediaAttachment): Promise<Blob | null> {
+  if (att.storageKey) {
+    const fromDb = await getMediaBlob(att.storageKey);
+    if (fromDb) return fromDb;
+  }
+  if (att.previewUrl && att.previewUrl.startsWith('blob:')) {
+    try {
+      const res = await fetch(att.previewUrl);
+      return await res.blob();
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
 
 /**
- * Converts a local blob: URL (from IndexedDB/File) into a compact Data URL
- * if small enough for direct Firestore cross-device sync.
+ * Splits a video / large audio / large photo Blob into Firestore-safe chunks
+ * so every family phone & computer can stream and cache it without needing Blaze Storage.
  */
-export async function inlineAttachmentForCloud(previewUrl?: string): Promise<string | undefined> {
-  if (!previewUrl) return undefined;
-  if (previewUrl.startsWith('data:')) {
-    return previewUrl.length <= MAX_CLOUD_DATA_URL_LEN ? previewUrl : undefined;
+async function uploadChunkedMediaToCloud(
+  blob: Blob,
+  att: MediaAttachment,
+  authorId: string
+): Promise<string> {
+  await ensureFirebaseSession();
+  const mediaId = att.cloudMediaId || `cmed_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
+  const buffer = await blob.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  const chunkCount = Math.max(1, Math.ceil(bytes.length / RAW_CHUNK_BYTES));
+  const safeMime = att.mimeType || blob.type || (att.kind === 'VIDEO' ? 'video/mp4' : 'audio/webm');
+
+  // Upload chunks in parallel batches of 4 for fast & reliable mobile uploads
+  const batchSize = 4;
+  for (let i = 0; i < chunkCount; i += batchSize) {
+    const tasks: Promise<void>[] = [];
+    for (let j = i; j < Math.min(chunkCount, i + batchSize); j++) {
+      const slice = bytes.subarray(j * RAW_CHUNK_BYTES, Math.min(bytes.length, (j + 1) * RAW_CHUNK_BYTES));
+      const b64 = uint8ToBase64(slice);
+      const chunkRef = doc(firestoreDb, `${FAMILY_ROOT}/media/${mediaId}/chunks`, String(j));
+      tasks.push(setDoc(chunkRef, { index: j, data: b64 }));
+    }
+    await Promise.all(tasks);
   }
-  if (!previewUrl.startsWith('blob:')) return previewUrl;
-  try {
-    const res = await fetch(previewUrl);
-    const blob = await res.blob();
-    if (blob.size > 520_000) return undefined;
-    return await new Promise<string | undefined>((resolve) => {
+
+  // Write manifest doc last so readers know all chunks are ready
+  await setDoc(doc(firestoreDb, `${FAMILY_ROOT}/media`, mediaId), {
+    id: mediaId,
+    fileName: att.fileName.slice(0, 190) || 'archivo',
+    mimeType: safeMime.slice(0, 95),
+    sizeBytes: bytes.length,
+    chunkCount,
+    authorId,
+    createdAt: new Date().toISOString(),
+  });
+
+  return mediaId;
+}
+
+const activeDownloads = new Map<string, Promise<string | null>>();
+
+/**
+ * Downloads chunked video/audio from Firestore, caches it in local IndexedDB
+ * for instant replay, and returns a playable Blob URL.
+ */
+export async function resolvePlayableMediaUrl(att: MediaAttachment): Promise<string | null> {
+  // 1. Already a real playable URL (not SVG placeholder)
+  if (
+    att.previewUrl &&
+    !att.previewUrl.startsWith('data:image/svg') &&
+    (att.previewUrl.startsWith('blob:') ||
+      att.previewUrl.startsWith('https://') ||
+      att.previewUrl.startsWith('data:video/') ||
+      att.previewUrl.startsWith('data:audio/'))
+  ) {
+    return att.previewUrl;
+  }
+
+  // 2. Check local IndexedDB cache first (instant on uploader device & cached replays!)
+  const cacheKey = att.cloudMediaId ? `cloud_${att.cloudMediaId}` : att.storageKey;
+  if (att.storageKey) {
+    const localUrl = await getMediaBlobUrl(att.storageKey);
+    if (localUrl) return localUrl;
+  }
+  if (cacheKey && cacheKey !== att.storageKey) {
+    const cachedCloudUrl = await getMediaBlobUrl(cacheKey);
+    if (cachedCloudUrl) return cachedCloudUrl;
+  }
+
+  // 3. Download chunked binary from Firestore
+  if (!att.cloudMediaId) return null;
+
+  const existing = activeDownloads.get(att.cloudMediaId);
+  if (existing) return existing;
+
+  const downloadTask = (async () => {
+    try {
+      await ensureFirebaseSession();
+      const metaSnap = await getDoc(doc(firestoreDb, `${FAMILY_ROOT}/media`, att.cloudMediaId!));
+      const meta = metaSnap.exists() ? (metaSnap.data() as { mimeType?: string }) : null;
+      const chunksSnap = await getDocs(
+        collection(firestoreDb, `${FAMILY_ROOT}/media/${att.cloudMediaId}/chunks`)
+      );
+      if (chunksSnap.empty) return null;
+
+      const sorted = chunksSnap.docs
+        .map((d) => d.data() as { index: number; data: string })
+        .sort((a, b) => a.index - b.index);
+
+      const parts: BlobPart[] = sorted.map((c) => {
+        const u8 = base64ToUint8(c.data);
+        return u8.buffer.slice(u8.byteOffset, u8.byteOffset + u8.byteLength) as ArrayBuffer;
+      });
+      const mime = meta?.mimeType || att.mimeType || (att.kind === 'VIDEO' ? 'video/mp4' : 'audio/webm');
+      const blob = new Blob(parts, { type: mime });
+
+      if (cacheKey) {
+        await saveMediaBlob(cacheKey, blob, {
+          kind: att.kind,
+          fileName: att.fileName,
+          mimeType: mime,
+        }).catch(() => {});
+      }
+      return URL.createObjectURL(blob);
+    } catch (err) {
+      console.error('Error downloading chunked cloud media:', err);
+      return null;
+    } finally {
+      activeDownloads.delete(att.cloudMediaId!);
+    }
+  })();
+
+  activeDownloads.set(att.cloudMediaId, downloadTask);
+  return downloadTask;
+}
+
+/**
+ * Prepares any attachment (image, video, voice note) for cloud Firestore sync:
+ * - Small images/audios (<= 480 KB) inline directly for zero extra latency.
+ * - Videos & larger files (up to 25 MB) automatically upload as Firestore chunks!
+ */
+async function prepareAttachmentForCloud(
+  att: MediaAttachment,
+  authorId: string
+): Promise<MediaAttachment> {
+  // Already uploaded as chunked media
+  if (att.cloudMediaId) {
+    return {
+      ...att,
+      previewUrl: att.previewUrl?.startsWith('blob:') ? undefined : att.previewUrl,
+    };
+  }
+
+  // Already a small data URL or external https URL (e.g. demo SVG)
+  if (att.previewUrl && !att.previewUrl.startsWith('blob:')) {
+    if (att.previewUrl.startsWith('data:') && att.previewUrl.length <= MAX_CLOUD_DATA_URL_LEN) {
+      return att;
+    }
+    if (att.previewUrl.startsWith('https://') || att.previewUrl.startsWith('./')) {
+      return att;
+    }
+  }
+
+  const blob = await resolveBlobFromAttachment(att);
+  if (!blob) {
+    return {
+      ...att,
+      previewUrl: att.previewUrl?.startsWith('blob:') ? undefined : att.previewUrl,
+    };
+  }
+
+  // Small images/audio -> inline directly
+  if (att.kind !== 'VIDEO' && blob.size <= MAX_INLINE_BYTES) {
+    const dataUrl = await new Promise<string | undefined>((resolve) => {
       const reader = new FileReader();
       reader.onload = () => {
         const out = typeof reader.result === 'string' ? reader.result : undefined;
@@ -78,13 +260,21 @@ export async function inlineAttachmentForCloud(previewUrl?: string): Promise<str
       reader.onerror = () => resolve(undefined);
       reader.readAsDataURL(blob);
     });
-  } catch {
-    return undefined;
+    if (dataUrl) {
+      return { ...att, previewUrl: dataUrl };
+    }
   }
+
+  // Videos & larger audio/images -> upload as Firestore binary chunks!
+  const cloudMediaId = await uploadChunkedMediaToCloud(blob, att, authorId);
+  return {
+    ...att,
+    cloudMediaId,
+    previewUrl: undefined,
+  };
 }
 
 export const firebaseSyncService = {
-  /** Ensures initial seed exists in Firestore once if the cloud family space is empty */
   async ensureCloudSeeded(seed: FamilyAppSnapshot): Promise<boolean> {
     try {
       await ensureFirebaseSession();
@@ -119,7 +309,6 @@ export const firebaseSyncService = {
     }
   },
 
-  /** Real-time subscriptions for every family collection across all phones */
   subscribeAll(handlers: {
     onMeta: (meta: CloudMetaConfig) => void;
     onMembers: (members: FamilyMember[]) => void;
@@ -265,18 +454,14 @@ export const firebaseSyncService = {
     await setDoc(doc(firestoreDb, `${FAMILY_ROOT}/members`, member.id), stripUndefined(member));
   },
 
-  async savePost(post: FamilyPost): Promise<void> {
+  async savePost(post: FamilyPost): Promise<FamilyPost> {
     await ensureFirebaseSession();
     const preparedAttachments = await Promise.all(
-      post.attachments.map(async (att) => ({
-        ...att,
-        previewUrl: await inlineAttachmentForCloud(att.previewUrl),
-      }))
+      post.attachments.map((att) => prepareAttachmentForCloud(att, post.authorId))
     );
-    await setDoc(
-      doc(firestoreDb, `${FAMILY_ROOT}/posts`, post.id),
-      stripUndefined({ ...post, attachments: preparedAttachments })
-    );
+    const cloudPost: FamilyPost = { ...post, attachments: preparedAttachments };
+    await setDoc(doc(firestoreDb, `${FAMILY_ROOT}/posts`, post.id), stripUndefined(cloudPost));
+    return cloudPost;
   },
 
   async deletePost(postId: string): Promise<void> {
@@ -290,10 +475,7 @@ export const firebaseSyncService = {
       chat.messages.map(async (m) => ({
         ...m,
         attachment: m.attachment
-          ? {
-              ...m.attachment,
-              previewUrl: await inlineAttachmentForCloud(m.attachment.previewUrl),
-            }
+          ? await prepareAttachmentForCloud(m.attachment, m.senderId)
           : undefined,
       }))
     );

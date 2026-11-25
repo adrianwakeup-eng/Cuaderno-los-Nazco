@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   EyeOff,
   Megaphone,
@@ -17,13 +17,185 @@ import {
 } from 'lucide-react';
 import { useAppearance } from '../../context/AppearanceContext';
 import { useFamilyApp } from '../../context/FamilyAppContext';
+import { resolvePlayableMediaUrl } from '../../services/firebaseSyncService';
 import { formatBytes, formatDuration } from '../../services/storageService';
-import type { FamilyPost } from '../../types';
+import type { FamilyPost, MediaAttachment } from '../../types';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
-import { AMIGURUMI_REACTIONS, CrochetHeart3D } from '../crochet/CrochetArt';
+import { AMIGURUMI_REACTIONS, CrochetHeart3D, YarnBallLoader } from '../crochet/CrochetArt';
 import { BottomSheet } from '../shared/BottomSheet';
 import { StickerGifBadge } from '../shared/StickerGifPicker';
 import { CommentThread } from './CommentThread';
+
+/** Smart video player that automatically hydrates local IndexedDB or chunked Firestore cloud videos */
+const CloudVideoPlayer: React.FC<{ att: MediaAttachment }> = ({ att }) => {
+  const [videoUrl, setVideoUrl] = useState<string | null>(
+    att.previewUrl && !att.previewUrl.startsWith('data:image/svg') ? att.previewUrl : null
+  );
+  const [loading, setLoading] = useState<boolean>(
+    Boolean(!videoUrl && (att.cloudMediaId || att.storageKey))
+  );
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    let alive = true;
+    if (att.previewUrl && !att.previewUrl.startsWith('data:image/svg')) {
+      setVideoUrl(att.previewUrl);
+      setLoading(false);
+      return;
+    }
+    if (!att.cloudMediaId && !att.storageKey) {
+      setLoading(false);
+      return;
+    }
+    setLoading(true);
+    setFailed(false);
+    void resolvePlayableMediaUrl(att).then((url) => {
+      if (!alive) return;
+      if (url) {
+        setVideoUrl(url);
+      } else {
+        setFailed(true);
+      }
+      setLoading(false);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [att.id, att.previewUrl, att.cloudMediaId, att.storageKey]);
+
+  if (videoUrl) {
+    return (
+      <div
+        className="photo-heirloom-frame overflow-hidden rounded-2xl bg-black"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <video
+          src={videoUrl}
+          poster={att.posterUrl}
+          controls
+          playsInline
+          preload="metadata"
+          className="max-h-[460px] w-full bg-black"
+        />
+        <div className="flex items-center justify-between bg-forest-900/95 px-3.5 py-2 text-[11px] font-semibold text-cotton-50">
+          <span className="truncate">
+            🎬 {att.fileName}
+            {att.durationSec ? ` · ${formatDuration(att.durationSec)}` : ''} ·{' '}
+            {formatBytes(att.sizeBytes)}
+          </span>
+          {att.cloudMediaId && (
+            <span className="ml-2 shrink-0 rounded-full bg-brazil-500/30 px-2 py-0.5 text-[10px] text-solar-200">
+              ☁️ En la nube
+            </span>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="photo-heirloom-frame flex min-h-[200px] flex-col items-center justify-center gap-3 rounded-2xl bg-forest-900/95 p-6 text-center text-cotton-50">
+        <YarnBallLoader size={42} />
+        <p className="text-xs font-bold text-solar-200">
+          Cargando video familiar ({formatBytes(att.sizeBytes)})…
+        </p>
+      </div>
+    );
+  }
+
+  // Fallback for seed demo SVG clip or pre-cloud local video viewed on another device
+  return (
+    <div className="photo-heirloom-frame overflow-hidden rounded-2xl bg-espresso-900">
+      <div className="relative">
+        {(att.posterUrl || att.previewUrl) && (
+          <img
+            src={att.posterUrl || att.previewUrl}
+            alt={att.fileName}
+            loading="lazy"
+            className="max-h-[340px] w-full object-cover opacity-95"
+          />
+        )}
+        <div className="flex flex-wrap items-center justify-between gap-2 bg-forest-900/95 px-4 py-3 text-xs text-cotton-50">
+          <span>
+            🎬 {att.fileName}
+            {att.durationSec ? ` · ${formatDuration(att.durationSec)}` : ''} ·{' '}
+            {formatBytes(att.sizeBytes)}
+          </span>
+          <span className="rounded-full bg-solar-400/20 px-2.5 py-0.5 text-[11px] text-solar-200">
+            {failed
+              ? 'Video publicado antes de la sincronización · súbelo de nuevo para compartirlo'
+              : 'Clip demo · sube tu video arriba'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/** Smart audio player that automatically hydrates local IndexedDB or chunked Firestore voice notes */
+const CloudAudioAttachment: React.FC<{
+  att: MediaAttachment;
+  demoVoicePlaying: boolean;
+  onPlayDemo: () => void;
+}> = ({ att, demoVoicePlaying, onPlayDemo }) => {
+  const [audioUrl, setAudioUrl] = useState<string | null>(att.previewUrl ?? null);
+
+  useEffect(() => {
+    let alive = true;
+    if (att.previewUrl) {
+      setAudioUrl(att.previewUrl);
+      return;
+    }
+    if (!att.cloudMediaId && !att.storageKey) return;
+    void resolvePlayableMediaUrl(att).then((url) => {
+      if (alive && url) setAudioUrl(url);
+    });
+    return () => {
+      alive = false;
+    };
+  }, [att.id, att.previewUrl, att.cloudMediaId, att.storageKey]);
+
+  return (
+    <div className="crochet-parchment rounded-2xl p-3.5" onClick={(e) => e.stopPropagation()}>
+      <div className="mb-2 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-2.5">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-forest-700 text-solar-300 shadow">
+            <Mic className="h-4 w-4" />
+          </span>
+          <div>
+            <p className="text-xs font-extrabold text-forest-900">{att.fileName}</p>
+            <p className="text-[11px] font-medium text-espresso-700">
+              Nota de voz · {formatDuration(att.durationSec)} · {formatBytes(att.sizeBytes)}
+            </p>
+          </div>
+        </div>
+        {!audioUrl && (
+          <button
+            type="button"
+            onClick={onPlayDemo}
+            className="crochet-green-3d btn-yarn-press inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-bold text-white"
+          >
+            <Play className="h-3.5 w-3.5 fill-current text-solar-300" />
+            {demoVoicePlaying ? 'Escuchando…' : 'Escuchar'}
+          </button>
+        )}
+      </div>
+      {demoVoicePlaying && (
+        <div className="mb-2 flex h-5 items-center justify-center gap-1">
+          {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((b) => (
+            <span
+              key={b}
+              style={{ animation: `wavePulse 0.8s ease-in-out ${b * 0.08}s infinite` }}
+              className="h-4 w-1 rounded-full bg-forest-700"
+            />
+          ))}
+        </div>
+      )}
+      {audioUrl && <audio src={audioUrl} controls className="w-full" />}
+    </div>
+  );
+};
 
 function formatPostDate(iso: string): string {
   const date = new Date(iso);
@@ -271,90 +443,17 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
               }
 
               if (att.kind === 'VIDEO') {
-                const isRealVideo = att.previewUrl && !att.previewUrl.startsWith('data:image/svg');
-                return (
-                  <div
-                    key={att.id}
-                    className="photo-heirloom-frame overflow-hidden rounded-2xl bg-espresso-900"
-                  >
-                    {isRealVideo ? (
-                      <video
-                        src={att.previewUrl}
-                        controls
-                        playsInline
-                        className="max-h-[440px] w-full bg-black"
-                      />
-                    ) : (
-                      <div className="relative">
-                        {att.previewUrl && (
-                          <img
-                            src={att.previewUrl}
-                            alt={att.fileName}
-                            loading="lazy"
-                            className="max-h-[340px] w-full object-cover opacity-95"
-                          />
-                        )}
-                        <div className="flex flex-wrap items-center justify-between gap-2 bg-forest-900/90 px-4 py-2.5 text-xs text-cotton-50">
-                          <span>
-                            🎬 {att.fileName} · {formatDuration(att.durationSec)} ·{' '}
-                            {formatBytes(att.sizeBytes)}
-                          </span>
-                          <span className="rounded-full bg-solar-400/20 px-2.5 py-0.5 text-[11px] text-solar-200">
-                            Clip demo · sube tu video arriba
-                          </span>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                );
+                return <CloudVideoPlayer key={att.id} att={att} />;
               }
 
               if (att.kind === 'AUDIO') {
                 return (
-                  <div
+                  <CloudAudioAttachment
                     key={att.id}
-                    className="crochet-parchment rounded-2xl p-3.5"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <div className="mb-2 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-2.5">
-                        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-forest-700 text-solar-300 shadow">
-                          <Mic className="h-4 w-4" />
-                        </span>
-                        <div>
-                          <p className="text-xs font-extrabold text-forest-900">{att.fileName}</p>
-                          <p className="text-[11px] font-medium text-espresso-700">
-                            Nota de voz · {formatDuration(att.durationSec)} · {formatBytes(att.sizeBytes)}
-                          </p>
-                        </div>
-                      </div>
-                      {!att.previewUrl && (
-                        <button
-                          type="button"
-                          onClick={playDemoVoiceGreeting}
-                          className="crochet-green-3d btn-yarn-press inline-flex items-center gap-1.5 rounded-full px-3.5 py-2 text-xs font-bold text-white"
-                        >
-                          <Play className="h-3.5 w-3.5 fill-current text-solar-300" />
-                          {demoVoicePlaying ? 'Escuchando…' : 'Escuchar'}
-                        </button>
-                      )}
-                    </div>
-                    {/* Decorative animated voice waveform */}
-                    {demoVoicePlaying && (
-                      <div className="mb-2 flex h-5 items-center justify-center gap-1">
-                        {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((b) => (
-                          <span
-                            key={b}
-                            style={{
-                              animation: `wavePulse 0.8s ease-in-out ${b * 0.08}s infinite`,
-                            }}
-                            className="h-4 w-1 rounded-full bg-forest-700"
-                          />
-                        ))}
-                      </div>
-                    )}
-                    {att.previewUrl && <audio src={att.previewUrl} controls className="w-full" />}
-                  </div>
+                    att={att}
+                    demoVoicePlaying={demoVoicePlaying}
+                    onPlayDemo={playDemoVoiceGreeting}
+                  />
                 );
               }
 

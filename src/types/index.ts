@@ -32,6 +32,8 @@ export interface MediaAttachment {
   sizeBytes: number;
   durationSec?: number;
   storageKey?: string;
+  cloudMediaId?: string;
+  posterUrl?: string;
   previewUrl?: string;
 }
 

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { ArrowLeft, MoonStar, Sparkles, Volume2, X } from 'lucide-react';
 import reader from './lector.webp';
 import readerHands from './lector-manos.webp';
@@ -46,6 +46,10 @@ export function TarotView({ onBack }: { onBack: () => void }) {
   const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
   const [audioMessage, setAudioMessage] = useState('');
   const detailRef = useRef<HTMLDialogElement>(null);
+  const previewRef = useRef<HTMLButtonElement>(null);
+  const tableCards = useRef<(HTMLSpanElement | null)[]>([]);
+  const flightRef = useRef<Animation | null>(null);
+  const closingRef = useRef(false);
   const activeCard = selectedIndex === null ? null : cards[selectedIndex];
 
   const readCard = (index: number) => {
@@ -76,18 +80,55 @@ export function TarotView({ onBack }: { onBack: () => void }) {
   };
 
   const openCard = (index: number) => {
+    if (selectedIndex !== null) return;
     setRevealed((current) => current.includes(index) ? current : [...current, index]);
     setSelectedIndex(index);
     readCard(index);
   };
 
-  useEffect(() => {
+  const getTableTransform = (index: number) => {
+    const from = tableCards.current[index]?.getBoundingClientRect();
+    const to = previewRef.current?.getBoundingClientRect();
+    if (!from || !to || !to.width || !to.height) return null;
+    const x = from.left + from.width / 2 - to.left - to.width / 2;
+    const y = from.top + from.height / 2 - to.top - to.height / 2;
+    return `translate3d(${x}px,${y}px,0) perspective(850px) rotateX(61deg) scale(${from.width / to.width})`;
+  };
+
+  useLayoutEffect(() => {
     const dialog = detailRef.current;
-    if (selectedIndex === null || !dialog || dialog.open) return;
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const timer = window.setTimeout(() => dialog.showModal(), reduceMotion ? 0 : 680);
-    return () => window.clearTimeout(timer);
+    const preview = previewRef.current;
+    if (selectedIndex === null || !dialog || !preview) return;
+    if (!dialog.open) dialog.showModal();
+    const tableTransform = getTableTransform(selectedIndex);
+    if (!tableTransform || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    flightRef.current = preview.animate([
+      { transform: tableTransform },
+      { transform: 'perspective(850px) translate3d(0,-9px,0) rotateX(-8deg) scale(1.03)', offset: .80 },
+      { transform: 'none' },
+    ], { duration: 760, easing: 'cubic-bezier(.22,.68,.21,1)' });
+    return () => { flightRef.current?.cancel(); flightRef.current = null; };
   }, [selectedIndex]);
+
+  const returnToTable = () => {
+    const dialog = detailRef.current;
+    const preview = previewRef.current;
+    if (!dialog?.open || !preview || selectedIndex === null || closingRef.current) return;
+    window.speechSynthesis?.cancel();
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    flightRef.current?.cancel();
+    const tableTransform = getTableTransform(selectedIndex);
+    if (reduceMotion || !tableTransform) {
+      dialog.close();
+      return;
+    }
+    closingRef.current = true;
+    dialog.dataset.returning = 'true';
+    const flight = preview.animate([{ transform: 'none' }, { transform: tableTransform }],
+      { duration: 470, easing: 'cubic-bezier(.38,0,.50,1)', fill: 'forwards' });
+    flightRef.current = flight;
+    flight.finished.then(() => dialog.close(), () => {});
+  };
 
   useEffect(() => {
     window.speechSynthesis?.getVoices();
@@ -119,16 +160,16 @@ export function TarotView({ onBack }: { onBack: () => void }) {
           {cards.map((card, index) => {
             const isRevealed = revealed.includes(index);
             return (
-              <button key={card.name} type="button" className="tarot-card"
+              <button key={card.name} type="button" className="tarot-card" data-lifted={selectedIndex === index}
                 aria-label={isRevealed ? `${positions[index]}: ${card.name}. ${card.reading}` : `Revelar carta: ${positions[index]}`}
                 onClick={() => openCard(index)}>
-                <span className="tarot-card-flip" data-revealed={isRevealed} aria-hidden="true">
+                <span className="tarot-card-flip" data-revealed={isRevealed} aria-hidden="true"
+                  ref={(node) => { tableCards.current[index] = node; }}>
                   <span className="tarot-card-face tarot-card-back"><Sparkles /><span>Destino</span></span>
                   <span className="tarot-card-face tarot-card-front">
                     {isRevealed && <img src={getArtwork(card)} alt="" />}
                   </span>
                 </span>
-                <span className="tarot-position" aria-hidden="true">{isRevealed ? card.name : positions[index]}</span>
               </button>
             );
           })}
@@ -144,13 +185,23 @@ export function TarotView({ onBack }: { onBack: () => void }) {
         ))}
       </div>
       <dialog ref={detailRef} className="tarot-detail" aria-label="Lectura de la carta"
-        onClose={() => { window.speechSynthesis?.cancel(); setAudioMessage(''); setSelectedIndex(null); }}
-        onClick={(event) => { if (event.target === event.currentTarget) event.currentTarget.close(); }}>
+        onClose={() => {
+          window.speechSynthesis?.cancel();
+          closingRef.current = false;
+          if (detailRef.current) delete detailRef.current.dataset.returning;
+          setAudioMessage('');
+          setSelectedIndex(null);
+        }}
+        onCancel={(event) => { event.preventDefault(); returnToTable(); }}
+        onClick={(event) => { if (event.target === event.currentTarget) returnToTable(); }}>
         {activeCard && selectedIndex !== null && (
           <div className="tarot-detail-content">
             <button type="button" className="tarot-detail-close" aria-label="Cerrar carta"
-              onClick={() => detailRef.current?.close()}><X aria-hidden="true" size={23} /></button>
-            <img className="tarot-detail-art" src={getArtwork(activeCard)} alt={`Ilustración de ${activeCard.name}`} />
+              onClick={returnToTable}><X aria-hidden="true" size={23} /></button>
+            <button ref={previewRef} className="tarot-detail-card" type="button"
+              onClick={returnToTable} aria-label={`${activeCard.name}: volver a la mesa`}>
+              <img className="tarot-detail-art" src={getArtwork(activeCard)} alt="" />
+            </button>
             <div className="tarot-detail-text">
               <p>{positions[selectedIndex]}</p>
               <h2 className="font-editorial">{activeCard.name}</h2>
@@ -160,6 +211,9 @@ export function TarotView({ onBack }: { onBack: () => void }) {
                 <Volume2 size={18} aria-hidden="true" /> Escuchar
               </button>
               {audioMessage && <p role="status">{audioMessage}</p>}
+              <button type="button" className="tarot-back tarot-return" onClick={returnToTable}>
+                <ArrowLeft size={17} aria-hidden="true" /> Volver a la mesa
+              </button>
             </div>
           </div>
         )}

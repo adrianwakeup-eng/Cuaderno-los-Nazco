@@ -7,7 +7,6 @@ import {
   Heart,
   Home,
   Images,
-  Menu,
   MessageCircle,
   Palette,
   Phone,
@@ -224,7 +223,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               className="ios-liquid-nav-bar btn-yarn-press flex h-11 w-11 shrink-0 items-center justify-center rounded-full lg:hidden"
               aria-label="Abrir menú lateral"
             >
-              <Menu stroke="url(#emeraldGoldIconGrad)" strokeWidth={2.2} className="relative z-10 h-5 w-5" />
+              <span className="relative z-10 flex" aria-hidden="true">
+                <MemberAvatar member={currentUser} size="sm" />
+              </span>
             </button>
 
             <button

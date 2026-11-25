@@ -417,7 +417,7 @@
     content: '';
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, #faebcc 0%, transparent 9% 88%, #e1e6d2 100%);
+    background: linear-gradient(180deg, #faebcc 0%, #fff5db38 12%, #fff5db25 84%, #e1e6d2 100%);
   }
 }
 

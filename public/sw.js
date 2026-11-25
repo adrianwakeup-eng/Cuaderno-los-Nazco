@@ -2,7 +2,7 @@
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Handles Web Push notifications for incoming calls & messages even when app is closed.
  */
-const CACHE_NAME = 'los-nazco-shell-v17';
+const CACHE_NAME = 'los-nazco-shell-v18';
 const PUSH_ENDPOINT_URL = 'https://yqhcyjrmkibhoorziqvg.supabase.co/functions/v1/nazco-push-notify';
 const dismissedCallIds = new Set();
 const STATIC_ASSETS = [
@@ -274,7 +274,7 @@ self.addEventListener('notificationclick', (event) => {
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
       for (const client of clients) {
         if (client.url.startsWith(self.registration.scope)) {
-          if ('navigate' in client && targetUrl.includes('incomingCall=')) {
+          if ('navigate' in client && (targetUrl.includes('incomingCall=') || new URL(targetUrl, self.registration.scope).searchParams.get('editarUbicacion') === '1')) {
             return client.navigate(targetUrl).then((c) => c?.focus());
           }
           return client.focus();

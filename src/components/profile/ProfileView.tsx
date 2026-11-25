@@ -10,12 +10,13 @@ import {
   UserCheck,
   Video,
 } from 'lucide-react';
+import { formatMemberLocation, hasUpdatedLocation, parseMemberLocation } from '../../data/memberLocation';
 import { useFamilyApp } from '../../context/FamilyAppContext';
 import { compressImageFile } from '../../services/storageService';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
 import { PostCard } from '../feed/PostCard';
 
-export const ProfileView: React.FC = () => {
+export const ProfileView: React.FC<{ editLocation?: boolean }> = ({ editLocation = false }) => {
   const {
     snapshot,
     currentUser,
@@ -43,7 +44,7 @@ export const ProfileView: React.FC = () => {
   const isOwn = member.id === currentUser.id;
   const canEdit = isOwn || currentUser.role === 'ADMIN';
 
-  const [editing, setEditing] = useState(false);
+  const [editing, setEditing] = useState(editLocation);
   const [saving, setSaving] = useState(false);
   const [username, setUsername] = useState(member.username);
   const [avatarColor, setAvatarColor] = useState(member.avatarColor);
@@ -51,7 +52,8 @@ export const ProfileView: React.FC = () => {
   const [removeCover, setRemoveCover] = useState(false);
   const [name, setName] = useState(member.name);
   const [relationship, setRelationship] = useState(member.relationship);
-  const [location, setLocation] = useState(member.location);
+  const [province, setProvince] = useState(() => parseMemberLocation(member.location).province);
+  const [country, setCountry] = useState(() => parseMemberLocation(member.location).country);
   const [email, setEmail] = useState(member.email);
   const displayBio = /^Feliz de estar en Cuaderno los Nazco\s*💛?$/iu.test(member.bio.trim())
     ? 'Feliz de estar en Cuaderno Social de la Familia 💛'
@@ -85,7 +87,9 @@ export const ProfileView: React.FC = () => {
     setRemoveCover(false);
     setName(member.name);
     setRelationship(member.relationship);
-    setLocation(member.location);
+    const location = parseMemberLocation(member.location);
+    setProvince(location.province);
+    setCountry(location.country);
     setEmail(member.email);
     setBio(displayBio);
     setPassword('');
@@ -268,7 +272,7 @@ export const ProfileView: React.FC = () => {
             <div className="mt-3 flex flex-wrap gap-4 text-xs font-medium text-espresso-500">
               <span className="inline-flex items-center gap-1">
                 <MapPin className="h-3.5 w-3.5 text-terracotta-600" />
-                {member.location}
+                {Object.values(parseMemberLocation(member.location)).filter(Boolean).join(', ') || 'Ubicación sin indicar'}
               </span>
               <span className="inline-flex items-center gap-1">
                 <Mail className="h-3.5 w-3.5 text-terracotta-600" />
@@ -276,6 +280,13 @@ export const ProfileView: React.FC = () => {
               </span>
             </div>
           </div>
+
+          {isOwn && !editing && !hasUpdatedLocation(member.location) && (
+            <button type="button" onClick={openEditor}
+              className="mt-4 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-bold text-espresso-900">
+              Actualizar provincia y país
+            </button>
+          )}
 
           {/* Inline Profile Editor */}
           {editing && (
@@ -299,7 +310,7 @@ export const ProfileView: React.FC = () => {
                   name: name.trim() || member.name,
                   username: nextUsername,
                   relationship: relationship.trim(),
-                  location: location.trim(),
+                  location: formatMemberLocation(province, country),
                   email: nextEmail,
                   bio: bio.trim(),
                   avatarColor,
@@ -329,12 +340,17 @@ export const ProfileView: React.FC = () => {
                   placeholder="Parentesco"
                   className="rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm"
                 />
-                <input
-                  maxLength={100} value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Ciudad / País"
-                  className="rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm"
-                />
+                <label className="flex flex-col gap-1 text-sm font-semibold">
+                  Provincia
+                  <input maxLength={48} value={province} onChange={(e) => setProvince(e.target.value)}
+                    autoFocus={editLocation}
+                    className="rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm" />
+                </label>
+                <label className="flex flex-col gap-1 text-sm font-semibold">
+                  País
+                  <input maxLength={48} value={country} onChange={(e) => setCountry(e.target.value)}
+                    className="rounded-xl border border-linen-300 bg-white px-3.5 py-2 text-sm" />
+                </label>
                 <input
                   type="email"
                   required

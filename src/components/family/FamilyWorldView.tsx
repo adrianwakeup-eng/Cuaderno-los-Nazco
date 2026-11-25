@@ -16,6 +16,8 @@ import { useAppearance } from '../../context/AppearanceContext';
 import { useFamilyApp } from '../../context/FamilyAppContext';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
 
+import { normalizeRegion, parseMemberLocation, provinceCoordinates } from '../../data/memberLocation';
+
 interface GeoCoords {
   lat: number;
   lon: number;
@@ -24,8 +26,16 @@ interface GeoCoords {
 }
 
 /** Approximate country/city-level coordinates ONLY — never exact addresses */
-function getSafeRegionCoords(location: string): GeoCoords {
-  const loc = location.toLowerCase();
+function getSafeRegionCoords(location: string): GeoCoords | null {
+  const { province, country } = parseMemberLocation(location);
+  const rawCountry = normalizeRegion(country);
+  const loc = rawCountry === 'brazil' ? 'brasil' : rawCountry;
+  const regional = provinceCoordinates[loc]?.[normalizeRegion(province)];
+  if (regional) {
+    return { lat: regional[0], lon: regional[1], regionLabel: `${province}, ${country}`,
+      flag: loc === 'cuba' ? '🇨🇺' : '🇧🇷' };
+  }
+  if (!loc) return null;
   if (
     loc.includes('brasil') ||
     loc.includes('brazil') ||
@@ -119,7 +129,7 @@ function getSafeRegionCoords(location: string): GeoCoords {
   if (loc.includes('canad') || loc.includes('toronto') || loc.includes('montreal')) {
     return { lat: 45.4, lon: -75.7, regionLabel: 'Canadá', flag: '🇨🇦' };
   }
-  return { lat: -14.2, lon: -51.9, regionLabel: location || 'Nuestra Familia', flag: '💛' };
+  return null;
 }
 
 /* ======================== SHARED 3D FLAT-EARTH CAMERA MATH ======================== */
@@ -627,7 +637,10 @@ export const FamilyWorldView: React.FC = () => {
 
   // Automatically de-overlap family members who share the exact same country coordinates
   const memberGeos = useMemo(() => {
-    const raw = activeMembers.map((m) => ({ member: m, base: getSafeRegionCoords(m.location) }));
+    const raw = activeMembers.flatMap((member) => {
+      const base = getSafeRegionCoords(member.location);
+      return base ? [{ member, base }] : [];
+    });
     const groups = new Map<string, typeof raw>();
     raw.forEach((item) => {
       const key = `${item.base.lat.toFixed(1)},${item.base.lon.toFixed(1)}`;
@@ -1058,6 +1071,7 @@ export const FamilyWorldView: React.FC = () => {
 
   const selectedMember =
     activeMembers.find((m) => m.id === selectedMemberId) ?? activeMembers[0];
+  const selectedGeo = selectedMember ? getSafeRegionCoords(selectedMember.location) : null;
 
   const handleToggleTopDown = () => {
     triggerFeedback('tap');
@@ -1254,8 +1268,7 @@ export const FamilyWorldView: React.FC = () => {
                   <p className="text-xs font-bold text-brazil-600">{selectedMember.relationship}</p>
                   <p className="mt-0.5 inline-flex items-center gap-1 text-xs text-espresso-700">
                     <MapPin className="h-3.5 w-3.5 text-forest-700" />
-                    {getSafeRegionCoords(selectedMember.location).flag}{' '}
-                    {getSafeRegionCoords(selectedMember.location).regionLabel}
+                    {selectedGeo ? `${selectedGeo.flag} ${selectedGeo.regionLabel}` : 'Ubicación sin confirmar'}
                   </p>
                 </div>
               </div>

@@ -83,6 +83,7 @@ const CuadernoContent: React.FC = () => {
     currentUser,
     activeSection,
     setActiveSection,
+    openProfile,
     joyBursts,
     incomingCall,
     acceptIncomingCall,
@@ -108,6 +109,24 @@ const CuadernoContent: React.FC = () => {
       }
     : null;
 
+  const [locationLink, setLocationLink] = React.useState(
+    () => new URLSearchParams(window.location.search).get('editarUbicacion') === '1'
+  );
+  const [editingOwnLocation, setEditingOwnLocation] = React.useState(false);
+  React.useEffect(() => {
+    if (activeSection !== 'PROFILE') setEditingOwnLocation(false);
+  }, [activeSection]);
+  React.useEffect(() => {
+    if (!locationLink || !currentUser) return;
+    openProfile(currentUser.id);
+    setEditingOwnLocation(true);
+    setLocationLink(false);
+    const url = new URL(window.location.href);
+    url.searchParams.delete('editarUbicacion');
+    window.history.replaceState(window.history.state, '', url);
+  }, [locationLink, currentUser, openProfile]);
+
+
   return (
     <AppearanceProvider userId={currentUser?.id}>
       {!currentUser ? (
@@ -128,7 +147,7 @@ const CuadernoContent: React.FC = () => {
               {activeSection === 'ALBUMS' && <AlbumsView />}
               {activeSection === 'FAMILY' && <FamilyWorldView />}
               {activeSection === 'TAROT' && <TarotView onBack={() => setActiveSection('FEED')} />}
-              {activeSection === 'PROFILE' && <ProfileView />}
+              {activeSection === 'PROFILE' && <ProfileView key={editingOwnLocation ? 'location' : 'profile'} editLocation={editingOwnLocation} />}
               {activeSection === 'ADMIN' && <AdminPanelView />}
             </SectionErrorBoundary>
           </AppShell>

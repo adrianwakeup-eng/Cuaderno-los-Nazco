@@ -17,6 +17,8 @@ import {
   Upload,
   Users,
 } from 'lucide-react';
+import { hasUpdatedLocation } from '../../data/memberLocation';
+import { dispatchPushNotification } from '../../services/pushNotificationService';
 import { useFamilyApp } from '../../context/FamilyAppContext';
 import { formatBytes } from '../../services/storageService';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
@@ -45,6 +47,7 @@ export const AdminPanelView: React.FC = () => {
     notify,
   } = useFamilyApp();
 
+  const [sendingLocationReminder, setSendingLocationReminder] = useState(false);
   const [memberQuery, setMemberQuery] = useState('');
   const [showRemoved, setShowRemoved] = useState(false);
   const [refreshingMembers, setRefreshingMembers] = useState(false);
@@ -126,6 +129,31 @@ export const AdminPanelView: React.FC = () => {
       }
     } finally {
       setSavingMemberId(null);
+    }
+  };
+
+  const pendingLocations = snapshot.members.filter((member) =>
+    member.role === 'MEMBER' && member.status === 'ACTIVE' && !hasUpdatedLocation(member.location)
+  );
+
+  const sendLocationReminder = async () => {
+    if (sendingLocationReminder || pendingLocations.length === 0) return;
+    setSendingLocationReminder(true);
+    try {
+      const result = await dispatchPushNotification({
+        targetMemberIds: pendingLocations.map((member) => member.id),
+        kind: 'MESSAGE',
+        title: 'Actualiza tu ubicación familiar',
+        body: 'Añade tu provincia y país para aparecer en el mapa familiar. Toca para editar tu perfil.',
+        openLocationSettings: true,
+      });
+      notify(
+        result.sent ? `Aviso enviado a ${result.sent} de ${result.total} dispositivos.` :
+          'El servicio push no confirmó ningún envío.',
+        result.sent ? 'success' : 'warning'
+      );
+    } finally {
+      setSendingLocationReminder(false);
     }
   };
 
@@ -324,6 +352,11 @@ export const AdminPanelView: React.FC = () => {
             <h3 className="font-editorial text-lg font-bold text-espresso-900">
               Cuentas de la familia
             </h3>
+            <button type="button" onClick={() => void sendLocationReminder()}
+              disabled={sendingLocationReminder || pendingLocations.length === 0}
+              className="mt-3 rounded-xl bg-olive-100 px-3 py-2 text-xs font-bold text-olive-700 disabled:opacity-50">
+              {sendingLocationReminder ? 'Enviando aviso…' : `Enviar aviso de ubicación (${pendingLocations.length})`}
+            </button>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               <label className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-linen-200 bg-white px-3 py-2">
                 <Search className="h-4 w-4 shrink-0 text-espresso-500" />

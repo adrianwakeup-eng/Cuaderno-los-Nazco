@@ -815,7 +815,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         email: cleanEmail,
         password: cleanPassword,
         relationship: input.relationship.trim() || 'Familiar',
-        location: input.location.trim() || 'Brasil',
+        location: input.location.trim(),
         bio: input.bio.trim() || 'Feliz de estar en Cuaderno Social de la Familia 💛',
         role: 'MEMBER',
         status: 'ACTIVE',

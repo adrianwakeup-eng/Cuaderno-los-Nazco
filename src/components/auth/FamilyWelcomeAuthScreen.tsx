@@ -13,6 +13,7 @@ import {
 import { useFamilyApp } from '../../context/FamilyAppContext';
 import { compressImageFile } from '../../services/storageService';
 
+import { formatMemberLocation } from '../../data/memberLocation';
 import cocina from './cover/cocina.webp';
 import cena from './cover/cena.webp';
 import cometa from './cover/cometa.webp';
@@ -44,7 +45,8 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
   const [registering, setRegistering] = useState(false);
   const [regName, setRegName] = useState('');
   const [regUsername, setRegUsername] = useState('');
-  const [regLocation, setRegLocation] = useState('');
+  const [province, setProvince] = useState('');
+  const [country, setCountry] = useState('');
   const [regPassword, setRegPassword] = useState('');
   const [regAvatarUrl, setRegAvatarUrl] = useState<string | undefined>(undefined);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
@@ -274,7 +276,7 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
                     email: '',
                     password: regPassword,
                     relationship: 'Familiar',
-                    location: regLocation,
+                    location: formatMemberLocation(province, country),
                     bio: '',
                     avatarUrl: regAvatarUrl,
                   });
@@ -331,12 +333,12 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
                   />
                 </div>
 
-                <input
-                  value={regLocation}
-                  onChange={(e) => setRegLocation(e.target.value)}
-                  placeholder="Ciudad / País (opcional)"
-                  className="w-full rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2.5 text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none"
-                />
+                <div className="grid grid-cols-2 gap-2">
+                  <input aria-label="Provincia" placeholder="Provincia (opcional)" maxLength={48}
+                    value={province} onChange={(e) => setProvince(e.target.value)} className="w-full rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2.5 text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none" />
+                  <input aria-label="País" placeholder="País (opcional)" maxLength={48}
+                    value={country} onChange={(e) => setCountry(e.target.value)} className="w-full rounded-xl border border-[#D4D2DF] bg-[#F7F6FA] px-3 py-2.5 text-xs text-[#1D1B29] focus:border-[#763CD2] focus:bg-white focus:outline-none" />
+                </div>
                 <input
                   required
                   type="password"

@@ -414,6 +414,7 @@ export async function dispatchPushNotification(params: {
   title: string;
   body: string;
   kind: 'CALL' | 'CALL_CANCEL' | 'MESSAGE' | 'TEST';
+  openLocationSettings?: boolean;
   roomCode?: string;
   callMode?: CallMode;
   callId?: string;
@@ -446,7 +447,8 @@ export async function dispatchPushNotification(params: {
 
     if (matched.length === 0) return { sent: 0, total: 0 };
 
-    const baseUrl = `${window.location.origin}${window.location.pathname}`;
+    const baseUrl = new URL(window.location.pathname, window.location.origin);
+    if (params.openLocationSettings) baseUrl.searchParams.set('editarUbicacion', '1');
     const res = await fetch(PUSH_ENDPOINT_URL, {
       method: 'POST',
       headers: {
@@ -462,7 +464,7 @@ export async function dispatchPushNotification(params: {
         })),
         title: params.title,
         body: params.body,
-        url: baseUrl,
+        url: baseUrl.toString(),
         kind: params.kind,
         roomCode: params.roomCode,
         callMode: params.callMode,

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Check,
   Copy,
@@ -132,12 +133,21 @@ export const VideoCallOverlay: React.FC = () => {
     notify('Enlace directo a la llamada copiado · pégalo en WhatsApp 💛', 'success');
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-[#16110E] text-white">
+  const canShareScreen =
+    typeof navigator !== 'undefined' &&
+    Boolean(navigator.mediaDevices && typeof navigator.mediaDevices.getDisplayMedia === 'function');
+
+  const overlay = (
+    <div
+      className="fixed inset-0 z-[90] flex h-[100dvh] w-screen flex-col overflow-hidden bg-[#16110E] text-white"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`Llamada activa: ${activeCall.title}`}
+    >
       <audio ref={remoteAudioRef} autoPlay playsInline />
 
       {/* Top Call Header */}
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-black/35 px-4 py-3 sm:px-6">
+      <header className="pt-safe flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-black/45 px-3 py-2.5 sm:gap-3 sm:px-6 sm:py-3">
         <div className="flex items-center gap-3">
           <span
             className={`h-2.5 w-2.5 rounded-full ${
@@ -193,9 +203,9 @@ export const VideoCallOverlay: React.FC = () => {
       </header>
 
       {/* Main Video / Audio Stage */}
-      <div className="relative flex-1 overflow-y-auto p-4 sm:p-6">
+      <div className="relative min-h-0 flex-1 overflow-y-auto p-3 sm:p-5">
         {connState === 'ERROR' && (
-          <div className="mx-auto mb-4 flex max-w-xl items-start gap-3 rounded-2xl border border-red-400/40 bg-red-950/60 p-4 text-sm text-red-100">
+          <div className="mx-auto mb-3 flex max-w-xl items-start gap-3 rounded-2xl border border-red-400/40 bg-red-950/60 p-3.5 text-sm text-red-100">
             <ShieldAlert className="mt-0.5 h-5 w-5 shrink-0 text-red-400" />
             <div>
               <p className="font-bold">Permisos de cámara o micrófono requeridos</p>
@@ -205,7 +215,7 @@ export const VideoCallOverlay: React.FC = () => {
         )}
 
         <div
-          className={`mx-auto grid h-full max-w-6xl gap-4 ${
+          className={`mx-auto grid h-full min-h-0 max-w-6xl auto-rows-fr gap-3 sm:gap-4 ${
             viewMode === 'SPOTLIGHT'
               ? 'grid-cols-1 lg:grid-cols-4'
               : remoteStream || otherParticipants.length <= 1
@@ -216,8 +226,8 @@ export const VideoCallOverlay: React.FC = () => {
           {/* Remote Live WebRTC Stream Tile (when connected) */}
           {remoteStream && (
             <div
-              className={`relative overflow-hidden rounded-3xl border border-emerald-400/40 bg-black ${
-                viewMode === 'SPOTLIGHT' ? 'min-h-[340px] lg:col-span-3' : 'min-h-[260px]'
+              className={`relative min-h-0 overflow-hidden rounded-3xl border border-emerald-400/40 bg-black ${
+                viewMode === 'SPOTLIGHT' ? 'lg:col-span-3' : ''
               }`}
             >
               <video
@@ -234,7 +244,7 @@ export const VideoCallOverlay: React.FC = () => {
 
           {/* Local Camera / Screen Share Tile */}
           <div
-            className={`relative flex min-h-[240px] flex-col items-center justify-center overflow-hidden rounded-3xl border border-terracotta-500/40 bg-[#241B16] ${
+            className={`relative flex min-h-0 flex-col items-center justify-center overflow-hidden rounded-3xl border border-terracotta-500/40 bg-[#241B16] ${
               viewMode === 'SPOTLIGHT' && !remoteStream ? 'lg:col-span-3' : ''
             }`}
           >
@@ -285,8 +295,11 @@ export const VideoCallOverlay: React.FC = () => {
         </div>
       </div>
 
-      {/* Bottom Controls Bar */}
-      <footer className="border-t border-white/10 bg-black/50 px-4 py-4">
+      {/* Bottom Controls Bar — always pinned above system navigation / safe area */}
+      <footer
+        className="shrink-0 border-t border-white/15 bg-black/85 px-4 pt-3 backdrop-blur-md"
+        style={{ paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))' }}
+      >
         <div className="mx-auto flex max-w-xl flex-wrap items-center justify-center gap-3 sm:gap-4">
           <button
             onClick={() => {
@@ -294,10 +307,11 @@ export const VideoCallOverlay: React.FC = () => {
               setMuted(next);
               controllerRef.current?.setMuted(next);
             }}
-            className={`flex h-13 w-13 flex-col items-center justify-center rounded-full p-3.5 transition ${
+            className={`flex h-12 w-12 items-center justify-center rounded-full transition sm:h-13 sm:w-13 ${
               muted ? 'bg-red-600 text-white' : 'bg-white/15 text-white hover:bg-white/25'
             }`}
             title={muted ? 'Activar micrófono' : 'Silenciar micrófono'}
+            aria-label={muted ? 'Activar micrófono' : 'Silenciar micrófono'}
           >
             {muted ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
           </button>
@@ -310,29 +324,33 @@ export const VideoCallOverlay: React.FC = () => {
                   setCameraOn(next);
                   controllerRef.current?.setCameraEnabled(next);
                 }}
-                className={`flex flex-col items-center justify-center rounded-full p-3.5 transition ${
+                className={`flex h-12 w-12 items-center justify-center rounded-full transition sm:h-13 sm:w-13 ${
                   !cameraOn ? 'bg-red-600 text-white' : 'bg-white/15 text-white hover:bg-white/25'
                 }`}
                 title={cameraOn ? 'Apagar cámara' : 'Encender cámara'}
+                aria-label={cameraOn ? 'Apagar cámara' : 'Encender cámara'}
               >
                 {cameraOn ? <Video className="h-5 w-5" /> : <VideoOff className="h-5 w-5" />}
               </button>
 
-              <button
-                onClick={() => {
-                  void controllerRef.current?.toggleScreenShare().catch((err: Error) => {
-                    notify(err.message, 'warning');
-                  });
-                }}
-                className={`flex flex-col items-center justify-center rounded-full p-3.5 transition ${
-                  screenSharing
-                    ? 'bg-emerald-600 text-white'
-                    : 'bg-white/15 text-white hover:bg-white/25'
-                }`}
-                title="Compartir pantalla"
-              >
-                <MonitorUp className="h-5 w-5" />
-              </button>
+              {canShareScreen && (
+                <button
+                  onClick={() => {
+                    void controllerRef.current?.toggleScreenShare().catch((err: Error) => {
+                      notify(err.message, 'warning');
+                    });
+                  }}
+                  className={`hidden h-12 w-12 items-center justify-center rounded-full transition sm:flex sm:h-13 sm:w-13 ${
+                    screenSharing
+                      ? 'bg-emerald-600 text-white'
+                      : 'bg-white/15 text-white hover:bg-white/25'
+                  }`}
+                  title="Compartir pantalla"
+                  aria-label="Compartir pantalla"
+                >
+                  <MonitorUp className="h-5 w-5" />
+                </button>
+              )}
 
               <button
                 onClick={() => {
@@ -340,8 +358,9 @@ export const VideoCallOverlay: React.FC = () => {
                     notify('Solo se detectó una cámara disponible.', 'info');
                   });
                 }}
-                className="flex flex-col items-center justify-center rounded-full bg-white/15 p-3.5 text-white transition hover:bg-white/25"
+                className="flex h-12 w-12 items-center justify-center rounded-full bg-white/15 text-white transition hover:bg-white/25 sm:h-13 sm:w-13"
                 title="Cambiar cámara"
+                aria-label="Cambiar cámara"
               >
                 <RefreshCw className="h-5 w-5" />
               </button>
@@ -353,7 +372,7 @@ export const VideoCallOverlay: React.FC = () => {
               controllerRef.current?.hangUp();
               endCall();
             }}
-            className="inline-flex items-center gap-2 rounded-full bg-red-600 px-6 py-3.5 text-sm font-bold text-white shadow-lg transition hover:bg-red-700"
+            className="inline-flex h-12 items-center gap-2 rounded-full bg-red-600 px-6 text-sm font-bold text-white shadow-lg shadow-red-900/40 transition hover:bg-red-700 active:scale-95 sm:h-13"
           >
             <PhoneOff className="h-5 w-5" />
             Colgar
@@ -362,4 +381,6 @@ export const VideoCallOverlay: React.FC = () => {
       </footer>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(overlay, document.body) : overlay;
 };

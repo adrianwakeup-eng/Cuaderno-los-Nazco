@@ -84,14 +84,15 @@ const CuadernoContent: React.FC = () => {
               {activeSection === 'PROFILE' && <ProfileView />}
               {activeSection === 'ADMIN' && <AdminPanelView />}
             </Suspense>
-            <VideoCallOverlay />
-            <IncomingCallModal
-              caller={incomingCaller}
-              mode={incomingCall?.mode ?? 'VIDEO'}
-              onAccept={acceptIncomingCall}
-              onReject={rejectIncomingCall}
-            />
           </AppShell>
+          {/* Mounted outside AppShell so top/bottom navigation bars NEVER cover full-screen calls */}
+          <VideoCallOverlay />
+          <IncomingCallModal
+            caller={incomingCaller}
+            mode={incomingCall?.mode ?? 'VIDEO'}
+            onAccept={acceptIncomingCall}
+            onReject={rejectIncomingCall}
+          />
           <JoyBurstLayer bursts={joyBursts} />
         </>
       )}

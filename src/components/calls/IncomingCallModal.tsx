@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { Phone, PhoneOff, Video } from 'lucide-react';
 import { useAppearance } from '../../context/AppearanceContext';
 import { startIncomingRingtone } from '../../services/pushNotificationService';
@@ -32,9 +33,9 @@ export const IncomingCallModal: React.FC<IncomingCallModalProps> = ({
 
   if (!caller) return null;
 
-  return (
+  const modal = (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-forest-900/90 p-5 backdrop-blur-md"
+      className="fixed inset-0 z-[100] flex h-[100dvh] items-center justify-center bg-forest-900/90 p-5 backdrop-blur-md"
       role="dialog"
       aria-modal="true"
       aria-label={`Llamada entrante de ${caller.name}`}
@@ -94,4 +95,6 @@ export const IncomingCallModal: React.FC<IncomingCallModalProps> = ({
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(modal, document.body) : modal;
 };

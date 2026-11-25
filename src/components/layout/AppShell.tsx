@@ -25,7 +25,6 @@ import {
   MacrameRosetteHanging,
   TropicalCanopyLights,
 } from '../crochet/CrochetArt';
-import { GiantRealisticSunflower } from '../crochet/GiantRealisticSunflower';
 import { OfflineNoticeBar, PwaInstallSheet, usePwaInstall } from '../pwa/PwaInstallSheet';
 import { AppearanceModal } from '../settings/AppearanceModal';
 import { BottomSheet } from '../shared/BottomSheet';
@@ -176,29 +175,17 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
       {/* Top Tropical Foliage & Warm Fairy Lights Canopy */}
       {showDecorations && <TropicalCanopyLights compact={scrolled} />}
 
-      {/* Desktop Top-Left Macramé Wall Hanging & Bottom Corner 3D Crochet Elements (Parallax) */}
+      {/* Desktop Top-Left Macramé Wall Hanging (Parallax) */}
       {showDecorations && (
-        <>
-          <div
-            className="pointer-events-none fixed left-0 top-0 z-20 hidden xl:block"
-            style={{
-              transform: `translate3d(${parallax.x * -6}px, ${parallax.y * -4}px, 0)`,
-              transition: 'transform 0.25s ease-out',
-            }}
-          >
-            <MacrameRosetteHanging className="w-24" />
-          </div>
-
-          <div
-            className="pointer-events-none fixed -bottom-2 -left-2 z-10 hidden xl:block"
-            style={{
-              transform: `translate3d(${parallax.x * 8}px, ${parallax.y * 6}px, 0)`,
-              transition: 'transform 0.25s ease-out',
-            }}
-          >
-            <GiantRealisticSunflower className="w-72 2xl:w-80" />
-          </div>
-        </>
+        <div
+          className="pointer-events-none fixed left-0 top-0 z-20 hidden xl:block"
+          style={{
+            transform: `translate3d(${parallax.x * -6}px, ${parallax.y * -4}px, 0)`,
+            transition: 'transform 0.25s ease-out',
+          }}
+        >
+          <MacrameRosetteHanging className="w-24" />
+        </div>
       )}
 
       {/* Reusable SVG Emerald-Gold Metallic Icon Gradients */}

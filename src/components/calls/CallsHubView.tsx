@@ -65,7 +65,7 @@ export const CallsHubView: React.FC = () => {
   };
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5">
+    <div className="mx-auto max-w-5xl space-y-5 overflow-x-hidden">
       {!enabled && (
         <div className="flex items-center gap-3 rounded-2xl border-2 border-solar-400 bg-solar-50 p-4 text-sm font-bold text-espresso-900">
           <ShieldAlert className="h-5 w-5 shrink-0 text-solar-600" />
@@ -202,13 +202,14 @@ export const CallsHubView: React.FC = () => {
           </div>
 
           <div className="mt-5 space-y-3">
-            <div className="flex gap-2">
+            <div className="flex w-full min-w-0 items-center gap-2">
               <input
                 value={joinCode}
+                size={8}
                 onChange={(e) => setJoinCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
                 placeholder="Ej. 202601"
                 inputMode="numeric"
-                className="min-h-[52px] flex-1 rounded-2xl border-2 border-cotton-300 bg-white px-4 font-mono text-xl tracking-widest text-forest-900 focus:border-forest-700 focus:outline-none"
+                className="min-h-[52px] w-full min-w-0 flex-1 rounded-2xl border-2 border-cotton-300 bg-white px-3.5 font-mono text-lg tracking-wider text-forest-900 focus:border-forest-700 focus:outline-none sm:px-4 sm:text-xl sm:tracking-widest"
               />
               <button
                 type="button"
@@ -223,7 +224,7 @@ export const CallsHubView: React.FC = () => {
                     isHost: false,
                   })
                 }
-                className="crochet-green-3d btn-yarn-press min-h-[52px] rounded-2xl px-6 text-sm font-bold text-white disabled:opacity-45"
+                className="crochet-green-3d btn-yarn-press min-h-[52px] shrink-0 rounded-2xl px-5 text-sm font-bold text-white disabled:opacity-45 sm:px-6"
               >
                 Unirme
               </button>

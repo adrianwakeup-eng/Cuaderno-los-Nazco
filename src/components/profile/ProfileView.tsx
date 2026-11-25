@@ -88,7 +88,7 @@ export const ProfileView: React.FC = () => {
                 }}
                 className={`inline-flex shrink-0 items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
                   active
-                    ? 'border-amber-300 bg-gradient-to-r from-rose-50 to-amber-50 text-terracotta-700 shadow-sm'
+                    ? 'border-emerald-400 bg-gradient-to-r from-emerald-50 to-solar-50 text-emerald-800 shadow-sm'
                     : 'border-amber-200/60 bg-white/80 text-espresso-700 hover:bg-white'
                 }`}
               >
@@ -176,7 +176,7 @@ export const ProfileView: React.FC = () => {
                 <>
                   <button
                     onClick={openEditor}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-terracotta-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-terracotta-700"
+                    className="crochet-green-3d btn-yarn-press inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-white transition"
                   >
                     <Edit3 className="h-4 w-4" />
                     Editar perfil
@@ -193,7 +193,7 @@ export const ProfileView: React.FC = () => {
                 <>
                   <button
                     onClick={() => openChatWithMember(member.id)}
-                    className="inline-flex items-center gap-1.5 rounded-xl bg-terracotta-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-terracotta-700"
+                    className="crochet-green-3d btn-yarn-press inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold text-white transition"
                   >
                     <MessageCircle className="h-4 w-4" />
                     Mensaje

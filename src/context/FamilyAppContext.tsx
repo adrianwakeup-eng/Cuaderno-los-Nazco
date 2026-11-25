@@ -150,7 +150,7 @@ interface FamilyAppContextValue {
 }
 
 const FamilyAppContext = createContext<FamilyAppContextValue | null>(null);
-const AVATAR_PALETTE = ['#164D32', '#398B4B', '#BA9254', '#16466C', '#C85531', '#7C3AED'];
+const AVATAR_PALETTE = ['#164D32', '#047857', '#BA9254', '#16466C', '#10B981', '#7C3AED'];
 
 export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [snapshot, setSnapshot] = useState<FamilyAppSnapshot>(() => familyRepository.loadSnapshot());

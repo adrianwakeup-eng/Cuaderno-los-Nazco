@@ -79,7 +79,7 @@ export const StickerGifPicker: React.FC<{
             onClick={() => setTab('GIF')}
             className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
               tab === 'GIF'
-                ? 'bg-gradient-to-r from-terracotta-500 to-rose-500 text-white shadow-sm'
+                ? 'bg-gradient-to-r from-emerald-600 to-forest-700 text-white shadow-sm'
                 : 'text-espresso-600 hover:text-espresso-900'
             }`}
           >
@@ -91,7 +91,7 @@ export const StickerGifPicker: React.FC<{
             onClick={() => setTab('STICKER')}
             className={`inline-flex items-center gap-1 rounded-xl px-3 py-1.5 text-xs font-bold transition ${
               tab === 'STICKER'
-                ? 'bg-gradient-to-r from-amber-500 to-terracotta-500 text-white shadow-sm'
+                ? 'bg-gradient-to-r from-emerald-500 to-emerald-700 text-white shadow-sm'
                 : 'text-espresso-600 hover:text-espresso-900'
             }`}
           >

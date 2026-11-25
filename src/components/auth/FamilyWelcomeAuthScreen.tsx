@@ -13,11 +13,20 @@ import {
 import { useFamilyApp } from '../../context/FamilyAppContext';
 import { compressImageFile } from '../../services/storageService';
 
+import cocina from './cover/cocina.webp';
+import cena from './cover/cena.webp';
+import cometa from './cover/cometa.webp';
+import album from './cover/album.webp';
+import './family-cover.css';
+
+const coverScenes = [cocina, cena, cometa, album];
+
 type AuthMode = 'LOGIN' | 'REGISTER' | 'ADMIN';
 
 export const FamilyWelcomeAuthScreen: React.FC = () => {
   const { loginFamilyMember, loginAsAdminPasswordOnly, registerMember } = useFamilyApp();
 
+  const [coverPaused, setCoverPaused] = useState(false);
   const [mode, setMode] = useState<AuthMode>('LOGIN');
   const [error, setError] = useState<string | null>(null);
   const [showForgotHelp, setShowForgotHelp] = useState(false);
@@ -74,20 +83,18 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
   };
 
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center overflow-hidden bg-[#241628] md:justify-end">
-      {/* Full-bleed exact sunset family background photograph */}
-      <img
-        src="./textures/welcome-sunset-clean.jpg"
-        alt="Social de la Familia — La red social privada que nos mantiene unidos, estemos donde estemos."
-        className="pointer-events-none absolute inset-0 h-full w-full select-none object-cover object-[22%_bottom] md:object-left-bottom"
-      />
-
-      {/* Subtle readability gradient on small mobile screens only */}
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/25 via-transparent to-black/35 md:hidden" />
-
-      {/* Right-aligned Auth Card matching reference proportions & placement */}
-      <div className="relative z-10 flex w-full flex-col items-center px-5 py-8 md:w-auto md:items-end md:pr-[5%] lg:pr-[6%] xl:pr-[7.5%]">
-        <div className="animate-pop-in w-full max-w-[392px] rounded-[24px] bg-[#FAF9FC]/[0.97] px-7 py-9 shadow-[0_24px_64px_rgba(24,10,42,0.34)] backdrop-blur-md sm:px-9 sm:py-10">
+    <div className="family-cover relative flex min-h-screen w-full items-center justify-center overflow-hidden md:justify-end">
+      <div className="family-cover-scenes" data-paused={coverPaused} aria-hidden="true">
+        {coverScenes.map((scene, index) => (
+          <img key={scene} src={scene} alt="" decoding="async"
+            fetchPriority={index === 0 ? 'high' : 'low'} className="family-cover-scene" />
+        ))}
+      </div>
+      <button type="button" className="family-cover-motion" onClick={() => setCoverPaused((paused) => !paused)}>
+        {coverPaused ? 'Reanudar fondo' : 'Pausar fondo'}
+      </button>
+      <div className="family-cover-card relative z-10 flex w-full flex-col items-center px-5 py-8 md:w-auto md:items-end md:pr-[5%] lg:pr-[6%] xl:pr-[7.5%]">
+        <div className="family-cover-panel w-full max-w-[392px] px-7 py-9 sm:px-9 sm:py-10">
           {/* ================= MODE 1: MAIN LOGIN (EXACT REFERENCE) ================= */}
           {mode === 'LOGIN' && (
             <div>

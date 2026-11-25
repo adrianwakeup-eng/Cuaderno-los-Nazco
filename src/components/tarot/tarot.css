@@ -216,13 +216,20 @@
 
 .tarot-detail[open] { display: grid; align-items: safe center; justify-items: center; }
 
-.tarot-detail::backdrop { background: rgba(8, 19, 15, .36); animation: tarot-backdrop 700ms ease-out both; }
-.tarot-detail[data-returning='true']::backdrop { animation: tarot-backdrop 470ms ease-in reverse both; }
-
-@keyframes tarot-backdrop {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.tarot-detail {
+  --tarot-fade: 810ms;
+  --tarot-ease: cubic-bezier(.38, 0, .2, 1);
 }
+
+.tarot-detail[data-returning='true'] { --tarot-fade: 650ms; }
+
+.tarot-detail::backdrop {
+  background: rgba(8, 19, 15, .36);
+  opacity: 0;
+  transition: opacity var(--tarot-fade) var(--tarot-ease);
+}
+
+.tarot-detail[data-visible='true']::backdrop { opacity: 1; }
 
 .tarot-detail-content {
   position: relative;
@@ -244,7 +251,8 @@
   border-radius: inherit;
   background: rgba(12, 36, 26, .86);
   box-shadow: inset 0 1px 0 rgba(255, 249, 221, .28), 0 17px 48px rgba(5, 17, 12, .38);
-  animation: tarot-detail-appear 500ms ease-out both;
+  opacity: 0;
+  transition: opacity var(--tarot-fade) var(--tarot-ease);
 }
 
 @supports ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
@@ -284,8 +292,18 @@
   filter: drop-shadow(0 0 12px #d5ad6675);
 }
 
-.tarot-detail[data-returning='true'] .tarot-detail-text,
-.tarot-detail[data-returning='true'] .tarot-detail-close { opacity: 0; transition: opacity 180ms; }
+.tarot-detail-text,
+.tarot-detail-close {
+  opacity: 0;
+  transition: opacity 610ms var(--tarot-ease);
+}
+
+.tarot-detail[data-visible='true'] .tarot-detail-content::before,
+.tarot-detail[data-visible='true'] .tarot-detail-text,
+.tarot-detail[data-visible='true'] .tarot-detail-close { opacity: 1; }
+
+.tarot-detail[data-visible='true'] .tarot-detail-text,
+.tarot-detail[data-visible='true'] .tarot-detail-close { transition-delay: 100ms; }
 
 .tarot-detail-text { display: grid; gap: .65rem; padding-top: 1rem; }
 .tarot-detail-text h2 { color: #f4d38f; font-weight: 800; font-size: clamp(1.4rem, 6vw, 2.6rem); }
@@ -293,11 +311,6 @@
 .tarot-listen { display: inline-flex; align-items: center; justify-self: start; gap: .4rem; min-height: 44px; padding: .4rem .9rem; border-radius: 999px; background: #f4d38f; color: #25372a; font-weight: 800; }
 
 .tarot-return { justify-self: start; }
-
-@keyframes tarot-detail-appear {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
 
 @media (max-width: 480px) {
   .tarot-detail-content { grid-template-columns: 1fr; gap: .5rem; }
@@ -325,9 +338,10 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .tarot-room, .tarot-card, .tarot-light-show, .tarot-detail-content::before { animation: none; }
+  .tarot-room, .tarot-card, .tarot-light-show { animation: none; }
   .tarot-light-show { opacity: .55; }
   .tarot-reader-hands, .tarot-reader-motion { transition: none; }
   .tarot-card-flip { transition: none; }
-  .tarot-detail::backdrop { animation: none; }
+  .tarot-detail::backdrop, .tarot-detail-content::before,
+  .tarot-detail .tarot-detail-text, .tarot-detail .tarot-detail-close { transition: none; }
 }

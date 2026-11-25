@@ -2,7 +2,7 @@ import React, { useEffect, useLayoutEffect, useMemo, useRef, useState } from 're
 import { ArrowLeft, MoonStar, Sparkles, Volume2, X } from 'lucide-react';
 import reader from './lector.webp';
 import readerHands from './lector-manos.webp';
-import readerMotion from './lector-animado.mp4';
+import readerMotion from './lector-bucle.mp4';
 import './tarot.css';
 
 const deck = [
@@ -107,7 +107,8 @@ export function TarotView({ onBack }: { onBack: () => void }) {
     if (!from || !to || !to.width || !to.height) return null;
     const x = from.left + from.width / 2 - to.left - to.width / 2;
     const y = from.top + from.height / 2 - to.top - to.height / 2;
-    return `translate3d(${x}px,${y}px,0) perspective(850px) rotateX(61deg) scale(${from.width / to.width})`;
+    const angle = [-7, 1, 8][index];
+    return `translate3d(${x}px,${y}px,0) perspective(850px) rotateX(61deg) rotateZ(${angle}deg) scale(${from.width / to.width})`;
   };
 
   useLayoutEffect(() => {
@@ -116,13 +117,23 @@ export function TarotView({ onBack }: { onBack: () => void }) {
     if (selectedIndex === null || !dialog || !preview) return;
     if (!dialog.open) dialog.showModal();
     const tableTransform = getTableTransform(selectedIndex);
-    if (!tableTransform || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (!tableTransform || reduceMotion) {
+      dialog.dataset.visible = 'true';
+      return;
+    }
+    const fadeFrame = requestAnimationFrame(() => {
+      if (!closingRef.current) dialog.dataset.visible = 'true';
+    });
     flightRef.current = preview.animate([
       { transform: tableTransform },
-      { transform: 'perspective(850px) translate3d(0,-9px,0) rotateX(-8deg) scale(1.03)', offset: .80 },
-      { transform: 'none' },
-    ], { duration: 760, easing: 'cubic-bezier(.22,.68,.21,1)' });
-    return () => { flightRef.current?.cancel(); flightRef.current = null; };
+      { transform: 'translate3d(0,0,0) perspective(850px) rotateX(0deg) rotateZ(0deg) scale(1)' },
+    ], { duration: 850, easing: 'cubic-bezier(.38,0,.2,1)' });
+    return () => {
+      cancelAnimationFrame(fadeFrame);
+      flightRef.current?.cancel();
+      flightRef.current = null;
+    };
   }, [selectedIndex]);
 
   const returnToTable = () => {
@@ -131,6 +142,7 @@ export function TarotView({ onBack }: { onBack: () => void }) {
     if (!dialog?.open || !preview || selectedIndex === null || closingRef.current) return;
     window.speechSynthesis?.cancel();
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const startingTransform = getComputedStyle(preview).transform;
     flightRef.current?.cancel();
     const tableTransform = getTableTransform(selectedIndex);
     if (reduceMotion || !tableTransform) {
@@ -139,8 +151,9 @@ export function TarotView({ onBack }: { onBack: () => void }) {
     }
     closingRef.current = true;
     dialog.dataset.returning = 'true';
-    const flight = preview.animate([{ transform: 'none' }, { transform: tableTransform }],
-      { duration: 470, easing: 'cubic-bezier(.38,0,.50,1)', fill: 'forwards' });
+    delete dialog.dataset.visible;
+    const flight = preview.animate([{ transform: startingTransform }, { transform: tableTransform }],
+      { duration: 680, easing: 'cubic-bezier(.42,0,.32,1)', fill: 'forwards' });
     flightRef.current = flight;
     flight.finished.then(() => dialog.close(), () => {});
   };
@@ -209,7 +222,10 @@ export function TarotView({ onBack }: { onBack: () => void }) {
         onClose={() => {
           window.speechSynthesis?.cancel();
           closingRef.current = false;
-          if (detailRef.current) delete detailRef.current.dataset.returning;
+          if (detailRef.current) {
+            delete detailRef.current.dataset.returning;
+            delete detailRef.current.dataset.visible;
+          }
           setAudioMessage('');
           setSelectedIndex(null);
         }}

@@ -12,12 +12,11 @@ import {
 } from 'lucide-react';
 import { useFamilyApp } from '../../context/FamilyAppContext';
 import { compressImageFile } from '../../services/storageService';
-import { MemberAvatar } from './FamilyAuthModal';
 
 type AuthMode = 'LOGIN' | 'REGISTER' | 'ADMIN';
 
 export const FamilyWelcomeAuthScreen: React.FC = () => {
-  const { snapshot, loginFamilyMember, loginAsAdminPasswordOnly, registerMember } = useFamilyApp();
+  const { loginFamilyMember, loginAsAdminPasswordOnly, registerMember } = useFamilyApp();
 
   const [mode, setMode] = useState<AuthMode>('LOGIN');
   const [error, setError] = useState<string | null>(null);
@@ -43,10 +42,6 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
   const [regInvite, setRegInvite] = useState('NAZCO-FAM-2026');
   const [regAvatarUrl, setRegAvatarUrl] = useState<string | undefined>(undefined);
   const avatarInputRef = useRef<HTMLInputElement | null>(null);
-
-  const familyMembersOnly = snapshot.members.filter(
-    (m) => m.role !== 'ADMIN' && m.status === 'ACTIVE'
-  );
 
   const handleAvatarUpload = async (file: File | undefined) => {
     if (!file) return;
@@ -190,25 +185,12 @@ export const FamilyWelcomeAuthScreen: React.FC = () => {
               {showForgotHelp && (
                 <div className="mt-3.5 space-y-2.5 rounded-2xl border border-[#E3DCF5] bg-[#F5F1FC] p-3.5 text-xs text-[#433A5C]">
                   <p className="font-semibold text-[#3C1E7E]">
-                    Acceso rápido para familiares demo (clave: <code>familia123</code>):
+                    ¿Olvidaste tu clave familiar?
                   </p>
-                  <div className="flex flex-wrap gap-1.5">
-                    {familyMembersOnly.map((m) => (
-                      <button
-                        key={m.id}
-                        type="button"
-                        onClick={() => {
-                          setIdentifier(m.email);
-                          setPassword('familia123');
-                          setError(null);
-                        }}
-                        className="inline-flex items-center gap-1.5 rounded-full border border-[#D4C7F2] bg-white px-2.5 py-1 text-[11px] font-semibold text-[#4A22A4] transition hover:bg-[#EFE8FD]"
-                      >
-                        <MemberAvatar member={m} size="xs" />
-                        <span>{m.name.split(' ')[0]}</span>
-                      </button>
-                    ))}
-                  </div>
+                  <p className="text-[11px] leading-relaxed text-[#52496B]">
+                    Pídele a <strong>Adrián</strong> (Administrador) que te ayude a restablecer tu
+                    contraseña o crea una cuenta nueva con el botón <strong>Crear cuenta</strong>.
+                  </p>
                   <div className="border-t border-[#E0D6F5] pt-2">
                     <button
                       type="button"

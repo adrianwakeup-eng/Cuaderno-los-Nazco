@@ -140,28 +140,7 @@ export const AlbumsView: React.FC = () => {
       });
 
     // Ensure at least one warm heirloom album entry per core album if empty
-    const defaults: AlbumPhotoItem[] = [
-      {
-        id: 'seed_album_1',
-        album: 'FAMILIA',
-        authorId: 'nazco_adrian',
-        title: 'Nuestro Cuaderno Familiar Nazco',
-        imageUrl: './textures/family-album-hero.jpg',
-        createdAt: new Date().toISOString(),
-        likes: ['nazco_elena', 'nazco_rosa'],
-        comments: [],
-      },
-      {
-        id: 'seed_album_2',
-        album: 'RECUERDOS',
-        authorId: 'nazco_sofia',
-        title: 'Atardecer de recuerdos unidos',
-        imageUrl: './textures/welcome-sunset-clean.jpg',
-        createdAt: new Date().toISOString(),
-        likes: ['nazco_adrian'],
-        comments: [],
-      },
-    ];
+    const defaults: AlbumPhotoItem[] = [];
 
     const mergedCustom = [...cloudAlbumPhotos, ...customPhotos].filter(
       (item, idx, arr) => arr.findIndex((x) => x.id === item.id) === idx

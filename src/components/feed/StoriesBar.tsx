@@ -17,47 +17,16 @@ const CROCHET_RING_COLORS = [
   'ring-[#D95D52] border-[#F2C443]',
 ];
 
-function createSeedStories(): FamilyStory[] {
-  const now = Date.now();
-  return [
-    {
-      id: 'story_elena_1',
-      authorId: 'nazco_elena',
-      caption: '¡Buenos días amores! Preparando cafecito y bizcocho para el domingo ☀️💛',
-      bgGradient: 'linear-gradient(155deg, #164D32 0%, #398B4B 52%, #BA9254 100%)',
-      createdAt: new Date(now - 35 * 60_000).toISOString(),
-      viewedBy: [],
-      reactions: ['nazco_adrian'],
-    },
-    {
-      id: 'story_rosa_1',
-      authorId: 'nazco_rosa',
-      caption: 'Las orquídeas amanecieron preciosas hoy 🌺 ¡Bendiciones a toda la familia Nazco!',
-      bgGradient: 'linear-gradient(155deg, #16466C 0%, #2C7756 58%, #F2C443 100%)',
-      createdAt: new Date(now - 90 * 60_000).toISOString(),
-      viewedBy: [],
-      reactions: ['nazco_elena'],
-    },
-    {
-      id: 'story_sofia_1',
-      authorId: 'nazco_sofia',
-      caption: 'Ensayando la guitarra para cantar el domingo a la Abuela Rosa 🎸🎂✨',
-      bgGradient: 'linear-gradient(155deg, #963A1D 0%, #BA9254 55%, #164D32 100%)',
-      createdAt: new Date(now - 140 * 60_000).toISOString(),
-      viewedBy: [],
-      reactions: [],
-    },
-  ];
-}
+const DEMO_IDS = new Set(['nazco_elena', 'nazco_rosa', 'nazco_sofia', 'nazco_carlos', 'nazco_mateo']);
 
 function loadStories(): FamilyStory[] {
   try {
     const raw = localStorage.getItem(STORIES_KEY);
-    if (!raw) return createSeedStories();
+    if (!raw) return [];
     const parsed = JSON.parse(raw) as FamilyStory[];
-    return Array.isArray(parsed) && parsed.length > 0 ? parsed : createSeedStories();
+    return Array.isArray(parsed) ? parsed.filter((s) => !DEMO_IDS.has(s.authorId)) : [];
   } catch {
-    return createSeedStories();
+    return [];
   }
 }
 

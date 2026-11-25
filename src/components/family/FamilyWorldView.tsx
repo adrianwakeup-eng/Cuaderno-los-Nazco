@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
-  Globe2,
+  Compass,
   MapPin,
   MessageCircle,
   Phone,
   RotateCcw,
   Sparkles,
+  Sun,
   User,
   Video,
   ZoomIn,
@@ -13,7 +14,6 @@ import {
 } from 'lucide-react';
 import { useAppearance } from '../../context/AppearanceContext';
 import { useFamilyApp } from '../../context/FamilyAppContext';
-import type { FamilyMember } from '../../types';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
 
 interface GeoCoords {
@@ -26,22 +26,55 @@ interface GeoCoords {
 /** Approximate country/city-level coordinates ONLY — never exact addresses */
 function getSafeRegionCoords(location: string): GeoCoords {
   const loc = location.toLowerCase();
-  if (loc.includes('brasil') || loc.includes('brazil') || loc.includes('sao') || loc.includes('rio') || loc.includes('toledo') || loc.includes('parana') || loc.includes('paraná')) {
+  if (
+    loc.includes('brasil') ||
+    loc.includes('brazil') ||
+    loc.includes('sao') ||
+    loc.includes('rio') ||
+    loc.includes('toledo') ||
+    loc.includes('parana') ||
+    loc.includes('paraná')
+  ) {
     return { lat: -15.8, lon: -47.9, regionLabel: 'Brasil', flag: '🇧🇷' };
   }
-  if (loc.includes('cuba') || loc.includes('habana') || loc.includes('havana') || loc.includes('santiago de cuba')) {
+  if (
+    loc.includes('cuba') ||
+    loc.includes('habana') ||
+    loc.includes('havana') ||
+    loc.includes('santiago de cuba')
+  ) {
     return { lat: 21.5, lon: -78.9, regionLabel: 'Cuba', flag: '🇨🇺' };
   }
-  if (loc.includes('méxico') || loc.includes('mexico') || loc.includes('cdmx') || loc.includes('guadalajara') || loc.includes('monterrey') || loc.includes('canc')) {
+  if (
+    loc.includes('méxico') ||
+    loc.includes('mexico') ||
+    loc.includes('cdmx') ||
+    loc.includes('guadalajara') ||
+    loc.includes('monterrey') ||
+    loc.includes('canc')
+  ) {
     return { lat: 19.4, lon: -99.1, regionLabel: 'México', flag: '🇲🇽' };
   }
-  if (loc.includes('madrid') || loc.includes('barcelona') || loc.includes('españa') || loc.includes('espana') || loc.includes('spain')) {
+  if (
+    loc.includes('madrid') ||
+    loc.includes('barcelona') ||
+    loc.includes('españa') ||
+    loc.includes('espana') ||
+    loc.includes('spain')
+  ) {
     return { lat: 40.4, lon: -3.7, regionLabel: 'España', flag: '🇪🇸' };
   }
   if (loc.includes('miami') || loc.includes('florida')) {
     return { lat: 25.8, lon: -80.2, regionLabel: 'EE. UU.', flag: '🇺🇸' };
   }
-  if (loc.includes('estados unidos') || loc.includes('usa') || loc.includes('eeuu') || loc.includes('new york') || loc.includes('texas') || loc.includes('california')) {
+  if (
+    loc.includes('estados unidos') ||
+    loc.includes('usa') ||
+    loc.includes('eeuu') ||
+    loc.includes('new york') ||
+    loc.includes('texas') ||
+    loc.includes('california')
+  ) {
     return { lat: 37.1, lon: -95.7, regionLabel: 'EE. UU.', flag: '🇺🇸' };
   }
   if (loc.includes('bogot') || loc.includes('colombia')) {
@@ -89,73 +122,68 @@ function getSafeRegionCoords(location: string): GeoCoords {
   return { lat: -14.2, lon: -51.9, regionLabel: location || 'Nuestra Familia', flag: '💛' };
 }
 
-/** Convert (lat, lon) to unit 3D vector in planet space */
-function latLonToVec3(lat: number, lon: number): [number, number, number] {
-  const phi = (lat * Math.PI) / 180;
-  const lam = (lon * Math.PI) / 180;
-  return [Math.cos(phi) * Math.sin(lam), Math.sin(phi), Math.cos(phi) * Math.cos(lam)];
+/* ======================== SHARED 3D FLAT-EARTH CAMERA MATH ======================== */
+
+const FOV_F = 1.55;
+const BASE_CAM_DIST = 2.42;
+const ORBIT_RADIUS = 0.51;
+const ORBIT_ALTITUDE = 0.35;
+const ORBIT_SPEED = 0.24; // radians/sec (~26s full day-night cycle)
+
+/** Convert (lat, lon) to Flat Earth disc-local coordinates (x, 0, z) with North Pole at (0,0) */
+function latLonToFlatLocal(lat: number, lon: number): [number, number] {
+  const r = Math.max(0.001, Math.min(0.95, (90 - lat) / 180));
+  const lonRad = (lon * Math.PI) / 180;
+  return [r * Math.sin(lonRad), r * Math.cos(lonRad)];
 }
 
-/** Exact 3D projection matching our WebGL Earth fragment shader */
-function project3D(
-  lat: number,
-  lon: number,
-  rotLon: number,
-  rotLat: number,
-  r: number,
-  cx: number,
-  cy: number,
-  altitude = 1
+/** Exact 3D perspective projection matching our WebGL Flat Earth + Ocean + Sun/Moon shader */
+function projectFlat3D(
+  lx: number,
+  ly: number,
+  lz: number,
+  yawDeg: number,
+  pitchDeg: number,
+  camDist: number,
+  w: number,
+  h: number
 ) {
-  const phi = (lat * Math.PI) / 180;
-  const lam = ((lon - rotLon) * Math.PI) / 180;
-  const tilt = (rotLat * Math.PI) / 180;
+  const yaw = (yawDeg * Math.PI) / 180;
+  const pitch = (pitchDeg * Math.PI) / 180;
+  const cosY = Math.cos(yaw);
+  const sinY = Math.sin(yaw);
+  const cosP = Math.cos(pitch);
+  const sinP = Math.sin(pitch);
 
-  const x0 = Math.cos(phi) * Math.sin(lam);
-  const y0 = Math.sin(phi);
-  const z0 = Math.cos(phi) * Math.cos(lam);
+  // Rotate disc-local point around Y by +yaw into camera-aligned world space
+  const wx = lx * cosY + lz * sinY;
+  const wy = ly;
+  const wz = -lx * sinY + lz * cosY;
 
-  const y1 = y0 * Math.cos(tilt) - z0 * Math.sin(tilt);
-  const z1 = y0 * Math.sin(tilt) + z0 * Math.cos(tilt);
+  // Vector from camera (0, D*sinP, D*cosP) to point W
+  const rx = wx;
+  const ry = wy - camDist * sinP;
+  const rz = wz - camDist * cosP;
+
+  // Project onto camera basis: R=(1,0,0), U=(0,cosP,-sinP), F=(0,-sinP,-cosP)
+  const cxCam = rx;
+  const cyCam = ry * cosP - rz * sinP;
+  const czCam = -ry * sinP - rz * cosP;
+
+  const scale = 0.5 * Math.min(w, h);
+  const safeZ = Math.max(0.08, czCam);
+  const ndcX = (cxCam / safeZ) * FOV_F;
+  const ndcY = (cyCam / safeZ) * FOV_F;
 
   return {
-    x: cx + x0 * r * altitude,
-    y: cy - y1 * r * altitude,
-    z: z1,
-    visible: z1 > 0.04,
+    x: 0.5 * w + ndcX * scale,
+    y: 0.5 * h - ndcY * scale,
+    depth: czCam,
+    visible: czCam > 0.15,
   };
 }
 
-function projectVec3(
-  vx: number,
-  vy: number,
-  vz: number,
-  rotLon: number,
-  rotLat: number,
-  r: number,
-  cx: number,
-  cy: number,
-  altitude = 1
-) {
-  const rotRad = (rotLon * Math.PI) / 180;
-  const cosR = Math.cos(-rotRad);
-  const sinR = Math.sin(-rotRad);
-  const x0 = vx * cosR + vz * sinR;
-  const z0 = -vx * sinR + vz * cosR;
-  const y0 = vy;
-
-  const tilt = (rotLat * Math.PI) / 180;
-  const y1 = y0 * Math.cos(tilt) - z0 * Math.sin(tilt);
-  const z1 = y0 * Math.sin(tilt) + z0 * Math.cos(tilt);
-
-  return {
-    x: cx + x0 * r * altitude,
-    y: cy - y1 * r * altitude,
-    z: z1,
-  };
-}
-
-/* ======================== HARDWARE-ACCELERATED WebGL 3D EARTH SHADER ======================== */
+/* ======================== HARDWARE-ACCELERATED WebGL FLAT EARTH + OCEAN + SUN & MOON SHADER ======================== */
 
 const VERT_SRC = `
 attribute vec2 aPos;
@@ -171,16 +199,20 @@ precision highp float;
 
 varying vec2 vUv;
 uniform vec2 uRes;
-uniform float uRadius;
-uniform float uRotLon;
-uniform float uRotLat;
+uniform float uYaw;
+uniform float uPitch;
+uniform float uCamDist;
 uniform float uTime;
 uniform float uCloudOffset;
+uniform float uSunAngle;
 uniform sampler2D uEarthTex;
 uniform sampler2D uCloudTex;
 uniform float uHasTex;
 
 const float PI = 3.14159265359;
+const float FOV_F = 1.55;
+const float ORBIT_R = 0.51;
+const float ORBIT_Y = 0.35;
 
 float hash21(vec2 p) {
   p = fract(p * vec2(234.34, 435.345));
@@ -188,122 +220,317 @@ float hash21(vec2 p) {
   return fract(p.x * p.y);
 }
 
+float vnoise(vec2 p) {
+  vec2 i = floor(p);
+  vec2 f = fract(p);
+  f = f * f * (3.0 - 2.0 * f);
+  float a = hash21(i);
+  float b = hash21(i + vec2(1.0, 0.0));
+  float c = hash21(i + vec2(0.0, 1.0));
+  float d = hash21(i + vec2(1.0, 1.0));
+  return mix(mix(a, b, f.x), mix(c, d, f.x), f.y);
+}
+
+float oceanWaveHeight(vec2 p, float t) {
+  float w = 0.0;
+  w += sin(p.x * 5.8 + p.y * 3.4 + t * 1.45) * 0.34;
+  w += sin(p.x * -4.2 + p.y * 6.5 - t * 1.15) * 0.26;
+  w += (vnoise(p * 4.5 + vec2(t * 0.42, -t * 0.28)) - 0.5) * 0.48;
+  w += (vnoise(p * 11.5 - vec2(t * 0.72, t * 0.55)) - 0.5) * 0.24;
+  return w;
+}
+
+vec3 oceanNormal(vec2 p, float t, float strength) {
+  float eps = 0.018;
+  float hC = oceanWaveHeight(p, t);
+  float hX = oceanWaveHeight(p + vec2(eps, 0.0), t);
+  float hZ = oceanWaveHeight(p + vec2(0.0, eps), t);
+  return normalize(vec3((hC - hX) * strength, 1.0, (hC - hZ) * strength));
+}
+
+// Analytic ray-sphere intersection: returns nearest positive t or -1.0
+float intersectSphere(vec3 ro, vec3 rd, vec3 center, float rad) {
+  vec3 oc = ro - center;
+  float b = dot(oc, rd);
+  float c = dot(oc, oc) - rad * rad;
+  float h = b * b - c;
+  if (h < 0.0) return -1.0;
+  float t = -b - sqrt(h);
+  return t > 0.0 ? t : -1.0;
+}
+
+// Distance from ray (ro + t*rd, t>=0) to point p, plus along-ray parameter t
+vec2 rayPointDist(vec3 ro, vec3 rd, vec3 p) {
+  float t = max(dot(p - ro, rd), 0.0);
+  vec3 closest = ro + rd * t;
+  return vec2(length(p - closest), t);
+}
+
+vec3 rotY(vec3 v, float a) {
+  float c = cos(a);
+  float s = sin(a);
+  return vec3(v.x * c + v.z * s, v.y, -v.x * s + v.z * c);
+}
+
 void main() {
   vec2 px = vec2(vUv.x * uRes.x, (1.0 - vUv.y) * uRes.y);
-  vec2 center = uRes * 0.5;
-  vec2 rel = (px - center) / uRadius;
-  float x1 = rel.x;
-  float y1 = -rel.y;
-  float r2 = x1 * x1 + y1 * y1;
-  float dist = sqrt(r2);
+  float scale = 0.5 * min(uRes.x, uRes.y);
+  vec2 ndc = vec2((px.x - 0.5 * uRes.x) / scale, (0.5 * uRes.y - px.y) / scale);
 
-  // Deep cosmic starry backdrop with subtle golden-sapphire nebula glow
-  vec3 spaceCol = mix(vec3(0.024, 0.047, 0.105), vec3(0.012, 0.022, 0.052), clamp(dist * 0.55, 0.0, 1.0));
-  spaceCol += vec3(0.14, 0.10, 0.025) * exp(-dist * dist * 1.1) * 0.35;
+  float cosP = cos(uPitch);
+  float sinP = sin(uPitch);
+  vec3 camPos = vec3(0.0, uCamDist * sinP, uCamDist * cosP);
+  vec3 camRight = vec3(1.0, 0.0, 0.0);
+  vec3 camUp = vec3(0.0, cosP, -sinP);
+  vec3 camFwd = vec3(0.0, -sinP, -cosP);
+  vec3 rd = normalize(camRight * ndc.x + camUp * ndc.y + camFwd * FOV_F);
 
-  // Multi-layer twinkling starfield
-  vec2 starGrid = floor(px * 0.16);
-  vec2 starLocal = fract(px * 0.16) - 0.5;
-  float rnd = hash21(starGrid);
-  if (rnd > 0.962) {
-    float dStar = length(starLocal);
-    float twinkle = 0.62 + 0.38 * sin(uTime * (2.0 + rnd * 4.5) + rnd * 60.0);
-    float bright = smoothstep(0.24, 0.02, dStar) * twinkle;
-    vec3 starTint = mix(vec3(0.82, 0.90, 1.0), vec3(1.0, 0.91, 0.68), fract(rnd * 27.0));
-    spaceCol += starTint * bright * 0.92;
+  // Orbiting 3D Sun & Moon in disc-local space, then rotated into camera-world space by +uYaw
+  float sunBob = sin(uSunAngle * 0.5) * 0.045;
+  vec3 sunLocal = vec3(sin(uSunAngle) * (ORBIT_R + sunBob), ORBIT_Y, cos(uSunAngle) * (ORBIT_R + sunBob));
+  vec3 moonLocal = vec3(sin(uSunAngle + PI) * (ORBIT_R - sunBob), ORBIT_Y, cos(uSunAngle + PI) * (ORBIT_R - sunBob));
+  vec3 sunPos = rotY(sunLocal, uYaw);
+  vec3 moonPos = rotY(moonLocal, uYaw);
+
+  // Sky / oceanic horizon backdrop (only seen when camera tilts low toward the horizon)
+  float skyGrad = clamp(rd.y * 2.4, 0.0, 1.0);
+  vec3 horizonCol = vec3(0.11, 0.34, 0.56);
+  vec3 zenithCol = vec3(0.025, 0.085, 0.21);
+  vec3 col = mix(horizonCol, zenithCol, pow(max(skyGrad, 0.0001), 0.65));
+
+  // Subtle sun-side warm glow & stars in high sky
+  float sunSkyAlign = max(dot(rd, normalize(sunPos - camPos)), 0.0);
+  col += vec3(1.0, 0.78, 0.38) * pow(max(sunSkyAlign, 0.0001), 8.0) * 0.35;
+  if (rd.y > 0.05) {
+    vec2 sg = floor(px * 0.14);
+    vec2 sl = fract(px * 0.14) - 0.5;
+    float rnd = hash21(sg);
+    if (rnd > 0.968) {
+      float tw = 0.6 + 0.4 * sin(uTime * (2.2 + rnd * 3.5) + rnd * 45.0);
+      col += vec3(0.88, 0.94, 1.0) * smoothstep(0.24, 0.02, length(sl)) * tw * smoothstep(0.05, 0.28, rd.y) * 0.7;
+    }
   }
 
-  // Outer atmospheric Rayleigh blue + warm golden corona glow
-  float outerGlow = exp(-max(dist - 0.985, 0.0) * 6.2);
-  vec3 corona = mix(vec3(0.18, 0.56, 0.98), vec3(0.98, 0.80, 0.32), 0.24) * outerGlow * 0.72;
-  spaceCol += corona;
+  float hitDepth = 1e6;
 
-  // Outside the planet sphere
-  if (r2 > 1.0) {
-    float edgeGlow = exp(-max(dist - 1.0, 0.0) * 28.0) * 0.65;
-    vec3 col = spaceCol + vec3(0.42, 0.78, 1.0) * edgeGlow;
-    gl_FragColor = vec4(col, 1.0);
-    return;
+  // Intersect infinite horizontal ocean + Flat Earth disc plane (y = 0)
+  if (rd.y < -0.0012) {
+    float tPlane = -camPos.y / rd.y;
+    hitDepth = tPlane;
+    vec3 hitW = camPos + rd * tPlane;
+
+    // Transform hit point into disc-local space (rotate by -uYaw)
+    float cosY = cos(uYaw);
+    float sinY = sin(uYaw);
+    vec2 localXZ = vec2(hitW.x * cosY - hitW.z * sinY, hitW.x * sinY + hitW.z * cosY);
+    float r = length(localXZ);
+
+    // Distance-based wave falloff so far horizon ocean never aliases
+    float distFade = exp(-tPlane * 0.045);
+
+    // Vector & lighting from orbiting 3D Sun and Moon onto this plane point
+    vec3 toSun = sunPos - hitW;
+    float dSun = length(toSun);
+    vec3 sunDir = toSun / max(dSun, 0.001);
+    float sunSpot = smoothstep(1.38, 0.14, dSun);
+    float sunCoreGlow = exp(-dSun * dSun * 1.45);
+
+    vec3 toMoon = moonPos - hitW;
+    float dMoon = length(toMoon);
+    vec3 moonDir = toMoon / max(dMoon, 0.001);
+    float moonSpot = smoothstep(1.25, 0.18, dMoon);
+
+    vec3 viewDir = -rd;
+
+    if (r <= 1.0) {
+      // ================= INSIDE THE FLAT EARTH DISC =================
+      float lonRad = atan(localXZ.x, localXZ.y);
+      float u = fract(lonRad / (2.0 * PI) + 0.5);
+      float v = clamp(r, 0.002, 0.998);
+
+      vec4 earthTex = texture2D(uEarthTex, vec2(u, v));
+      vec3 albedo = uHasTex > 0.5 ? earthTex.rgb : vec3(0.08, 0.30, 0.54);
+      float isLand = smoothstep(0.68, 0.88, earthTex.a);
+      float isOcean = 1.0 - isLand;
+
+      // Crisp 3D continental mountain/coastline relief normal
+      float eps = 0.0014;
+      vec3 eR = texture2D(uEarthTex, vec2(fract(u + eps), v)).rgb;
+      vec3 eD = texture2D(uEarthTex, vec2(u, clamp(v + eps, 0.002, 0.998))).rgb;
+      float lumC = dot(albedo, vec3(0.3, 0.59, 0.11));
+      float lumR = dot(eR, vec3(0.3, 0.59, 0.11));
+      float lumD = dot(eD, vec3(0.3, 0.59, 0.11));
+
+      // Gentle waves on internal oceans of the flat Earth, topographic bump on continents (rotated to world space)
+      vec2 radDir = localXZ / max(r, 0.001);
+      vec2 tanDir = vec2(radDir.y, -radDir.x);
+      vec2 landGrad = tanDir * (lumC - lumR) * 2.8 + radDir * (lumC - lumD) * 2.8;
+      vec3 innerOceanN = oceanNormal(localXZ * 5.2, uTime, 1.35 * distFade);
+      vec3 landN = normalize(vec3(landGrad.x, 1.0, landGrad.y));
+      vec3 surfN = rotY(normalize(mix(innerOceanN, landN, isLand)), uYaw);
+
+      // Antarctic snowy ice-wall perimeter ring (r = 0.92..1.00) for unmistakable Flat Earth look
+      float iceWall = smoothstep(0.915, 0.975, r);
+      vec3 iceCol = vec3(0.90, 0.95, 0.99) * (0.90 + 0.10 * vnoise(localXZ * 38.0));
+      albedo = mix(albedo, iceCol, iceWall * 0.88);
+      isOcean *= (1.0 - iceWall);
+      isLand = max(isLand, iceWall);
+
+      // Rich dynamic illumination from orbiting Sun (warm day) + Moon (readable cool twilight)
+      float ndlSun = max(dot(surfN, sunDir), 0.0);
+      float ndlMoon = max(dot(surfN, moonDir), 0.0);
+
+      // Keep Earth generously legible everywhere so the family can always visualize all continents clearly!
+      vec3 dayLight = vec3(1.06, 0.99, 0.88) * (0.42 + 0.95 * ndlSun * (0.55 + 0.70 * sunSpot));
+      vec3 moonLight = vec3(0.42, 0.62, 0.92) * (0.28 + 0.48 * ndlMoon * moonSpot);
+
+      vec3 surfaceCol = albedo * (dayLight * (0.48 + 0.52 * sunSpot) + moonLight * (1.0 - 0.55 * sunSpot));
+      // Warm solar pool right under the Sun
+      surfaceCol += vec3(1.0, 0.88, 0.55) * sunCoreGlow * (0.14 + 0.12 * isLand);
+
+      // Sparkle of ocean sun glint & moon glint on Earth's oceans
+      vec3 halfSun = normalize(sunDir + viewDir);
+      vec3 halfMoon = normalize(moonDir + viewDir);
+      float oceanSpecSun = pow(max(dot(surfN, halfSun), 0.0001), 42.0) * 0.95 * sunSpot;
+      float oceanSpecMoon = pow(max(dot(surfN, halfMoon), 0.0001), 36.0) * 0.45 * moonSpot;
+      surfaceCol += vec3(1.0, 0.94, 0.74) * oceanSpecSun * isOcean;
+      surfaceCol += vec3(0.76, 0.89, 1.0) * oceanSpecMoon * isOcean;
+
+      // Subtle warm golden city lights on the Moonlit side of continents
+      float nightMask = (1.0 - sunSpot) * isLand * (1.0 - iceWall);
+      float cityNoise = hash21(floor(vec2(u * 300.0, v * 150.0)));
+      float cityLight = smoothstep(0.958, 0.996, cityNoise) * nightMask * (1.0 - smoothstep(0.75, 0.90, r));
+      surfaceCol += vec3(1.0, 0.82, 0.42) * cityLight * 1.15;
+
+      // Subtle delicate latitude/equator & golden border rim
+      float eqLine = exp(-abs(r - 0.50) * 260.0) * 0.16;
+      surfaceCol += vec3(1.0, 0.88, 0.48) * eqLine;
+
+      // Drifting translucent clouds slightly elevated above the disc (parallax offset!)
+      float tCloud = -(camPos.y - 0.022) / rd.y;
+      vec3 hitCloud = camPos + rd * tCloud;
+      vec2 cXZ = vec2(hitCloud.x * cosY - hitCloud.z * sinY, hitCloud.x * sinY + hitCloud.z * cosY);
+      float cR = length(cXZ);
+      if (cR < 0.98) {
+        float cu = fract(atan(cXZ.x, cXZ.y) / (2.0 * PI) + 0.5 - uCloudOffset);
+        float cv = clamp(cR, 0.002, 0.998);
+        float cloudA = texture2D(uCloudTex, vec2(cu, cv)).a * 0.46;
+        float shadowA = texture2D(uCloudTex, vec2(fract(u - uCloudOffset + 0.005), v)).a * 0.20;
+        surfaceCol *= (1.0 - shadowA);
+        vec3 cloudCol = mix(vec3(0.56, 0.70, 0.90), vec3(1.0, 0.98, 0.94), 0.35 + 0.65 * sunSpot);
+        surfaceCol = mix(surfaceCol, cloudCol, cloudA);
+      }
+
+      // Luminous golden-crystalline outer rim separating the flat Earth from the infinite ocean
+      float rimGold = smoothstep(0.982, 0.999, r);
+      surfaceCol = mix(surfaceCol, vec3(0.98, 0.86, 0.52), rimGold * 0.65);
+
+      col = surfaceCol;
+    } else {
+      // ================= INFINITE SURROUNDING 3D OCEAN =================
+      vec3 nOcean = rotY(oceanNormal(localXZ * 2.35, uTime, 2.85 * distFade), uYaw);
+      float fresnel = pow(clamp(1.0 - max(dot(nOcean, viewDir), 0.0), 0.0001, 1.0), 3.2);
+
+      // Rich deep turquoise-sapphire oceanic water palette
+      float shallowRim = exp(-(r - 1.0) * 4.8);
+      vec3 deepSea = vec3(0.022, 0.145, 0.305);
+      vec3 midSea = vec3(0.042, 0.285, 0.495);
+      vec3 shallowSea = vec3(0.09, 0.52, 0.64);
+      vec3 seaCol = mix(deepSea, midSea, 0.40 + 0.60 * (0.45 + 0.55 * sunSpot));
+      seaCol = mix(seaCol, shallowSea, shallowRim * 0.68);
+
+      // Animated wave-crest highlights & ocean ripples
+      float waveH = oceanWaveHeight(localXZ * 2.35, uTime);
+      float crest = smoothstep(0.24, 0.72, waveH) * distFade;
+      seaCol += vec3(0.18, 0.46, 0.64) * crest * (0.50 + 0.50 * sunSpot);
+
+      // Sky reflection via Fresnel
+      vec3 skyRefl = mix(vec3(0.10, 0.32, 0.54), vec3(0.45, 0.68, 0.88), sunSpot * 0.65);
+      seaCol = mix(seaCol, skyRefl, fresnel * 0.52);
+
+      // Golden shimmering Sun reflection path across the surrounding ocean waves!
+      vec3 halfSun = normalize(sunDir + viewDir);
+      float sunGlintTight = pow(max(dot(nOcean, halfSun), 0.0001), 64.0) * 1.45;
+      float sunGlintBroad = pow(max(dot(nOcean, halfSun), 0.0001), 14.0) * 0.34;
+      seaCol += vec3(1.0, 0.90, 0.58) * (sunGlintTight + sunGlintBroad) * (0.35 + 0.65 * sunSpot) * distFade;
+
+      // Silvery-blue Moon reflection path across the surrounding ocean waves!
+      vec3 halfMoon = normalize(moonDir + viewDir);
+      float moonGlintTight = pow(max(dot(nOcean, halfMoon), 0.0001), 48.0) * 0.82;
+      float moonGlintBroad = pow(max(dot(nOcean, halfMoon), 0.0001), 12.0) * 0.20;
+      seaCol += vec3(0.76, 0.90, 1.0) * (moonGlintTight + moonGlintBroad) * (0.35 + 0.65 * moonSpot) * distFade;
+
+      // Animated white sea-foam & soft golden tide ripples lapping around the edge of the Flat Earth
+      float waveLap = sin((r - 1.0) * 44.0 - uTime * 2.6 + vnoise(localXZ * 12.0) * 4.5);
+      float foam = smoothstep(1.075, 1.00, r) * (0.55 + 0.45 * waveLap);
+      seaCol = mix(seaCol, vec3(0.84, 0.94, 0.98), clamp(foam * 0.55, 0.0, 0.72));
+
+      // Subtle glowing golden aura hugging the outer edge of the Flat Earth disc
+      float rimHalo = exp(-(r - 1.0) * 18.0) * 0.38;
+      seaCol += vec3(1.0, 0.84, 0.42) * rimHalo;
+
+      // Atmospheric oceanic mist blending far-distance water into the horizon
+      float fog = 1.0 - exp(-tPlane * tPlane * 0.0038);
+      col = mix(seaCol, horizonCol, clamp(fog, 0.0, 0.94));
+    }
   }
 
-  float z1 = sqrt(max(1.0 - r2, 0.0));
-  vec3 N = normalize(vec3(x1, y1, z1));
+  // ================= 3D ORBITING SUN & MOON (RAY-TRACED SPHERES + VOLUMETRIC HALOS) =================
+  float sunRad = 0.076;
+  float moonRad = 0.062;
 
-  // Inverse X-axis tilt matching JS project3D exactly
-  float cT = cos(uRotLat);
-  float sT = sin(uRotLat);
-  float x0 = x1;
-  float y0 = y1 * cT + z1 * sT;
-  float z0 = -y1 * sT + z1 * cT;
+  // Volumetric Sun corona & Moon silver aura in 3D space (respecting depth!)
+  vec2 sunRay = rayPointDist(camPos, rd, sunPos);
+  if (sunRay.y < hitDepth + 0.25) {
+    float coronaSoft = exp(-sunRay.x * 6.5) * 0.78;
+    float coronaCore = exp(-sunRay.x * 18.0) * 0.96;
+    col += vec3(1.0, 0.84, 0.38) * coronaSoft + vec3(1.0, 0.96, 0.78) * coronaCore;
+  }
 
-  float phi = asin(clamp(y0, -1.0, 1.0));
-  float lam = atan(x0, z0);
-  float lonRad = lam + uRotLon;
+  vec2 moonRay = rayPointDist(camPos, rd, moonPos);
+  if (moonRay.y < hitDepth + 0.25) {
+    float moonAura = exp(-moonRay.x * 10.5) * 0.52;
+    col += vec3(0.68, 0.84, 1.0) * moonAura;
+  }
 
-  float u = fract(lonRad / (2.0 * PI) + 0.5);
-  float v = clamp(0.5 - phi / PI, 0.002, 0.998);
+  // Solid 3D Sun sphere intersection
+  float tSun = intersectSphere(camPos, rd, sunPos, sunRad);
+  if (tSun > 0.0 && tSun < hitDepth) {
+    hitDepth = tSun;
+    vec3 pSun = camPos + rd * tSun;
+    vec3 nSun = normalize(pSun - sunPos);
+    float facing = max(dot(nSun, -rd), 0.0);
+    float plasma = vnoise(nSun.xy * 7.5 + vec2(uTime * 0.8, -uTime * 0.5)) * 0.55
+                 + vnoise(nSun.yz * 15.0 - vec2(uTime * 1.1, uTime * 0.6)) * 0.45;
+    vec3 sunCore = mix(vec3(1.0, 0.62, 0.14), vec3(1.0, 0.98, 0.84), pow(max(facing, 0.0001), 0.55));
+    sunCore += vec3(1.0, 0.86, 0.42) * plasma * 0.28;
+    col = sunCore;
+  }
 
-  vec4 earthTex = texture2D(uEarthTex, vec2(u, v));
-  vec3 albedo = uHasTex > 0.5 ? earthTex.rgb : vec3(0.08, 0.28, 0.52);
-  // Alpha stores [0.55..1.0] where ~0.55 = ocean, ~1.0 = land
-  float isLand = smoothstep(0.68, 0.88, earthTex.a);
-  float isOcean = 1.0 - isLand;
+  // Solid 3D Moon sphere intersection (with realistic lunar maria & craters!)
+  float tMoon = intersectSphere(camPos, rd, moonPos, moonRad);
+  if (tMoon > 0.0 && tMoon < hitDepth) {
+    hitDepth = tMoon;
+    vec3 pMoon = camPos + rd * tMoon;
+    vec3 nMoon = normalize(pMoon - moonPos);
+    vec3 toSunFromMoon = normalize(sunPos - moonPos);
+    float mDiff = max(dot(nMoon, toSunFromMoon), 0.0);
+    float mView = max(dot(nMoon, -rd), 0.0);
 
-  // Subtle procedural micro-normal relief boost on continents for crisp 3D depth
-  float eps = 0.0012;
-  vec3 eR = texture2D(uEarthTex, vec2(fract(u + eps), v)).rgb;
-  vec3 eU = texture2D(uEarthTex, vec2(u, clamp(v - eps, 0.002, 0.998))).rgb;
-  float lumC = dot(albedo, vec3(0.3, 0.59, 0.11));
-  float lumR = dot(eR, vec3(0.3, 0.59, 0.11));
-  float lumU = dot(eU, vec3(0.3, 0.59, 0.11));
-  vec3 bumpN = normalize(N + vec3((lumC - lumR) * 2.2 * isLand, (lumC - lumU) * 2.2 * isLand, 0.0));
+    // Procedural lunar maria & fine craters
+    float maria = vnoise(nMoon.xz * 4.5 + nMoon.y * 2.0);
+    float craters = vnoise(nMoon.xy * 18.0 + nMoon.z * 9.0);
+    vec3 lunarAlbedo = mix(vec3(0.58, 0.64, 0.72), vec3(0.92, 0.95, 0.98), smoothstep(0.32, 0.74, maria));
+    lunarAlbedo *= (0.86 + 0.18 * craters);
 
-  // Studio-warm 3D directional sunlight + subtle secondary bounce so Earth is vivid & legible
-  vec3 sunDir = normalize(vec3(-0.46, 0.26, 0.85));
-  vec3 viewDir = vec3(0.0, 0.0, 1.0);
-  float ndotl = dot(bumpN, sunDir);
-  float dayFactor = smoothstep(-0.14, 0.28, ndotl);
-  float diffuse = max(ndotl, 0.0);
+    // Luminous silver rim + sunlit crescent + soft earthshine so full Moon sphere is always gorgeous
+    float rimM = pow(clamp(1.0 - mView, 0.0001, 1.0), 2.4);
+    col = lunarAlbedo * (0.48 + 0.75 * mDiff) + vec3(0.76, 0.88, 1.0) * rimM * 0.42;
+  }
 
-  // Realistic ocean solar specular glint (glistens ONLY on ocean water, matte on land!)
-  vec3 halfVec = normalize(sunDir + viewDir);
-  float specBroad = pow(max(dot(N, halfVec), 0.0), 18.0) * 0.26;
-  float specTight = pow(max(dot(N, halfVec), 0.0), 72.0) * 0.52;
-  vec3 oceanSpec = vec3(1.0, 0.96, 0.84) * (specBroad + specTight) * isOcean * dayFactor;
-
-  // Animated drifting volumetric cloud layer + subtle ground shadow underneath clouds
-  float uCloud = fract(u - uCloudOffset);
-  vec4 cloudSample = texture2D(uCloudTex, vec2(uCloud, v));
-  float cloudMask = cloudSample.a * 0.78;
-  float cloudShadow = texture2D(uCloudTex, vec2(fract(uCloud + 0.0045), clamp(v + 0.0035, 0.002, 0.998))).a * 0.34;
-
-  // Day surface shading with cloud shadow & vibrant satellite color depth
-  vec3 dayCol = albedo * (0.30 + 0.94 * diffuse) * (1.0 - cloudShadow) + oceanSpec;
-
-  // Night side: deep cobalt ambient + sparkling warm golden coastal/city lights on land
-  float cityNoise = hash21(floor(vec2(u * 280.0, v * 140.0)));
-  float citySparkle = smoothstep(0.955, 0.995, cityNoise) * isLand * (1.0 - smoothstep(0.55, 0.78, abs(y0)));
-  vec3 nightCol = albedo * vec3(0.11, 0.16, 0.28) + vec3(1.0, 0.82, 0.42) * citySparkle * 1.15;
-
-  // Subtle warm golden sunset terminator transition band
-  float twilight = exp(-pow((ndotl - 0.02) * 7.5, 2.0)) * 0.22;
-  vec3 surfaceCol = mix(nightCol, dayCol, dayFactor) + vec3(0.95, 0.55, 0.22) * twilight * (1.0 - isOcean * 0.4);
-
-  // Composite lit drifting white clouds over the surface
-  float cloudLight = 0.24 + 0.88 * max(dot(N, sunDir), 0.0);
-  vec3 cloudCol = mix(vec3(0.65, 0.76, 0.92), vec3(1.0, 0.99, 0.96), dayFactor) * cloudLight;
-  surfaceCol = mix(surfaceCol, cloudCol, cloudMask);
-
-  // Fresnel atmospheric Rayleigh scattering rim (signature 3D orb depth!)
-  float fresnel = pow(1.0 - z1, 3.0);
-  vec3 atmoColor = mix(vec3(0.28, 0.68, 1.0), vec3(1.0, 0.86, 0.48), 0.16);
-  surfaceCol += atmoColor * fresnel * (0.48 + 0.52 * dayFactor);
-
-  // Anti-aliased outer sphere edge blending cleanly into cosmic atmosphere
-  float edgeAA = smoothstep(1.0, 0.985, dist);
-  vec3 finalCol = mix(spaceCol + vec3(0.36, 0.74, 1.0) * 0.45, surfaceCol, edgeAA);
-
-  gl_FragColor = vec4(finalCol, 1.0);
+  // Subtle filmic tone curve for luminous highlights without clipping
+  col = col / (1.0 + col * 0.18);
+  gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }
 `;
 
@@ -325,14 +552,15 @@ export const FamilyWorldView: React.FC = () => {
 
   const [selectedMemberId, setSelectedMemberId] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
+  const [topDownMode, setTopDownMode] = useState(false);
   const [webglReady, setWebglReady] = useState(true);
 
-  const rotRef = useRef({
-    lon: -56,
-    lat: 10,
-    velLon: 0.11,
-    targetLon: null as number | null,
-    targetLat: null as number | null,
+  const camRef = useRef({
+    yaw: 68, // Centers Americas right in the foreground
+    pitch: 50, // Dramatic 3D perspective over the Flat Earth & surrounding ocean
+    velYaw: 0.07,
+    targetYaw: null as number | null,
+    targetPitch: null as number | null,
   });
   const dragRef = useRef<{ active: boolean; x: number; y: number }>({ active: false, x: 0, y: 0 });
   const glCanvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -344,7 +572,7 @@ export const FamilyWorldView: React.FC = () => {
     [snapshot.members]
   );
 
-  // Automatically de-overlap family members who share the exact same country coordinates!
+  // Automatically de-overlap family members who share the exact same country coordinates
   const memberGeos = useMemo(() => {
     const raw = activeMembers.map((m) => ({ member: m, base: getSafeRegionCoords(m.location) }));
     const groups = new Map<string, typeof raw>();
@@ -363,8 +591,8 @@ export const FamilyWorldView: React.FC = () => {
       }
       const idx = peers.findIndex((p) => p.member.id === item.member.id);
       const angle = (idx / peers.length) * Math.PI * 2 - Math.PI / 4;
-      const spreadLon = 7.2 * Math.cos(angle);
-      const spreadLat = 5.4 * Math.sin(angle);
+      const spreadLon = 7.5 * Math.cos(angle);
+      const spreadLat = 5.5 * Math.sin(angle);
       return {
         member: item.member,
         anchor: item.base,
@@ -377,13 +605,14 @@ export const FamilyWorldView: React.FC = () => {
     });
   }, [activeMembers]);
 
-  const flyToLocation = useCallback((lat: number, lon: number) => {
-    rotRef.current.targetLon = lon;
-    rotRef.current.targetLat = Math.max(-42, Math.min(42, lat * 0.52));
-    rotRef.current.velLon = 0;
-  }, []);
+  const flyToLocation = useCallback((_lat: number, lon: number, pitchOverride?: number) => {
+    // Rotating yaw to -lon swings that country right into the front-center foreground!
+    camRef.current.targetYaw = -lon;
+    camRef.current.targetPitch = pitchOverride ?? (topDownMode ? 78 : 48);
+    camRef.current.velYaw = 0;
+  }, [topDownMode]);
 
-  // Real-time 60 FPS WebGL 3D Earth + Elevated 3D Golden Great-Circle Arcs + Zero-Rerender Pins
+  // Real-time 60 FPS WebGL Flat Earth Disc + Infinite Ocean + Orbiting Sun & Moon + 3D Golden Arcs & Pins
   useEffect(() => {
     const glCanvas = glCanvasRef.current;
     const ovCanvas = overlayCanvasRef.current;
@@ -400,11 +629,12 @@ export const FamilyWorldView: React.FC = () => {
 
     let prog: WebGLProgram | null = null;
     let uRes: WebGLUniformLocation | null = null;
-    let uRadius: WebGLUniformLocation | null = null;
-    let uRotLon: WebGLUniformLocation | null = null;
-    let uRotLat: WebGLUniformLocation | null = null;
+    let uYaw: WebGLUniformLocation | null = null;
+    let uPitch: WebGLUniformLocation | null = null;
+    let uCamDist: WebGLUniformLocation | null = null;
     let uTime: WebGLUniformLocation | null = null;
     let uCloudOffset: WebGLUniformLocation | null = null;
+    let uSunAngle: WebGLUniformLocation | null = null;
     let uHasTex: WebGLUniformLocation | null = null;
     let texLoaded = false;
 
@@ -426,7 +656,7 @@ export const FamilyWorldView: React.FC = () => {
         0,
         glCtx.RGBA,
         glCtx.UNSIGNED_BYTE,
-        new Uint8Array([14, 52, 102, 140])
+        new Uint8Array([14, 58, 108, 140])
       );
       glCtx.texParameteri(glCtx.TEXTURE_2D, glCtx.TEXTURE_WRAP_S, glCtx.REPEAT);
       glCtx.texParameteri(glCtx.TEXTURE_2D, glCtx.TEXTURE_WRAP_T, glCtx.CLAMP_TO_EDGE);
@@ -469,11 +699,12 @@ export const FamilyWorldView: React.FC = () => {
             gl.vertexAttribPointer(aPos, 2, gl.FLOAT, false, 0, 0);
 
             uRes = gl.getUniformLocation(prog, 'uRes');
-            uRadius = gl.getUniformLocation(prog, 'uRadius');
-            uRotLon = gl.getUniformLocation(prog, 'uRotLon');
-            uRotLat = gl.getUniformLocation(prog, 'uRotLat');
+            uYaw = gl.getUniformLocation(prog, 'uYaw');
+            uPitch = gl.getUniformLocation(prog, 'uPitch');
+            uCamDist = gl.getUniformLocation(prog, 'uCamDist');
             uTime = gl.getUniformLocation(prog, 'uTime');
             uCloudOffset = gl.getUniformLocation(prog, 'uCloudOffset');
+            uSunAngle = gl.getUniformLocation(prog, 'uSunAngle');
             uHasTex = gl.getUniformLocation(prog, 'uHasTex');
 
             gl.uniform1i(gl.getUniformLocation(prog, 'uEarthTex'), 0);
@@ -514,50 +745,129 @@ export const FamilyWorldView: React.FC = () => {
         glCanvas.height = targetH;
       }
 
-      // Smooth spring fly-to target OR gentle inertial auto-spin
-      const rot = rotRef.current;
+      // Smooth spring fly-to target OR gentle ambient rotation
+      const cam = camRef.current;
       if (!dragRef.current.active) {
-        if (rot.targetLon !== null && rot.targetLat !== null) {
-          let dLon = ((rot.targetLon - rot.lon + 540) % 360) - 180;
-          const dLat = rot.targetLat - rot.lat;
-          rot.lon += dLon * 0.1;
-          rot.lat += dLat * 0.1;
-          if (Math.abs(dLon) < 0.25 && Math.abs(dLat) < 0.25) {
-            rot.targetLon = null;
-            rot.targetLat = null;
-            rot.velLon = 0.08;
+        if (cam.targetYaw !== null && cam.targetPitch !== null) {
+          const dYaw = ((cam.targetYaw - cam.yaw + 540) % 360) - 180;
+          const dPitch = cam.targetPitch - cam.pitch;
+          cam.yaw += dYaw * 0.1;
+          cam.pitch += dPitch * 0.1;
+          if (Math.abs(dYaw) < 0.2 && Math.abs(dPitch) < 0.2) {
+            cam.targetYaw = null;
+            cam.targetPitch = null;
+            cam.velYaw = 0.04;
           }
         } else if (prefs.animationsEnabled && prefs.mode !== 'LIGHT') {
-          rot.lon += rot.velLon;
-          rot.velLon += (0.09 - rot.velLon) * 0.035;
+          cam.yaw += cam.velYaw;
+          cam.velYaw += (0.045 - cam.velYaw) * 0.03;
         }
       }
 
-      const cx = w / 2;
-      const cy = h / 2;
-      const radius = Math.min(w, h) * 0.415 * zoom;
+      const camDist = BASE_CAM_DIST / zoom;
+      const animActive = prefs.animationsEnabled && prefs.mode !== 'LIGHT';
+      const sunAngle = animActive ? 0.55 + elapsedSec * ORBIT_SPEED : 0.95;
 
-      // 1. Render photorealistic WebGL 3D Planet Earth
+      // 1. Render Photorealistic WebGL Flat Earth + Surrounding Ocean + Orbiting Sun & Moon
       if (gl && prog) {
         gl.viewport(0, 0, targetW, targetH);
         gl.uniform2f(uRes, targetW, targetH);
-        gl.uniform1f(uRadius, radius * dpr);
-        gl.uniform1f(uRotLon, (rot.lon * Math.PI) / 180);
-        gl.uniform1f(uRotLat, (rot.lat * Math.PI) / 180);
-        gl.uniform1f(uTime, elapsedSec);
-        gl.uniform1f(uCloudOffset, (elapsedSec * 0.0055) % 1.0);
+        gl.uniform1f(uYaw, (cam.yaw * Math.PI) / 180);
+        gl.uniform1f(uPitch, (cam.pitch * Math.PI) / 180);
+        gl.uniform1f(uCamDist, camDist);
+        gl.uniform1f(uTime, animActive ? elapsedSec : 1.0);
+        gl.uniform1f(uCloudOffset, animActive ? (elapsedSec * 0.0045) % 1.0 : 0.0);
+        gl.uniform1f(uSunAngle, sunAngle);
         gl.uniform1f(uHasTex, texLoaded ? 1.0 : 0.0);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
       }
 
-      // 2. Render 3D elevated golden great-circle arcs + pulsing beacon rings + traveling sparks
+      // 2. Render 3D Orbital Halo Track, Sun/Moon Subtle Labels, Elevated Golden Family Arcs & Beacons
       ovCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ovCtx.clearRect(0, 0, w, h);
 
-      // Draw graceful 3D elevated arcs between unique family regions
+      // Draw graceful elevated 3D orbital track ring for the Sun & Moon above the Flat Earth
+      const ringSteps = 72;
+      ovCtx.save();
+      ovCtx.beginPath();
+      for (let i = 0; i <= ringSteps; i++) {
+        const a = (i / ringSteps) * Math.PI * 2;
+        const p = projectFlat3D(
+          Math.sin(a) * ORBIT_RADIUS,
+          ORBIT_ALTITUDE,
+          Math.cos(a) * ORBIT_RADIUS,
+          cam.yaw,
+          cam.pitch,
+          camDist,
+          w,
+          h
+        );
+        if (i === 0) ovCtx.moveTo(p.x, p.y);
+        else ovCtx.lineTo(p.x, p.y);
+      }
+      ovCtx.setLineDash([4, 6]);
+      ovCtx.strokeStyle = 'rgba(255, 232, 152, 0.36)';
+      ovCtx.lineWidth = 1.25;
+      ovCtx.stroke();
+      ovCtx.restore();
+
+      // Draw crisp Sun & Moon vertical light-drop beams + tiny glowing orbital labels
+      const sunBob = Math.sin(sunAngle * 0.5) * 0.045;
+      const sunLX = Math.sin(sunAngle) * (ORBIT_RADIUS + sunBob);
+      const sunLZ = Math.cos(sunAngle) * (ORBIT_RADIUS + sunBob);
+      const moonLX = Math.sin(sunAngle + Math.PI) * (ORBIT_RADIUS - sunBob);
+      const moonLZ = Math.cos(sunAngle + Math.PI) * (ORBIT_RADIUS - sunBob);
+
+      const pSun = projectFlat3D(sunLX, ORBIT_ALTITUDE, sunLZ, cam.yaw, cam.pitch, camDist, w, h);
+      const pSunGround = projectFlat3D(sunLX, 0.005, sunLZ, cam.yaw, cam.pitch, camDist, w, h);
+      const pMoon = projectFlat3D(moonLX, ORBIT_ALTITUDE, moonLZ, cam.yaw, cam.pitch, camDist, w, h);
+      const pMoonGround = projectFlat3D(moonLX, 0.005, moonLZ, cam.yaw, cam.pitch, camDist, w, h);
+
+      if (pSun.visible && pSunGround.visible) {
+        ovCtx.save();
+        const beam = ovCtx.createLinearGradient(pSun.x, pSun.y, pSunGround.x, pSunGround.y);
+        beam.addColorStop(0, 'rgba(255, 236, 158, 0.34)');
+        beam.addColorStop(1, 'rgba(255, 220, 108, 0.0)');
+        ovCtx.strokeStyle = beam;
+        ovCtx.lineWidth = 2.0;
+        ovCtx.setLineDash([2, 4]);
+        ovCtx.beginPath();
+        ovCtx.moveTo(pSun.x, pSun.y);
+        ovCtx.lineTo(pSunGround.x, pSunGround.y);
+        ovCtx.stroke();
+
+        // Subtle animated solar flare cross
+        const flareR = 20 + Math.sin(elapsedSec * 3.0) * 3;
+        const sunGrad = ovCtx.createRadialGradient(pSun.x, pSun.y, 1, pSun.x, pSun.y, flareR);
+        sunGrad.addColorStop(0, 'rgba(255, 253, 224, 0.55)');
+        sunGrad.addColorStop(0.45, 'rgba(255, 214, 92, 0.18)');
+        sunGrad.addColorStop(1, 'rgba(255, 190, 52, 0)');
+        ovCtx.fillStyle = sunGrad;
+        ovCtx.beginPath();
+        ovCtx.arc(pSun.x, pSun.y, flareR, 0, Math.PI * 2);
+        ovCtx.fill();
+        ovCtx.restore();
+      }
+
+      if (pMoon.visible && pMoonGround.visible) {
+        ovCtx.save();
+        const beamM = ovCtx.createLinearGradient(pMoon.x, pMoon.y, pMoonGround.x, pMoonGround.y);
+        beamM.addColorStop(0, 'rgba(196, 224, 255, 0.24)');
+        beamM.addColorStop(1, 'rgba(148, 198, 255, 0.0)');
+        ovCtx.strokeStyle = beamM;
+        ovCtx.lineWidth = 1.6;
+        ovCtx.setLineDash([2, 4]);
+        ovCtx.beginPath();
+        ovCtx.moveTo(pMoon.x, pMoon.y);
+        ovCtx.lineTo(pMoonGround.x, pMoonGround.y);
+        ovCtx.stroke();
+        ovCtx.restore();
+      }
+
+      // Draw graceful 3D elevated golden arcs across the Flat Earth between unique family regions
       if (memberGeos.length >= 2) {
         const hubAnchor = memberGeos[0].anchor;
-        const vA = latLonToVec3(hubAnchor.lat, hubAnchor.lon);
+        const [ax, az] = latLonToFlatLocal(hubAnchor.lat, hubAnchor.lon);
         const drawnTargets = new Set<string>();
 
         memberGeos.slice(1).forEach(({ anchor }, idx) => {
@@ -570,83 +880,81 @@ export const FamilyWorldView: React.FC = () => {
           }
           drawnTargets.add(targetKey);
 
-          const vB = latLonToVec3(anchor.lat, anchor.lon);
-          const dot = Math.max(-0.999, Math.min(0.999, vA[0] * vB[0] + vA[1] * vB[1] + vA[2] * vB[2]));
-          const omega = Math.acos(dot);
-          const sinOmega = Math.sin(omega) || 1;
-          const peakAlt = 1.0 + Math.min(0.28, omega * 0.16);
+          const [bx, bz] = latLonToFlatLocal(anchor.lat, anchor.lon);
+          const dist = Math.hypot(bx - ax, bz - az);
+          const peakH = 0.09 + Math.min(0.22, dist * 0.22);
           const steps = 36;
+          const pts: { x: number; y: number; visible: boolean }[] = [];
 
-          const pts: { x: number; y: number; z: number }[] = [];
           for (let s = 0; s <= steps; s++) {
             const t = s / steps;
-            const wA = Math.sin((1 - t) * omega) / sinOmega;
-            const wB = Math.sin(t * omega) / sinOmega;
-            const vx = vA[0] * wA + vB[0] * wB;
-            const vy = vA[1] * wA + vB[1] * wB;
-            const vz = vA[2] * wA + vB[2] * wB;
-            const alt = 1.0 + Math.sin(t * Math.PI) * (peakAlt - 1.0);
-            pts.push(projectVec3(vx, vy, vz, rot.lon, rot.lat, radius, cx, cy, alt));
+            const lx = ax + (bx - ax) * t;
+            const lz = az + (bz - az) * t;
+            const ly = Math.sin(t * Math.PI) * peakH;
+            pts.push(projectFlat3D(lx, ly, lz, cam.yaw, cam.pitch, camDist, w, h));
           }
 
-          // Luminous golden thread arc (only draw visible front-hemisphere segments)
           ovCtx.save();
           ovCtx.lineCap = 'round';
-          for (let s = 0; s < steps; s++) {
-            const p0 = pts[s];
-            const p1 = pts[s + 1];
-            if (p0.z < -0.08 && p1.z < -0.08) continue;
-            const alpha = Math.max(0.15, Math.min(1, (Math.min(p0.z, p1.z) + 0.15) * 1.4));
-            ovCtx.beginPath();
-            ovCtx.moveTo(p0.x, p0.y);
-            ovCtx.lineTo(p1.x, p1.y);
-            ovCtx.strokeStyle = `rgba(255, 224, 114, ${alpha * 0.85})`;
-            ovCtx.lineWidth = 2.2;
-            ovCtx.shadowColor = 'rgba(255, 212, 74, 0.85)';
-            ovCtx.shadowBlur = 8;
-            ovCtx.stroke();
-          }
+          ovCtx.beginPath();
+          pts.forEach((pt, i) => {
+            if (i === 0) ovCtx.moveTo(pt.x, pt.y);
+            else ovCtx.lineTo(pt.x, pt.y);
+          });
+          ovCtx.strokeStyle = 'rgba(255, 224, 114, 0.86)';
+          ovCtx.lineWidth = 2.2;
+          ovCtx.shadowColor = 'rgba(255, 212, 74, 0.9)';
+          ovCtx.shadowBlur = 8;
+          ovCtx.stroke();
 
-          // Animated golden shooting comet gliding smoothly along the 3D arc!
+          // Animated golden shooting spark gliding along the 3D arc
           const sparkT = (elapsedSec * 0.36 + idx * 0.37) % 1;
           const sparkIdx = Math.min(steps - 1, Math.floor(sparkT * steps));
           const sp = pts[sparkIdx];
-          if (sp.z > 0.0) {
-            const grad = ovCtx.createRadialGradient(sp.x, sp.y, 0.5, sp.x, sp.y, 9);
+          if (sp.visible) {
+            const grad = ovCtx.createRadialGradient(sp.x, sp.y, 0.5, sp.x, sp.y, 8.5);
             grad.addColorStop(0, 'rgba(255, 254, 232, 1)');
             grad.addColorStop(0.4, 'rgba(255, 218, 88, 0.92)');
             grad.addColorStop(1, 'rgba(255, 200, 50, 0)');
             ovCtx.fillStyle = grad;
             ovCtx.beginPath();
-            ovCtx.arc(sp.x, sp.y, 9, 0, Math.PI * 2);
+            ovCtx.arc(sp.x, sp.y, 8.5, 0, Math.PI * 2);
             ovCtx.fill();
           }
           ovCtx.restore();
         });
       }
 
-      // Draw pulsing golden radar beacon rings on the planet surface & position DOM pins cleanly (0 React re-renders!)
+      // Draw pulsing golden radar beacon rings on the Flat Earth & position ALL DOM pins smoothly (0 React re-renders!)
       memberGeos.forEach(({ member, geo }, idx) => {
-        const p = project3D(geo.lat, geo.lon, rot.lon, rot.lat, radius, cx, cy, 1.01);
+        const [lx, lz] = latLonToFlatLocal(geo.lat, geo.lon);
+        const p = projectFlat3D(lx, 0.012, lz, cam.yaw, cam.pitch, camDist, w, h);
         const el = pinElsRef.current.get(member.id);
 
-        if (p.z > 0.06) {
-          // Expanding golden pulse ring on the Earth's surface
-          const pulse = (elapsedSec * 0.7 + idx * 0.28) % 1;
+        if (p.visible) {
+          const pulse = (elapsedSec * 0.72 + idx * 0.28) % 1;
           ovCtx.save();
           ovCtx.beginPath();
-          ovCtx.arc(p.x, p.y, 5 + pulse * 18, 0, Math.PI * 2);
-          ovCtx.strokeStyle = `rgba(255, 224, 118, ${(1 - pulse) * 0.72})`;
+          ovCtx.ellipse(
+            p.x,
+            p.y,
+            5 + pulse * 17,
+            (5 + pulse * 17) * Math.max(0.42, Math.sin((cam.pitch * Math.PI) / 180)),
+            0,
+            0,
+            Math.PI * 2
+          );
+          ovCtx.strokeStyle = `rgba(255, 224, 118, ${(1 - pulse) * 0.78})`;
           ovCtx.lineWidth = 1.6;
           ovCtx.stroke();
           ovCtx.restore();
 
           if (el) {
-            const depthScale = 0.84 + Math.min(0.22, p.z * 0.22);
-            el.style.opacity = String(Math.min(1, (p.z - 0.06) * 4.5));
+            const depthScale = Math.max(0.76, Math.min(1.12, (BASE_CAM_DIST / Math.max(1.0, p.depth)) * 0.96));
+            el.style.opacity = '1';
             el.style.pointerEvents = 'auto';
-            el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) translate(-50%, -50%) scale(${depthScale})`;
-            el.style.zIndex = String(Math.round(20 + p.z * 20));
+            el.style.transform = `translate3d(${p.x}px, ${p.y}px, 0) translate(-50%, -62%) scale(${depthScale})`;
+            el.style.zIndex = String(Math.max(10, Math.round(50 - p.depth * 10)));
           }
         } else if (el) {
           el.style.opacity = '0';
@@ -666,33 +974,55 @@ export const FamilyWorldView: React.FC = () => {
   const selectedMember =
     activeMembers.find((m) => m.id === selectedMemberId) ?? activeMembers[0];
 
+  const handleToggleTopDown = () => {
+    triggerFeedback('tap');
+    setTopDownMode((prev) => {
+      const next = !prev;
+      camRef.current.targetYaw = camRef.current.yaw;
+      camRef.current.targetPitch = next ? 80 : 50;
+      return next;
+    });
+  };
+
   return (
     <div className="mx-auto max-w-6xl space-y-5">
-      {/* Hero Section: Real-Time 3D Interactive Planet Earth */}
+      {/* Hero Section: Interactive 3D Flat Earth with Orbiting Sun & Moon over Infinite Ocean */}
       <div className="card-crochet overflow-hidden rounded-3xl p-4 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <span className="inline-flex items-center gap-1.5 rounded-full bg-forest-700 px-3 py-1 text-[11px] font-bold text-solar-300">
-              <Globe2 className="h-3.5 w-3.5" /> Planeta 3D en vivo
+              <Sun className="h-3.5 w-3.5" /> Tierra plana 3D · Sol y Luna en vivo
             </span>
             <h2 className="mt-1.5 font-editorial text-2xl font-bold text-forest-900 sm:text-3xl">
-              Nuestra familia conectada en el planeta 🇧🇷✨
+              Nuestra familia conectada en la Tierra 🇧🇷✨
             </h2>
             <p className="mt-0.5 text-xs text-espresso-700 sm:text-sm">
-              Gira la Tierra en 3D con relieve real, nubes en movimiento y toca a cualquier familiar para
-              volar hasta su país.
+              Visualiza todos los continentes al mismo tiempo con el Sol y la Luna girando sobre el
+              plano rodeado de océano. Arrastra para girar o inclinar y toca a cualquier familiar.
             </p>
           </div>
 
           <div className="flex items-center gap-1.5">
             <button
               type="button"
+              onClick={handleToggleTopDown}
+              className={`liquid-glass-pill btn-yarn-press flex h-10 items-center gap-1.5 rounded-xl px-3 text-xs font-bold ${
+                topDownMode ? 'bg-forest-700 text-solar-200' : 'text-forest-900'
+              }`}
+              title={topDownMode ? 'Cambiar a vista 3D inclinada' : 'Ver desde arriba'}
+              aria-label={topDownMode ? 'Vista 3D inclinada' : 'Vista desde arriba'}
+            >
+              <Compass className="h-4 w-4" />
+              <span className="hidden sm:inline">{topDownMode ? 'Vista 3D' : 'Desde arriba'}</span>
+            </button>
+            <button
+              type="button"
               onClick={() => {
                 triggerFeedback('tap');
-                setZoom((z) => Math.max(0.8, Number((z - 0.15).toFixed(2))));
+                setZoom((z) => Math.max(0.76, Number((z - 0.15).toFixed(2))));
               }}
               className="liquid-glass-pill btn-yarn-press flex h-10 w-10 items-center justify-center rounded-xl text-forest-900"
-              aria-label="Alejar planeta"
+              aria-label="Alejar mapa"
             >
               <ZoomOut className="h-4 w-4" />
             </button>
@@ -700,10 +1030,10 @@ export const FamilyWorldView: React.FC = () => {
               type="button"
               onClick={() => {
                 triggerFeedback('tap');
-                setZoom((z) => Math.min(1.38, Number((z + 0.15).toFixed(2))));
+                setZoom((z) => Math.min(1.65, Number((z + 0.15).toFixed(2))));
               }}
               className="liquid-glass-pill btn-yarn-press flex h-10 w-10 items-center justify-center rounded-xl text-forest-900"
-              aria-label="Acercar planeta"
+              aria-label="Acercar mapa"
             >
               <ZoomIn className="h-4 w-4" />
             </button>
@@ -711,25 +1041,28 @@ export const FamilyWorldView: React.FC = () => {
               type="button"
               onClick={() => {
                 triggerFeedback('tap');
-                flyToLocation(-15.8, -47.9);
+                setTopDownMode(false);
+                camRef.current.targetYaw = 68;
+                camRef.current.targetPitch = 50;
+                camRef.current.velYaw = 0;
                 setZoom(1);
               }}
               className="liquid-glass-pill btn-yarn-press flex h-10 w-10 items-center justify-center rounded-xl text-forest-900"
-              aria-label="Centrar globo en América"
+              aria-label="Restablecer vista"
             >
               <RotateCcw className="h-4 w-4" />
             </button>
           </div>
         </div>
 
-        {/* 3D Planet Stage + Selected Member Card */}
+        {/* 3D Flat Earth Ocean Stage + Selected Member Card */}
         <div className="mt-4 grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
-          {/* Interactive Photorealistic WebGL 3D Earth */}
+          {/* Interactive Photorealistic WebGL Flat Earth Disc + Ocean + Orbiting Sun & Moon */}
           <div
-            className="relative h-[350px] w-full cursor-grab touch-none overflow-hidden rounded-3xl border border-solar-300/80 bg-[#040B1A] shadow-[0_20px_50px_-14px_rgba(4,12,32,0.75)] active:cursor-grabbing sm:h-[420px] lg:col-span-7"
+            className="relative h-[360px] w-full cursor-grab touch-none overflow-hidden rounded-3xl border border-solar-300/80 bg-[#05203E] shadow-[0_20px_50px_-14px_rgba(4,24,48,0.72)] active:cursor-grabbing sm:h-[430px] lg:col-span-7"
             onPointerDown={(e) => {
-              rotRef.current.targetLon = null;
-              rotRef.current.targetLat = null;
+              camRef.current.targetYaw = null;
+              camRef.current.targetPitch = null;
               dragRef.current = { active: true, x: e.clientX, y: e.clientY };
               (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
             }}
@@ -737,9 +1070,9 @@ export const FamilyWorldView: React.FC = () => {
               if (!dragRef.current.active) return;
               const dx = e.clientX - dragRef.current.x;
               const dy = e.clientY - dragRef.current.y;
-              rotRef.current.lon -= dx * 0.42;
-              rotRef.current.lat = Math.max(-55, Math.min(55, rotRef.current.lat + dy * 0.34));
-              rotRef.current.velLon = -dx * 0.065;
+              camRef.current.yaw += dx * 0.44;
+              camRef.current.pitch = Math.max(24, Math.min(84, camRef.current.pitch + dy * 0.34));
+              camRef.current.velYaw = dx * 0.055;
               dragRef.current.x = e.clientX;
               dragRef.current.y = e.clientY;
             }}
@@ -750,16 +1083,16 @@ export const FamilyWorldView: React.FC = () => {
               dragRef.current.active = false;
             }}
           >
-            {/* Layer 1: GPU WebGL 3D Photorealistic Earth with Relief, Ocean Glint, Clouds & Atmosphere */}
+            {/* Layer 1: GPU WebGL Flat Earth Disc, Animated Ocean Backdrop & 3D Orbiting Sun + Moon */}
             <canvas ref={glCanvasRef} className="absolute inset-0 h-full w-full" />
 
-            {/* Layer 2: 3D Elevated Golden Arcs, Traveling Light Sparks & Pulsing Beacons */}
+            {/* Layer 2: 3D Orbital Halo, Sun/Moon Light Beams, Elevated Golden Family Arcs & Beacons */}
             <canvas
               ref={overlayCanvasRef}
               className="pointer-events-none absolute inset-0 h-full w-full"
             />
 
-            {/* Layer 3: Clickable Family Avatar Pins (de-overlapped & smoothly projected at 60 FPS) */}
+            {/* Layer 3: Clickable Family Avatar Pins (ALL visible simultaneously at 60 FPS) */}
             {memberGeos.map(({ member, geo }) => (
               <button
                 key={member.id}
@@ -791,20 +1124,20 @@ export const FamilyWorldView: React.FC = () => {
                 >
                   <MemberAvatar member={member} size="xs" showPresence />
                 </div>
-                <span className="mt-0.5 whitespace-nowrap rounded-full border border-solar-300/80 bg-[#07152B]/85 px-2 py-0.5 text-[10px] font-bold text-solar-200 shadow-md backdrop-blur-md">
+                <span className="mt-0.5 whitespace-nowrap rounded-full border border-solar-300/80 bg-[#071E38]/85 px-2 py-0.5 text-[10px] font-bold text-solar-200 shadow-md backdrop-blur-md">
                   {geo.flag} {member.name.split(' ')[0]}
                 </span>
               </button>
             ))}
 
             {/* Top-left Live 3D badge */}
-            <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-solar-300/70 bg-[#07152B]/70 px-2.5 py-1 text-[10px] font-bold text-solar-200 backdrop-blur-md">
+            <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-solar-300/70 bg-[#071E38]/75 px-2.5 py-1 text-[10px] font-bold text-solar-200 backdrop-blur-md">
               <Sparkles className="h-3 w-3 text-solar-300" />
-              {webglReady ? 'Tierra 3D HD · Nubes en vivo' : 'Globo 3D Interactivo'}
+              {webglReady ? '☀️ Sol y 🌙 Luna en órbita · Océano 3D' : 'Plano 3D Interactivo'}
             </span>
 
-            <span className="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-solar-300/70 bg-[#07152B]/75 px-3.5 py-1 text-[11px] font-semibold text-solar-100 shadow-md backdrop-blur-md">
-              👆 Arrastra para girar el planeta 3D
+            <span className="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-solar-300/70 bg-[#071E38]/78 px-3.5 py-1 text-[11px] font-semibold text-solar-100 shadow-md backdrop-blur-md">
+              👆 Arrastra para girar o inclinar la Tierra plana
             </span>
           </div>
 

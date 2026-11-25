@@ -1,4 +1,5 @@
 import React, { useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   Download,
   Globe2,
@@ -58,9 +59,9 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ open, onClose, onOpenIns
     onClose();
   };
 
-  return (
+  const drawer = (
     <div
-      className="fixed inset-0 z-50 flex bg-forest-900/55 backdrop-blur-sm"
+      className="fixed inset-0 z-[85] flex h-[100dvh] bg-forest-900/55 backdrop-blur-sm"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -189,4 +190,6 @@ export const SideDrawer: React.FC<SideDrawerProps> = ({ open, onClose, onOpenIns
       </aside>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(drawer, document.body) : drawer;
 };

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ChevronLeft,
   ChevronRight,
@@ -363,9 +364,9 @@ export const AlbumsView: React.FC = () => {
       )}
 
       {/* Fullscreen Touch Lightbox with Zoom, Swipe, Comments & Share */}
-      {activeLightbox && lightboxIdx !== null && (
+      {activeLightbox && lightboxIdx !== null && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-50 flex flex-col bg-black/92 text-white backdrop-blur-md"
+          className="fixed inset-0 z-[85] flex h-[100dvh] flex-col bg-black/92 text-white backdrop-blur-md"
           onTouchStart={(e) => {
             touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
           }}
@@ -513,7 +514,8 @@ export const AlbumsView: React.FC = () => {
               </button>
             </form>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

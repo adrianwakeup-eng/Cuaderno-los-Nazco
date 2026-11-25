@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Camera, Heart, Plus, Send, X } from 'lucide-react';
 import { useAppearance } from '../../context/AppearanceContext';
 import { useFamilyApp } from '../../context/FamilyAppContext';
@@ -258,9 +259,9 @@ export const StoriesBar: React.FC = () => {
       </BottomSheet>
 
       {/* Fullscreen Instagram-Style Story Viewer */}
-      {currentStory && currentStoryAuthor && (
+      {currentStory && currentStoryAuthor && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-50 flex flex-col justify-between bg-forest-900 text-white"
+          className="fixed inset-0 z-[85] flex h-[100dvh] flex-col justify-between bg-forest-900 text-white"
           style={{
             background: currentStory.imageUrl ? '#0D1E14' : currentStory.bgGradient,
           }}
@@ -399,7 +400,8 @@ export const StoriesBar: React.FC = () => {
               <Heart className="h-6 w-6 fill-current" />
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

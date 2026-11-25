@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import {
   EyeOff,
   Megaphone,
@@ -581,61 +582,64 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
         </div>
       </BottomSheet>
 
-      {/* Fullscreen Zoomable Swipe-Down Lightbox */}
-      {lightboxUrl && (
-        <div
-          onClick={() => setLightboxUrl(null)}
-          onTouchStart={(e) => {
-            lightboxTouchY.current = e.touches[0].clientY;
-          }}
-          onTouchEnd={(e) => {
-            if (lightboxTouchY.current !== null) {
-              const dy = e.changedTouches[0].clientY - lightboxTouchY.current;
-              if (dy > 90 && zoom === 1) setLightboxUrl(null);
-            }
-            lightboxTouchY.current = null;
-          }}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
-        >
+      {/* Fullscreen Zoomable Swipe-Down Lightbox (portaled above nav bars) */}
+      {lightboxUrl &&
+        typeof document !== 'undefined' &&
+        createPortal(
           <div
-            onClick={(e) => e.stopPropagation()}
-            className="pt-safe absolute right-4 top-4 flex items-center gap-2"
+            onClick={() => setLightboxUrl(null)}
+            onTouchStart={(e) => {
+              lightboxTouchY.current = e.touches[0].clientY;
+            }}
+            onTouchEnd={(e) => {
+              if (lightboxTouchY.current !== null) {
+                const dy = e.changedTouches[0].clientY - lightboxTouchY.current;
+                if (dy > 90 && zoom === 1) setLightboxUrl(null);
+              }
+              lightboxTouchY.current = null;
+            }}
+            className="fixed inset-0 z-[85] flex h-[100dvh] flex-col items-center justify-center bg-black/90 p-4 backdrop-blur-sm"
           >
-            <button
-              type="button"
-              onClick={() => setZoom((z) => Math.max(1, z - 0.5))}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white"
-              aria-label="Alejar"
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="pt-safe absolute right-4 top-4 flex items-center gap-2"
             >
-              <ZoomOut className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setZoom((z) => Math.min(3, z + 0.5))}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white"
-              aria-label="Acercar"
-            >
-              <ZoomIn className="h-5 w-5" />
-            </button>
-            <button
-              type="button"
-              onClick={() => setLightboxUrl(null)}
-              className="flex h-11 w-11 items-center justify-center rounded-full bg-white/20 text-white"
-              aria-label="Cerrar vista ampliada"
-            >
-              <X className="h-6 w-6" />
-            </button>
-          </div>
-          <img
-            src={lightboxUrl}
-            alt="Foto ampliada"
-            onClick={(e) => e.stopPropagation()}
-            style={{ transform: `scale(${zoom})` }}
-            className="max-h-[84dvh] max-w-[94vw] rounded-2xl object-contain shadow-2xl transition-transform duration-200"
-          />
-          <p className="mt-3 text-xs text-white/70">Desliza hacia abajo o toca fuera para cerrar</p>
-        </div>
-      )}
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.max(1, z - 0.5))}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white"
+                aria-label="Alejar"
+              >
+                <ZoomOut className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setZoom((z) => Math.min(3, z + 0.5))}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/15 text-white"
+                aria-label="Acercar"
+              >
+                <ZoomIn className="h-5 w-5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setLightboxUrl(null)}
+                className="flex h-11 w-11 items-center justify-center rounded-full bg-white/20 text-white"
+                aria-label="Cerrar vista ampliada"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+            <img
+              src={lightboxUrl}
+              alt="Foto ampliada"
+              onClick={(e) => e.stopPropagation()}
+              style={{ transform: `scale(${zoom})` }}
+              className="max-h-[84dvh] max-w-[94vw] rounded-2xl object-contain shadow-2xl transition-transform duration-200"
+            />
+            <p className="mt-3 text-xs text-white/70">Desliza hacia abajo o toca fuera para cerrar</p>
+          </div>,
+          document.body
+        )}
     </>
   );
 };

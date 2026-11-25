@@ -1,4 +1,5 @@
 import React, { useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 interface BottomSheetProps {
@@ -15,9 +16,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ open, title, onClose, 
 
   if (!open) return null;
 
-  return (
+  const sheet = (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-forest-900/55 backdrop-blur-sm sm:items-center sm:p-4"
+      className="fixed inset-0 z-[85] flex h-[100dvh] items-end justify-center bg-forest-900/60 backdrop-blur-sm sm:items-center sm:p-4"
       onClick={onClose}
       role="dialog"
       aria-modal="true"
@@ -40,8 +41,9 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ open, title, onClose, 
         }}
         style={{
           transform: dragY > 0 ? `translateY(${dragY}px)` : undefined,
+          paddingBottom: 'calc(1rem + env(safe-area-inset-bottom, 0px))',
         }}
-        className="animate-sheet-up card-crochet pb-safe max-h-[88dvh] w-full overflow-hidden rounded-t-[28px] sm:max-w-lg sm:rounded-[28px]"
+        className="animate-sheet-up card-crochet max-h-[88dvh] w-full overflow-hidden rounded-t-[28px] sm:max-w-lg sm:rounded-[28px]"
       >
         {/* Drag handle for mobile */}
         <div className="flex justify-center pt-2.5 sm:hidden">
@@ -64,4 +66,6 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({ open, title, onClose, 
       </div>
     </div>
   );
+
+  return typeof document !== 'undefined' ? createPortal(sheet, document.body) : sheet;
 };

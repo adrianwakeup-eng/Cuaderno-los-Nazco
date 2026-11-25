@@ -197,13 +197,8 @@ function projectFlat3D(
 
 function drawMarineAnimal(ctx: CanvasRenderingContext2D, whale: boolean, tailMotion: number) {
   // The animal faces right in canvas coordinates. The caller projects its heading onto the water.
-  ctx.fillStyle = 'rgba(199, 247, 255, 0.55)';
-  ctx.beginPath();
-  ctx.ellipse(-0.43, 0.15, 0.29, 0.065, -0.06, 0, Math.PI * 2);
-  ctx.fill();
-
   const back = ctx.createLinearGradient(0, -0.24, 0, 0.15);
-  back.addColorStop(0, whale ? '#4389a2' : '#7cc4d6');
+  back.addColorStop(0, whale ? '#567786' : '#8eabb4');
   back.addColorStop(0.58, whale ? '#23536d' : '#376e87');
   back.addColorStop(1, whale ? '#9ac8cf' : '#d4eef1');
   ctx.fillStyle = back;
@@ -218,6 +213,18 @@ function drawMarineAnimal(ctx: CanvasRenderingContext2D, whale: boolean, tailMot
   ctx.quadraticCurveTo(-0.18, 0.28, -0.16, 0.14);
   ctx.lineTo(-0.10, 0.07);
   ctx.quadraticCurveTo(-0.31, 0.05, -0.40, -0.01);
+  ctx.fill();
+
+  ctx.strokeStyle = whale ? 'rgba(158, 197, 202, 0.46)' : 'rgba(210, 233, 234, 0.54)';
+  ctx.lineWidth = 0.012;
+  ctx.beginPath();
+  ctx.moveTo(0.09, -0.115);
+  ctx.quadraticCurveTo(0.31, -0.15, 0.44, -0.065);
+  ctx.stroke();
+
+  ctx.fillStyle = '#152e40';
+  ctx.beginPath();
+  ctx.arc(whale ? 0.38 : 0.43, 0.002, 0.014, 0, Math.PI * 2);
   ctx.fill();
 
   ctx.fillStyle = whale ? '#376e87' : '#5795ab';
@@ -852,16 +859,19 @@ export const FamilyWorldView: React.FC = () => {
         for (const animal of MARINE_LIFE) {
           const whale = animal.kind === 'whale';
           const angle = animal.phase + time * animal.speed;
-          const stroke = time * (whale ? 2.1 : 4.2) + animal.phase;
-          const surface = Math.max(0, Math.sin(stroke));
-          const height = 0.016 + surface * (whale ? 0.012 : 0.045);
+          const swimPhase = time * (whale ? 0.61 : 1.5) + animal.phase * 2.6;
+          const stroke = time * (whale ? 2.1 : 5.4) + animal.phase;
+          const surfacing = (Math.sin(swimPhase) + 1) / 2;
+          const depth = Math.pow(surfacing, whale ? 2 : 3);
+          const height = whale ? -0.069 + depth * 0.095 : -0.055 + depth * 0.129;
           const x = animal.radius * Math.cos(angle);
           const z = animal.radius * Math.sin(angle);
           const heading = Math.sign(animal.speed);
           const dx = -Math.sin(angle) * heading * animal.length / 2;
           const dz = Math.cos(angle) * heading * animal.length / 2;
-          const nose = project(x + dx, height, z + dz);
-          const tail = project(x - dx, height, z - dz);
+          const bodyPitch = Math.cos(swimPhase) * depth * (whale ? 0.016 : 0.047);
+          const nose = project(x + dx, height + bodyPitch, z + dz);
+          const tail = project(x - dx, height - bodyPitch, z - dz);
           if (!nose.visible || !tail.visible) continue;
 
           const centerX = (nose.x + tail.x) / 2;
@@ -870,13 +880,56 @@ export const FamilyWorldView: React.FC = () => {
           if (size < 2 || centerX < -size || centerX > w + size ||
               centerY < -size || centerY > h + size) continue;
 
+          const surface = Math.max(0, Math.min(1, (height + 0.02) / 0.05));
+          const trailAngle = animal.length * 0.38 / animal.radius;
+          // The foam remains on the surface even when the animal dives or leaps.
+          for (const side of [-1, 1]) {
+            ovCtx.beginPath();
+            let drawing = false;
+            for (let i = 0; i <= 10; i++) {
+              const age = i / 10;
+              const bearing = angle - heading * trailAngle * (0.45 + 1.65 * age);
+              const spread = (0.12 + age * 0.34) * animal.length;
+              const r = animal.radius + side * spread;
+              const point = project(r * Math.cos(bearing), 0.002, r * Math.sin(bearing));
+              if (!point.visible) {
+                drawing = false;
+                continue;
+              }
+              if (drawing) ovCtx.lineTo(point.x, point.y);
+              else ovCtx.moveTo(point.x, point.y);
+              drawing = true;
+            }
+            ovCtx.lineWidth = Math.max(0.55, Math.min(2.2, size * 0.031));
+            ovCtx.strokeStyle = `rgba(193, 234, 239, ${0.12 + surface * 0.30})`;
+            ovCtx.stroke();
+          }
+
           ovCtx.save();
           ovCtx.translate(centerX, centerY);
           ovCtx.rotate(Math.atan2(nose.y - tail.y, nose.x - tail.x));
           ovCtx.scale(size, size * (whale ? 1.22 : 0.93));
-          ovCtx.globalAlpha = 0.66 + surface * 0.34;
-          drawMarineAnimal(ovCtx, whale, Math.sin(stroke) * 0.051);
+          ovCtx.globalAlpha = 0.17 + surface * 0.83;
+          drawMarineAnimal(ovCtx, whale, Math.sin(stroke) * (whale ? 0.065 : 0.106));
           ovCtx.restore();
+
+          // Exhalation peaks just before the whale arches into its next dive.
+          const blow = whale && animActive ? Math.max(0, 1 - Math.abs(swimPhase % (2 * Math.PI) - 1.46) / 0.27) : 0;
+          if (blow > 0) {
+            const base = project(x + dx * 0.55, height, z + dz * 0.55);
+            const top = project(x + dx * 0.48, height + 0.064 * blow, z + dz * 0.48);
+            if (base.visible && top.visible) {
+              const spray = ovCtx.createLinearGradient(base.x, base.y, top.x, top.y);
+              spray.addColorStop(0, `rgba(228, 251, 255, ${blow * 0.85})`);
+              spray.addColorStop(1, 'rgba(228, 251, 255, 0)');
+              ovCtx.strokeStyle = spray;
+              ovCtx.lineWidth = Math.max(1, size * 0.044);
+              ovCtx.beginPath();
+              ovCtx.moveTo(base.x, base.y);
+              ovCtx.lineTo(top.x, top.y);
+              ovCtx.stroke();
+            }
+          }
         }
       }
 

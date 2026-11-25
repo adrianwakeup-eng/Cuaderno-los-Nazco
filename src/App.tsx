@@ -5,6 +5,7 @@ import { FamilyWelcomeAuthScreen } from './components/auth/FamilyWelcomeAuthScre
 import { CallsHubView } from './components/calls/CallsHubView';
 import { IncomingCallModal } from './components/calls/IncomingCallModal';
 import { VideoCallOverlay } from './components/calls/VideoCallOverlay';
+import { TarotView } from './components/tarot/TarotView';
 import { FamilyWorldView } from './components/family/FamilyWorldView';
 import { FeedView } from './components/feed/FeedView';
 import { AppShell } from './components/layout/AppShell';
@@ -126,6 +127,7 @@ const CuadernoContent: React.FC = () => {
               {activeSection === 'CALLS' && <CallsHubView />}
               {activeSection === 'ALBUMS' && <AlbumsView />}
               {activeSection === 'FAMILY' && <FamilyWorldView />}
+              {activeSection === 'TAROT' && <TarotView onBack={() => setActiveSection('FEED')} />}
               {activeSection === 'PROFILE' && <ProfileView />}
               {activeSection === 'ADMIN' && <AdminPanelView />}
             </SectionErrorBoundary>

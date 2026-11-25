@@ -34,7 +34,6 @@ import { SideDrawer } from './SideDrawer';
 export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const {
     snapshot,
-    cloudStatus,
     pushEnabled,
     pushSupport,
     enablePushNotifications,
@@ -212,7 +211,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
         }`}
       >
         <div className="mx-auto flex max-w-[1380px] items-center justify-between gap-2 px-3 sm:px-5">
-          {/* LEFT: Mobile Menu + Crochet Plaque Logo ("Cuaderno Social de la Familia" + "Santuario Familiar Privado") */}
+          {/* LEFT: Mobile Menu + Crochet Plaque Logo ("Cuaderno Social de la Familia") */}
           <div className="flex items-center gap-2">
             <button
               type="button"
@@ -228,40 +227,38 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
               </span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => handleSelectSection('FEED')}
-              className="group relative flex flex-col items-start text-left"
-            >
-              <div
-                className={`crochet-parchment relative flex items-center gap-2 rounded-2xl transition-all ${
-                  scrolled ? 'px-3 py-1' : 'px-3.5 py-1.5 sm:px-4'
-                }`}
+            <div className="flex min-w-0 flex-col items-start">
+              <button
+                type="button"
+                onClick={() => handleSelectSection('FEED')}
+                className="group relative flex flex-col items-start text-left"
               >
-                <span
-                  className={`font-crochet-script font-bold leading-none text-espresso-900 transition-all ${
-                    scrolled ? 'text-base sm:text-xl' : 'text-[19px] sm:text-[25px]'
+                <div
+                  className={`crochet-parchment relative flex items-center gap-2 rounded-2xl transition-all ${
+                    scrolled ? 'px-3 py-1' : 'px-3.5 py-1.5 sm:px-4'
                   }`}
                 >
-                  Cuaderno Social de la Familia
-                </span>
-                <CrochetSunflower className="h-6 w-6 shrink-0 transition group-hover:rotate-12" />
-              </div>
-
-              {!scrolled && (
-                <span className="crochet-green-3d -mt-1.5 ml-3 inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold text-white shadow">
-                  <span className="text-solar-300">💛</span>
-                  Santuario Familiar ·{' '}
-                  <span className={cloudStatus === 'CONNECTED' ? 'text-solar-200' : 'text-cotton-200'}>
-                    {cloudStatus === 'CONNECTED'
-                      ? '☁️ En vivo'
-                      : cloudStatus === 'CONNECTING'
-                        ? 'Conectando…'
-                        : 'Local'}
+                  <span
+                    className={`font-crochet-script font-bold leading-none text-espresso-900 transition-all ${
+                      scrolled ? 'text-base sm:text-xl' : 'text-[19px] sm:text-[25px]'
+                    }`}
+                  >
+                    Cuaderno Social de la Familia
                   </span>
-                </span>
-              )}
-            </button>
+                  <CrochetSunflower className="h-6 w-6 shrink-0 transition group-hover:rotate-12" />
+                </div>
+
+              </button>
+              <button
+                type="button"
+                onClick={() => handleSelectSection('TAROT')}
+                aria-current={activeSection === 'TAROT' ? 'page' : undefined}
+                className="crochet-green-3d relative z-10 -mt-1 ml-3 inline-flex min-h-6 items-center self-start gap-1.5 rounded-full px-3 text-[11px] font-extrabold text-white"
+              >
+                <span aria-hidden="true" className="text-solar-300">✦</span>
+                Tarot del día
+              </button>
+            </div>
           </div>
 
           {/* CENTER: Desktop iOS Liquid Glass Crystal Nav Bar with Emerald-Gold Icons */}

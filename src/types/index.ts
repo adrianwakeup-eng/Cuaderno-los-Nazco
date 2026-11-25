@@ -144,7 +144,7 @@ export interface StorageUsageSummary {
   quotaBytes: number;
 }
 
-export type AppSection = 'FEED' | 'MESSAGES' | 'CALLS' | 'ALBUMS' | 'FAMILY' | 'PROFILE' | 'ADMIN';
+export type AppSection = 'FEED' | 'MESSAGES' | 'CALLS' | 'ALBUMS' | 'FAMILY' | 'TAROT' | 'PROFILE' | 'ADMIN';
 
 export type AppearanceMode = 'IMMERSIVE_3D' | 'ARTISANAL' | 'LIGHT';
 export type TextScaleOption = 'normal' | 'large' | 'xlarge';

@@ -9,6 +9,7 @@ import {
 import {
   dispatchPushNotification,
   enableDevicePush,
+  ensureSenderCircularAvatarMediaId,
   getNotificationPermission,
   getPushSupportState,
   sendTestPushToSelf,
@@ -346,7 +347,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     return found ?? null;
   }, [snapshot.members, activeUserId]);
 
-  // Silently keep this device's Web Push subscription synced to the signed-in family member
+  // Silently keep this device's Web Push subscription synced & pre-warm sender's circular notification avatar
   useEffect(() => {
     if (!currentUser) return;
     if (getNotificationPermission() === 'granted') {
@@ -354,7 +355,13 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         if (res.ok) setPushEnabled(true);
       });
     }
-  }, [currentUser?.id]);
+    void ensureSenderCircularAvatarMediaId({
+      id: currentUser.id,
+      name: currentUser.name,
+      avatarUrl: currentUser.avatarUrl,
+      avatarColor: currentUser.avatarColor,
+    });
+  }, [currentUser?.id, currentUser?.avatarUrl, currentUser?.name, currentUser?.avatarColor]);
 
   // Deep-link when user taps an incoming call Push Notification (?incomingCall=... or ?joinCall=...)
   useEffect(() => {
@@ -417,7 +424,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   const testPushNotification = useCallback(async (): Promise<void> => {
     if (!currentUser) return;
-    const ok = await sendTestPushToSelf(currentUser.id, currentUser.name);
+    const ok = await sendTestPushToSelf(
+      currentUser.id,
+      currentUser.name,
+      currentUser.avatarUrl,
+      currentUser.avatarColor
+    );
     if (ok) {
       notify('Notificación de prueba enviada al servidor Push 🔔', 'success');
     } else {
@@ -997,6 +1009,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
                     ? '📷 Envió una foto'
                     : '✨ Envió un sticker'),
               kind: 'MESSAGE',
+              sender: {
+                id: currentUser.id,
+                name: currentUser.name,
+                avatarUrl: currentUser.avatarUrl,
+                avatarColor: currentUser.avatarColor,
+              },
             });
             return updated;
           })
@@ -1131,6 +1149,12 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           callId,
           callerId: currentUser.id,
           callerName: currentUser.name,
+          sender: {
+            id: currentUser.id,
+            name: currentUser.name,
+            avatarUrl: currentUser.avatarUrl,
+            avatarColor: currentUser.avatarColor,
+          },
         });
       }
     },

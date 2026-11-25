@@ -2,7 +2,7 @@
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Handles Web Push notifications for incoming calls & messages even when app is closed.
  */
-const CACHE_NAME = 'los-nazco-shell-v8';
+const CACHE_NAME = 'los-nazco-shell-v9';
 const STATIC_ASSETS = [
   './offline.html',
   './manifest.webmanifest',
@@ -10,6 +10,8 @@ const STATIC_ASSETS = [
   './icons/icon-512.png',
   './icons/icon-maskable-512.png',
   './icons/apple-touch-icon.png',
+  './icons/badge-96.png',
+  './icons/notif-circle-192.png',
   './crochet/cotton-cream-weave.webp',
   './crochet/crochet-green-knit.webp',
   './crochet/crochet-gold-knit.webp',
@@ -94,6 +96,7 @@ self.addEventListener('push', (event) => {
     callId: '',
     callerId: '',
     callerName: '',
+    iconUrl: '',
   };
 
   if (event.data) {
@@ -118,10 +121,15 @@ self.addEventListener('push', (event) => {
     targetUrl = u.toString();
   }
 
+  const resolvedIcon =
+    typeof payload.iconUrl === 'string' && payload.iconUrl.startsWith('https://')
+      ? payload.iconUrl
+      : new URL('./icons/notif-circle-192.png', baseScope).toString();
+
   const options = {
     body: payload.body,
-    icon: new URL('./icons/icon-192.png', baseScope).toString(),
-    badge: new URL('./icons/icon-192.png', baseScope).toString(),
+    icon: resolvedIcon,
+    badge: new URL('./icons/badge-96.png', baseScope).toString(),
     tag: payload.tag || (isCall ? `nazco-call-${payload.roomCode}` : 'nazco-msg'),
     renotify: true,
     requireInteraction: isCall,

@@ -1,6 +1,168 @@
-import { collection, deleteDoc, doc, getDocs, query, setDoc, where } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, query, setDoc, where } from 'firebase/firestore';
 import type { CallMode } from '../types';
 import { ensureFirebaseSession, firebaseAuth, firestoreDb } from './firebaseClient';
+
+export interface PushSenderAvatarInfo {
+  id: string;
+  name: string;
+  avatarUrl?: string;
+  avatarColor?: string;
+}
+
+const avatarMediaCache = new Map<string, string>();
+
+function hashStringPair(input: string): string {
+  let h1 = 2166136261;
+  let h2 = 33554467;
+  for (let i = 0; i < input.length; i++) {
+    const ch = input.charCodeAt(i);
+    h1 ^= ch;
+    h1 = Math.imul(h1, 16777619);
+    h2 ^= ch;
+    h2 = Math.imul(h2, 2246822519);
+  }
+  return `${(h1 >>> 0).toString(36)}${(h2 >>> 0).toString(36)}`.slice(0, 12);
+}
+
+function loadImageElement(src: string): Promise<HTMLImageElement | null> {
+  return new Promise((resolve) => {
+    const img = new Image();
+    if (!src.startsWith('data:')) {
+      img.crossOrigin = 'anonymous';
+    }
+    img.onload = () => resolve(img);
+    img.onerror = () => resolve(null);
+    img.src = src;
+  });
+}
+
+function getInitials(name: string): string {
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return 'LN';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return `${parts[0][0]}${parts[parts.length - 1][0]}`.toUpperCase();
+}
+
+/**
+ * Renders a 192x192 circular PNG (transparent corners — never a square!)
+ * containing the sender's profile photo (or initials monogram if no photo).
+ */
+async function renderCircularAvatarPng(
+  sender: PushSenderAvatarInfo
+): Promise<{ base64: string; sizeBytes: number } | null> {
+  if (typeof document === 'undefined') return null;
+  const size = 192;
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return null;
+
+  ctx.clearRect(0, 0, size, size);
+  const cx = size / 2;
+  const cy = size / 2;
+  const radius = size / 2 - 4;
+
+  // Clip strictly to a circle so outside corners remain 100% transparent
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+  ctx.closePath();
+  ctx.clip();
+
+  let drewPhoto = false;
+  if (sender.avatarUrl) {
+    const img = await loadImageElement(sender.avatarUrl);
+    if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
+      const iw = img.naturalWidth;
+      const ih = img.naturalHeight;
+      const scale = Math.max(size / iw, size / ih);
+      const dw = iw * scale;
+      const dh = ih * scale;
+      const dx = (size - dw) / 2;
+      // Bias slightly upward on portraits so faces stay centered inside the circle
+      const dy = dh > size ? (size - dh) * 0.35 : (size - dh) / 2;
+      ctx.drawImage(img, dx, dy, dw, dh);
+      drewPhoto = true;
+    }
+  }
+
+  if (!drewPhoto) {
+    const bg = sender.avatarColor || '#164D32';
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, size, size);
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = '700 72px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(getInitials(sender.name), cx, cy + 3);
+  }
+  ctx.restore();
+
+  // Subtle crisp warm-cream circular ring
+  ctx.beginPath();
+  ctx.arc(cx, cy, radius - 1.5, 0, Math.PI * 2);
+  ctx.strokeStyle = 'rgba(255, 250, 238, 0.92)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+
+  const dataUrl = canvas.toDataURL('image/png');
+  const commaIdx = dataUrl.indexOf(',');
+  if (commaIdx < 0) return null;
+  const base64 = dataUrl.slice(commaIdx + 1);
+  if (base64.length > 740_000) return null;
+  const sizeBytes = Math.max(1, Math.floor((base64.length * 3) / 4));
+  return { base64, sizeBytes };
+}
+
+/**
+ * Ensures the sender's circular PNG avatar exists in Firestore media chunks
+ * (cached per avatar content hash so repeated pushes take 0 ms).
+ */
+export async function ensureSenderCircularAvatarMediaId(
+  sender?: PushSenderAvatarInfo
+): Promise<string | undefined> {
+  if (!sender?.id) return undefined;
+  const fingerprint = `${sender.id}|${sender.name}|${sender.avatarColor || ''}|${sender.avatarUrl || ''}`;
+  const cached = avatarMediaCache.get(fingerprint);
+  if (cached) return cached;
+
+  try {
+    await ensureFirebaseSession();
+    const safeMemberId = sender.id.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 56) || 'member';
+    const contentHash = hashStringPair(fingerprint);
+    const mediaId = `av_${safeMemberId}_${contentHash}`.slice(0, 115);
+
+    // Pure read first: media docs are immutable (allow update: if false)
+    const metaRef = doc(firestoreDb, `${FAMILY_ROOT}/media`, mediaId);
+    const existing = await getDoc(metaRef);
+    if (existing.exists()) {
+      avatarMediaCache.set(fingerprint, mediaId);
+      return mediaId;
+    }
+
+    const rendered = await renderCircularAvatarPng(sender);
+    if (!rendered) return undefined;
+
+    const chunkRef = doc(firestoreDb, `${FAMILY_ROOT}/media/${mediaId}/chunks`, '0');
+    await setDoc(chunkRef, { index: 0, data: rendered.base64 });
+    await setDoc(metaRef, {
+      id: mediaId,
+      fileName: `avatar-${safeMemberId}.png`,
+      mimeType: 'image/png',
+      sizeBytes: rendered.sizeBytes,
+      chunkCount: 1,
+      authorId: sender.id,
+      createdAt: new Date().toISOString(),
+    });
+
+    avatarMediaCache.set(fingerprint, mediaId);
+    return mediaId;
+  } catch (err) {
+    console.warn('Could not sync circular push avatar:', err);
+    return undefined;
+  }
+}
 
 const FAMILY_ROOT = 'families/los_nazco';
 const VAPID_PUBLIC_KEY =
@@ -185,6 +347,7 @@ export async function dispatchPushNotification(params: {
   callId?: string;
   callerId?: string;
   callerName?: string;
+  sender?: PushSenderAvatarInfo;
 }): Promise<{ sent: number; total: number }> {
   try {
     await ensureFirebaseSession();
@@ -194,7 +357,15 @@ export async function dispatchPushNotification(params: {
     const targets = params.targetMemberIds.filter((id) => id !== params.excludeMemberId);
     if (targets.length === 0) return { sent: 0, total: 0 };
 
-    const subsSnap = await getDocs(collection(firestoreDb, `${FAMILY_ROOT}/push_subs`));
+    const [subsSnap, senderAvatarMediaId] = await Promise.all([
+      getDocs(collection(firestoreDb, `${FAMILY_ROOT}/push_subs`)),
+      params.sender
+        ? Promise.race([
+            ensureSenderCircularAvatarMediaId(params.sender),
+            new Promise<undefined>((resolve) => setTimeout(() => resolve(undefined), 3500)),
+          ])
+        : Promise.resolve(undefined),
+    ]);
     const matched = subsSnap.docs
       .map((d) => d.data() as StoredPushSubscription)
       .filter((s) => targets.includes(s.memberId));
@@ -224,6 +395,7 @@ export async function dispatchPushNotification(params: {
         callId: params.callId,
         callerId: params.callerId,
         callerName: params.callerName,
+        senderAvatarMediaId,
         tag:
           params.kind === 'CALL' && params.roomCode
             ? `nazco-call-${params.roomCode}`
@@ -250,7 +422,12 @@ export async function dispatchPushNotification(params: {
   }
 }
 
-export async function sendTestPushToSelf(memberId: string, memberName: string): Promise<boolean> {
+export async function sendTestPushToSelf(
+  memberId: string,
+  memberName: string,
+  avatarUrl?: string,
+  avatarColor?: string
+): Promise<boolean> {
   const qs = await getDocs(
     query(collection(firestoreDb, `${FAMILY_ROOT}/push_subs`), where('memberId', '==', memberId))
   );
@@ -260,6 +437,12 @@ export async function sendTestPushToSelf(memberId: string, memberName: string): 
     title: '🔔 ¡Notificaciones activas!',
     body: `Hola ${memberName.split(' ')[0]}, ya recibirás avisos de llamadas y mensajes aunque cierres la app 💛`,
     kind: 'TEST',
+    sender: {
+      id: memberId,
+      name: memberName,
+      avatarUrl,
+      avatarColor,
+    },
   });
   return res.sent > 0;
 }

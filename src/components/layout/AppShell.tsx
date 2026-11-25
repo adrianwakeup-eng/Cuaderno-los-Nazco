@@ -272,6 +272,9 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
             >
               <img src={animateTarotButton ? tarotMageMotion : tarotMagePoster}
                 className="tarot-mage-portrait" alt="" />
+              <span aria-hidden="true" className="relative z-10 whitespace-nowrap bg-emerald-950/95 px-0.5 py-1 text-center text-[8px] font-extrabold leading-tight text-amber-100 sm:text-[10px]">
+                Tarot del día
+              </span>
             </button>
           </div>
 

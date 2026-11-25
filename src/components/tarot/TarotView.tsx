@@ -319,15 +319,6 @@ function TarotReading({ date, familyId, sign, onEdit, onBack }: {
             </div>
           </div>
         </div>
-        <div className="tarot-reading" aria-live="polite">
-          {cards.map((card, index) => revealed.includes(index) && (
-            <div key={card.name}>
-              <h2>{positions[index]} · {card.name}</h2>
-              <p>{card.reading}</p>
-              <p><strong>Consejo del lector:</strong> {card.action}</p>
-            </div>
-          ))}
-        </div>
         <dialog ref={detailRef} className="tarot-detail" aria-label="Lectura de la carta"
           onClose={() => {
             stopNarration();

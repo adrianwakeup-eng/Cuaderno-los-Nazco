@@ -421,6 +421,8 @@ export async function dispatchPushNotification(params: {
   callerId?: string;
   callerName?: string;
   sender?: PushSenderAvatarInfo;
+  chatId?: string;
+  messageKind?: 'TEXT' | 'AUDIO' | 'IMAGE' | 'VIDEO';
 }): Promise<{ sent: number; total: number }> {
   try {
     await ensureFirebaseSession();
@@ -449,6 +451,11 @@ export async function dispatchPushNotification(params: {
 
     const baseUrl = new URL(window.location.pathname, window.location.origin);
     if (params.openLocationSettings) baseUrl.searchParams.set('editarUbicacion', '1');
+    if (params.kind === 'MESSAGE') {
+      baseUrl.searchParams.set('section', 'MESSAGES');
+      if (params.chatId) baseUrl.searchParams.set('chatId', params.chatId);
+      if (params.messageKind) baseUrl.searchParams.set('msgKind', params.messageKind);
+    }
     const res = await fetch(PUSH_ENDPOINT_URL, {
       method: 'POST',
       headers: {
@@ -466,6 +473,8 @@ export async function dispatchPushNotification(params: {
         body: params.body,
         url: baseUrl.toString(),
         kind: params.kind,
+        chatId: params.chatId,
+        messageKind: params.messageKind,
         roomCode: params.roomCode,
         callMode: params.callMode,
         callId: params.callId,
@@ -475,7 +484,9 @@ export async function dispatchPushNotification(params: {
         tag:
           params.kind === 'CALL' && params.roomCode
             ? `nazco-call-${params.roomCode}`
-            : `nazco-${params.kind.toLowerCase()}-${Date.now()}`,
+            : params.kind === 'MESSAGE' && params.chatId
+              ? `nazco-chat-${params.chatId}`
+              : `nazco-${params.kind.toLowerCase()}-${Date.now()}`,
       }),
     });
 
@@ -530,6 +541,19 @@ export async function closeCallNotificationBanner(roomCode?: string): Promise<vo
     const reg = await navigator.serviceWorker.getRegistration();
     if (!reg) return;
     const list = await reg.getNotifications({ tag: `nazco-call-${roomCode}` });
+    list.forEach((n) => n.close());
+  } catch {
+    // ignore
+  }
+}
+
+/** Closes any grouped OS message notification banner once the user opens that chat */
+export async function closeChatNotificationBanner(chatId?: string): Promise<void> {
+  if (!chatId || typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return;
+  try {
+    const reg = await navigator.serviceWorker.getRegistration();
+    if (!reg) return;
+    const list = await reg.getNotifications({ tag: `nazco-chat-${chatId}` });
     list.forEach((n) => n.close());
   } catch {
     // ignore

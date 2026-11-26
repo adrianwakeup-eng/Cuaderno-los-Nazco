@@ -9,6 +9,7 @@ import {
 } from '../services/firebaseSyncService';
 import {
   closeCallNotificationBanner,
+  closeChatNotificationBanner,
   dispatchPushNotification,
   enableDevicePush,
   ensureSenderCircularAvatarMediaId,
@@ -450,7 +451,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
 
   // Deep-link when user taps an incoming call Push Notification (?incomingCall=... or ?joinCall=...)
   useEffect(() => {
-    if (!currentUser) return;
+    if (!currentUser || currentUser.role === 'ADMIN') return;
     const params = new URLSearchParams(window.location.search);
     const incomingRoom = params.get('incomingCall') || params.get('joinCall');
     if (!incomingRoom) return;
@@ -465,6 +466,16 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     // Clean query params so reloading later won't re-trigger (preserve history guard state)
     const cleanUrl = `${window.location.origin}${window.location.pathname}`;
     window.history.replaceState(window.history.state, '', cleanUrl);
+
+    // Security check: if Firestore already has this call signal, verify currentUser is a participant
+    const liveMatch = liveCalls.find((c) => c.id === callIdParam || c.roomCode === incomingRoom);
+    if (liveMatch && liveMatch.scope === 'DIRECT' && !liveMatch.participantIds.includes(currentUser.id)) {
+      return;
+    }
+    if (liveMatch && liveMatch.status === 'ENDED') {
+      void closeCallNotificationBanner(incomingRoom);
+      return;
+    }
 
     if (autoAnswer) {
       void closeCallNotificationBanner(incomingRoom);
@@ -497,7 +508,34 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         createdAt: new Date().toISOString(),
       });
     }
-  }, [currentUser?.id]);
+  }, [currentUser?.id, currentUser?.role, liveCalls]);
+
+  // Handle Service Worker postMessage when user taps a MESSAGE notification while app is already open
+  useEffect(() => {
+    if (!currentUser || !('serviceWorker' in navigator)) return;
+    const onSwMessage = (event: MessageEvent) => {
+      const data = event.data as { type?: string; chatId?: string; focusReply?: boolean; messageKind?: string } | null;
+      if (!data || data.type !== 'OPEN_CHAT' || !data.chatId) return;
+      const targetChat = snapshotRef.current.chats.find(
+        (c) => c.id === data.chatId && c.participantIds.includes(currentUser.id)
+      );
+      if (!targetChat) return;
+      setActiveSection('MESSAGES');
+      setActiveChatId(targetChat.id);
+      void closeChatNotificationBanner(targetChat.id);
+      window.dispatchEvent(
+        new CustomEvent('nazco:open-chat-from-notif', {
+          detail: {
+            chatId: targetChat.id,
+            focusReply: Boolean(data.focusReply),
+            messageKind: data.messageKind || 'TEXT',
+          },
+        })
+      );
+    };
+    navigator.serviceWorker.addEventListener('message', onSwMessage);
+    return () => navigator.serviceWorker.removeEventListener('message', onSwMessage);
+  }, [currentUser, setActiveSection]);
 
   const enablePushNotifications = useCallback(async (): Promise<boolean> => {
     if (!currentUser) return false;
@@ -1228,15 +1266,25 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       };
       return firebaseSyncService.appendChatMessage(chat, message).then(() => {
         if (stickerId) triggerJoyBurst('💕', 4);
+        const previewText = clean
+          ? (clean.length > 110 ? `${clean.slice(0, 107).trimEnd()}…` : clean)
+          : attachment?.kind === 'AUDIO'
+            ? '🎤 Te envió un mensaje de voz'
+            : attachment?.kind === 'IMAGE'
+              ? '📷 Te envió una foto'
+              : attachment?.kind === 'VIDEO'
+                ? '🎬 Te envió un video'
+                : '✨ Te envió un sticker';
         void dispatchPushNotification({
           targetMemberIds: chat.participantIds,
           excludeMemberId: currentUser.id,
           title: chat.kind === 'GROUP'
             ? `💬 ${currentUser.name.split(' ')[0]} en ${chat.title || 'Familia'}`
             : `💬 ${currentUser.name}`,
-          body: clean || (attachment?.kind === 'AUDIO' ? '🎙️ Nota de voz' :
-            attachment?.kind === 'IMAGE' ? '📷 Envió una foto' : '✨ Envió un sticker'),
+          body: previewText,
           kind: 'MESSAGE',
+          chatId,
+          messageKind: attachment?.kind === 'AUDIO' ? 'AUDIO' : attachment?.kind === 'IMAGE' ? 'IMAGE' : attachment?.kind === 'VIDEO' ? 'VIDEO' : 'TEXT',
           sender: {
             id: currentUser.id,
             name: currentUser.name,

@@ -2,7 +2,7 @@
  * Security rule: NEVER caches private user posts, messages, credentials, or user photos.
  * Handles Web Push notifications for incoming calls & messages even when app is closed.
  */
-const CACHE_NAME = 'los-nazco-shell-v19';
+const CACHE_NAME = 'los-nazco-shell-v20';
 const PUSH_ENDPOINT_URL = 'https://yqhcyjrmkibhoorziqvg.supabase.co/functions/v1/nazco-push-notify';
 const dismissedCallIds = new Set();
 const STATIC_ASSETS = [
@@ -218,24 +218,52 @@ self.addEventListener('push', (event) => {
     return;
   }
 
-  // Regular MESSAGE / TEST notification: rings ONCE (never repeats)
-  const targetUrl = payload.url || baseScope;
-  event.waitUntil(
-    self.registration.showNotification(payload.title, {
-      body: payload.body,
-      icon: resolvedIcon,
-      badge: badgeUrl,
-      tag: payload.tag || `nazco-msg-${Date.now()}`,
-      renotify: false,
-      requireInteraction: false,
-      vibrate: [180, 80, 180],
-      data: {
-        url: targetUrl,
-        kind: payload.kind,
-      },
-      actions: [{ action: 'open', title: '💬 Abrir' }],
-    })
-  );
+  // Regular MESSAGE / TEST notification: grouped per chatId, rings once per new message
+  const isMessage = payload.kind === 'MESSAGE';
+  const chatId = typeof payload.chatId === 'string' ? payload.chatId : '';
+  const messageKind = typeof payload.messageKind === 'string' ? payload.messageKind : 'TEXT';
+  let targetUrl = payload.url || baseScope;
+  if (isMessage && chatId) {
+    try {
+      const u = new URL(targetUrl, baseScope);
+      u.searchParams.set('section', 'MESSAGES');
+      u.searchParams.set('chatId', chatId);
+      if (messageKind) u.searchParams.set('msgKind', messageKind);
+      targetUrl = u.toString();
+    } catch {
+      // keep fallback targetUrl
+    }
+  }
+  const messageActions = isMessage
+    ? [{ action: 'reply', title: '💬 Responder' }, { action: 'open', title: 'Ver conversación' }]
+    : [{ action: 'open', title: '💬 Abrir' }];
+  const safeThumb =
+    typeof payload.imageUrl === 'string' && payload.imageUrl.startsWith('https://')
+      ? payload.imageUrl
+      : typeof payload.thumbnailUrl === 'string' && payload.thumbnailUrl.startsWith('https://')
+        ? payload.thumbnailUrl
+        : '';
+  const groupedTag = payload.tag || (isMessage && chatId ? `nazco-chat-${chatId}` : `nazco-msg-${Date.now()}`);
+  const notifOptions = {
+    body: payload.body,
+    icon: resolvedIcon,
+    badge: badgeUrl,
+    tag: groupedTag,
+    renotify: Boolean(isMessage && chatId),
+    requireInteraction: false,
+    vibrate: [180, 80, 180],
+    data: {
+      url: targetUrl,
+      kind: payload.kind,
+      chatId,
+      messageKind,
+    },
+    actions: messageActions,
+  };
+  if (safeThumb && (messageKind === 'IMAGE' || messageKind === 'VIDEO')) {
+    notifOptions.image = safeThumb;
+  }
+  event.waitUntil(self.registration.showNotification(payload.title, notifOptions));
 });
 
 self.addEventListener('notificationclick', (event) => {
@@ -277,12 +305,41 @@ self.addEventListener('notificationclick', (event) => {
     targetUrl = u.toString();
   }
 
+  const isMessageClick = notifData.kind === 'MESSAGE';
+  const wantsReplyFocus = isMessageClick && event.action === 'reply';
+  if (isMessageClick) {
+    try {
+      const u = new URL(targetUrl, self.registration.scope);
+      u.searchParams.set('section', 'MESSAGES');
+      if (notifData.chatId) u.searchParams.set('chatId', notifData.chatId);
+      if (notifData.messageKind) u.searchParams.set('msgKind', notifData.messageKind);
+      if (wantsReplyFocus) u.searchParams.set('focusReply', '1');
+      targetUrl = u.toString();
+    } catch {
+      // keep targetUrl
+    }
+  }
+
   event.waitUntil(
     self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clients) => {
       for (const client of clients) {
         if (client.url.startsWith(self.registration.scope)) {
           if ('navigate' in client && (targetUrl.includes('incomingCall=') || new URL(targetUrl, self.registration.scope).searchParams.get('editarUbicacion') === '1')) {
             return client.navigate(targetUrl).then((c) => c?.focus());
+          }
+          if (isMessageClick) {
+            if ('postMessage' in client && notifData.chatId) {
+              client.postMessage({
+                type: 'OPEN_CHAT',
+                chatId: notifData.chatId,
+                focusReply: wantsReplyFocus,
+                messageKind: notifData.messageKind || 'TEXT',
+              });
+              return client.focus();
+            }
+            if ('navigate' in client) {
+              return client.navigate(targetUrl).then((c) => c?.focus());
+            }
           }
           return client.focus();
         }

@@ -575,7 +575,7 @@ export const MessengerView: React.FC = () => {
                         {msg.attachment?.kind === 'IMAGE' && msg.attachment.previewUrl && (
                           <img
                             src={msg.attachment.previewUrl}
-                            alt={msg.attachment.fileName}
+                            alt="Foto del mensaje"
                             className="mb-2 max-h-60 rounded-xl object-cover"
                           />
                         )}
@@ -702,12 +702,12 @@ export const MessengerView: React.FC = () => {
                       {pendingAttachment.previewUrl && (
                         <img
                           src={pendingAttachment.previewUrl}
-                          alt={pendingAttachment.fileName}
+                          alt="Foto adjunta"
                           className="h-11 w-11 rounded-xl object-cover"
                         />
                       )}
                       <span className="truncate text-xs font-bold text-espresso-800">
-                        {pendingAttachment.fileName}
+                        Foto adjunta
                       </span>
                     </div>
                     <button

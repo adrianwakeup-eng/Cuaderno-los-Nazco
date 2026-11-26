@@ -84,7 +84,7 @@ const CloudVideoPlayer: React.FC<{ att: MediaAttachment }> = ({ att }) => {
         </video>
         <div className="flex items-center justify-between bg-forest-900/95 px-3.5 py-2 text-[11px] font-semibold text-cotton-50">
           <span className="truncate">
-            🎬 {att.fileName}
+            🎬 Video
             {att.durationSec ? ` · ${formatDuration(att.durationSec)}` : ''} ·{' '}
             {formatBytes(att.sizeBytes)}
           </span>
@@ -116,14 +116,14 @@ const CloudVideoPlayer: React.FC<{ att: MediaAttachment }> = ({ att }) => {
         {(att.posterUrl || att.previewUrl) && (
           <img
             src={att.posterUrl || att.previewUrl}
-            alt={att.fileName}
+            alt="Vista previa del video"
             loading="lazy"
             className="max-h-[340px] w-full object-cover opacity-95"
           />
         )}
         <div className="flex flex-wrap items-center justify-between gap-2 bg-forest-900/95 px-4 py-3 text-xs text-cotton-50">
           <span>
-            🎬 {att.fileName}
+            🎬 Video
             {att.durationSec ? ` · ${formatDuration(att.durationSec)}` : ''} ·{' '}
             {formatBytes(att.sizeBytes)}
           </span>
@@ -169,7 +169,6 @@ const CloudAudioAttachment: React.FC<{
             <Mic className="h-4 w-4" />
           </span>
           <div>
-            <p className="text-xs font-extrabold text-forest-900">{att.fileName}</p>
             <p className="text-[11px] font-medium text-espresso-700">
               Nota de voz · {formatDuration(att.durationSec)} · {formatBytes(att.sizeBytes)}
             </p>
@@ -475,7 +474,7 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
                   >
                     <img
                       src={att.previewUrl}
-                      alt={att.fileName}
+                      alt="Foto de la publicación"
                       loading="lazy"
                       className="max-h-[540px] w-full object-cover transition duration-300 group-hover:scale-[1.015]"
                     />

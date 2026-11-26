@@ -279,7 +279,7 @@ export const PostComposer: React.FC = () => {
                 {att.kind === 'IMAGE' && att.previewUrl && (
                   <img
                     src={att.previewUrl}
-                    alt={att.fileName}
+                    alt="Foto adjunta"
                     className="h-36 w-full rounded-xl object-cover"
                   />
                 )}
@@ -296,7 +296,7 @@ export const PostComposer: React.FC = () => {
                   </div>
                 )}
                 <p className="mt-1.5 truncate text-xs font-semibold text-espresso-700">
-                  {att.fileName} · {formatBytes(att.sizeBytes)}
+                  {formatBytes(att.sizeBytes)}
                 </p>
               </div>
             ))}

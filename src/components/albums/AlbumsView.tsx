@@ -147,7 +147,7 @@ export const AlbumsView: React.FC = () => {
               id: `post_img_${att.id}`,
               album,
               authorId: post.authorId,
-              title: post.text.slice(0, 80) || att.fileName,
+              title: post.text.slice(0, 80) || 'Foto familiar',
               imageUrl: att.previewUrl,
               createdAt: post.createdAt,
               likes: post.reactions['❤️'] ?? [],
@@ -168,7 +168,11 @@ export const AlbumsView: React.FC = () => {
     const mergedCustom = [...cloudAlbumPhotos, ...customPhotos].filter(
       (item, idx, arr) => arr.findIndex((x) => x.id === item.id) === idx
     );
-    return [...mergedCustom, ...fromPosts, ...defaults];
+    return [
+      ...mergedCustom.map((photo) => photo.id.startsWith('alb_photo_') ? { ...photo, title: 'Foto familiar' } : photo),
+      ...fromPosts,
+      ...defaults,
+    ];
   }, [snapshot.posts, customPhotos, cloudAlbumPhotos]);
 
   if (!currentUser) return null;
@@ -189,7 +193,7 @@ export const AlbumsView: React.FC = () => {
         id: `alb_photo_${Date.now()}`,
         album: selectedAlbum,
         authorId: currentUser.id,
-        title: file.name.replace(/\.[^.]+$/, ''),
+        title: 'Foto familiar',
         imageUrl: reader.result,
         createdAt: new Date().toISOString(),
         likes: [],

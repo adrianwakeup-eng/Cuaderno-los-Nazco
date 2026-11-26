@@ -220,6 +220,10 @@ self.addEventListener('push', (event) => {
 
   // Regular MESSAGE / TEST notification: rings ONCE (never repeats)
   const targetUrl = payload.url || baseScope;
+  const isMessage = payload.kind === 'MESSAGE';
+  const messageActions = isMessage
+    ? [{ action: 'reply', title: '💬 Responder' }, { action: 'open', title: 'Ver conversación' }]
+    : [{ action: 'open', title: '💬 Abrir' }];
   event.waitUntil(
     self.registration.showNotification(payload.title, {
       body: payload.body,
@@ -233,7 +237,7 @@ self.addEventListener('push', (event) => {
         url: targetUrl,
         kind: payload.kind,
       },
-      actions: [{ action: 'open', title: '💬 Abrir' }],
+      actions: messageActions,
     })
   );
 });
@@ -282,6 +286,9 @@ self.addEventListener('notificationclick', (event) => {
       for (const client of clients) {
         if (client.url.startsWith(self.registration.scope)) {
           if ('navigate' in client && (targetUrl.includes('incomingCall=') || new URL(targetUrl, self.registration.scope).searchParams.get('editarUbicacion') === '1')) {
+            return client.navigate(targetUrl).then((c) => c?.focus());
+          }
+          if (notifData.kind === 'MESSAGE' && 'navigate' in client) {
             return client.navigate(targetUrl).then((c) => c?.focus());
           }
           return client.focus();

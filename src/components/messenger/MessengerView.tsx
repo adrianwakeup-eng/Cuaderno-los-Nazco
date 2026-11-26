@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { useAppearance } from '../../context/AppearanceContext';
 import { useFamilyApp } from '../../context/FamilyAppContext';
+import { closeChatNotificationBanner } from '../../services/pushNotificationService';
 import { formatDuration, prepareAndStoreAttachment } from '../../services/storageService';
 import type { ChatMessage, FamilyChat, MediaAttachment } from '../../types';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
@@ -75,6 +76,9 @@ export const MessengerView: React.FC = () => {
   const typingTimeoutRef = useRef<number | null>(null);
   const longPressTimerRef = useRef<number | null>(null);
   const endRef = useRef<HTMLDivElement | null>(null);
+  const composerInputRef = useRef<HTMLInputElement | null>(null);
+  const audioMsgRefs = useRef<Record<string, HTMLDivElement | null>>({});
+  const [highlightedAudioMsgId, setHighlightedAudioMsgId] = useState<string | null>(null);
   const imageInputRef = useRef<HTMLInputElement | null>(null);
   const cameraInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -104,17 +108,61 @@ export const MessengerView: React.FC = () => {
       .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }, [snapshot.chats, currentUser, membersById]);
 
+  const focusReplyInput = () => {
+    window.setTimeout(() => {
+      composerInputRef.current?.focus();
+    }, 120);
+  };
+
+  const highlightLatestAudio = (chat: FamilyChat | undefined) => {
+    if (!chat) return;
+    const latestAudio = [...chat.messages]
+      .reverse()
+      .find((m) => m.attachment?.kind === 'AUDIO' && m.attachment.previewUrl);
+    if (!latestAudio) return;
+    setHighlightedAudioMsgId(latestAudio.id);
+    window.setTimeout(() => {
+      audioMsgRefs.current[latestAudio.id]?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 160);
+    window.setTimeout(() => {
+      setHighlightedAudioMsgId((cur) => (cur === latestAudio.id ? null : cur));
+    }, 4500);
+  };
+
   useEffect(() => {
     if (!currentUser) return;
     const url = new URL(window.location.href);
     const requestedId = url.searchParams.get('chatId');
     if (!requestedId) return;
-    const allowed = myChats.some((chat) => chat.id === requestedId && chat.participantIds.includes(currentUser.id));
-    if (!allowed) return;
+    const matchedChat = myChats.find((chat) => chat.id === requestedId && chat.participantIds.includes(currentUser.id));
+    if (!matchedChat) return;
+    const focusReply = url.searchParams.get('focusReply') === '1';
+    const msgKind = url.searchParams.get('msgKind');
     setActiveChatId(requestedId);
     setMobileShowThread(true);
+    void closeChatNotificationBanner(requestedId);
+    if (focusReply) focusReplyInput();
+    if (msgKind === 'AUDIO') highlightLatestAudio(matchedChat);
     url.searchParams.delete('chatId');
+    url.searchParams.delete('focusReply');
+    url.searchParams.delete('msgKind');
     window.history.replaceState(window.history.state, '', url);
+  }, [currentUser, myChats, setActiveChatId]);
+
+  useEffect(() => {
+    const onOpenFromNotif = (ev: Event) => {
+      const detail = (ev as CustomEvent<{ chatId?: string; focusReply?: boolean; messageKind?: string }>).detail;
+      if (!detail?.chatId || !currentUser) return;
+      const matchedChat = myChats.find((chat) => chat.id === detail.chatId && chat.participantIds.includes(currentUser.id));
+      if (!matchedChat) return;
+      setActiveChatId(matchedChat.id);
+      setMobileShowThread(true);
+      void closeChatNotificationBanner(matchedChat.id);
+      if (detail.focusReply) focusReplyInput();
+      if (detail.messageKind === 'AUDIO') highlightLatestAudio(matchedChat);
+    };
+    window.addEventListener('nazco:open-chat-from-notif', onOpenFromNotif);
+    return () => window.removeEventListener('nazco:open-chat-from-notif', onOpenFromNotif);
   }, [currentUser, myChats, setActiveChatId]);
 
   const activeChat: FamilyChat | undefined =
@@ -124,7 +172,10 @@ export const MessengerView: React.FC = () => {
     const desktop = window.matchMedia('(min-width: 768px)');
     const confirmRead = () => {
       if (activeChat && document.visibilityState === 'visible' && document.hasFocus() &&
-          (mobileShowThread || desktop.matches)) markChatRead(activeChat);
+          (mobileShowThread || desktop.matches)) {
+        markChatRead(activeChat);
+        void closeChatNotificationBanner(activeChat.id);
+      }
     };
     confirmRead();
     desktop.addEventListener('change', confirmRead);
@@ -592,9 +643,24 @@ export const MessengerView: React.FC = () => {
                             className="mb-2 max-h-60 rounded-xl object-cover"
                           />
                         )}
+                        {msg.attachment?.kind === 'VIDEO' && msg.attachment.previewUrl && (
+                          <video
+                            src={msg.attachment.previewUrl}
+                            poster={msg.attachment.posterUrl}
+                            controls
+                            playsInline
+                            preload="metadata"
+                            className="mb-2 max-h-64 w-full rounded-xl object-cover"
+                          />
+                        )}
                         {msg.attachment?.kind === 'AUDIO' && msg.attachment.previewUrl && (
-                          <div className="mb-1.5 space-y-1">
-                            <div className="flex items-center gap-1 opacity-80">
+                          <div
+                            ref={(el) => { audioMsgRefs.current[msg.id] = el; }}
+                            className={`mb-1.5 space-y-1 rounded-xl p-1 transition ${
+                              highlightedAudioMsgId === msg.id ? 'ring-2 ring-solar-300 bg-white/15' : ''
+                            }`}
+                          >
+                            <div className="flex items-center gap-1 opacity-85">
                               {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
                                 <span
                                   key={i}
@@ -602,7 +668,9 @@ export const MessengerView: React.FC = () => {
                                   style={{ height: `${8 + ((i * 5) % 12)}px` }}
                                 />
                               ))}
-                              <span className="ml-1 text-[10px] font-bold">Nota de voz</span>
+                              <span className="ml-1 text-[10px] font-bold">
+                                {highlightedAudioMsgId === msg.id ? 'Nota de voz · Toca ▶ para reproducir' : 'Nota de voz'}
+                              </span>
                             </div>
                             <audio src={msg.attachment.previewUrl} controls className="max-w-full" />
                           </div>
@@ -802,6 +870,7 @@ export const MessengerView: React.FC = () => {
                     <Smile className="h-5 w-5" />
                   </button>
                   <input
+                    ref={composerInputRef}
                     value={draft}
                     onChange={(e) => handleDraftChange(e.target.value)}
                     placeholder="Mensaje…"

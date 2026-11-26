@@ -1237,6 +1237,8 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
           body: clean || (attachment?.kind === 'AUDIO' ? '🎙️ Nota de voz' :
             attachment?.kind === 'IMAGE' ? '📷 Envió una foto' : '✨ Envió un sticker'),
           kind: 'MESSAGE',
+          chatId,
+          messageKind: attachment?.kind === 'AUDIO' ? 'AUDIO' : attachment?.kind === 'IMAGE' ? 'IMAGE' : attachment?.kind === 'VIDEO' ? 'VIDEO' : 'TEXT',
           sender: {
             id: currentUser.id,
             name: currentUser.name,

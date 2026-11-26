@@ -33,6 +33,7 @@ export interface MediaAttachment {
   durationSec?: number;
   storageKey?: string;
   cloudMediaId?: string;
+  economyVideo?: { id: string; mimeType: string; sizeBytes: number };
   posterUrl?: string;
   previewUrl?: string;
 }

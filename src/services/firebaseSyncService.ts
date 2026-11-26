@@ -36,7 +36,9 @@ import type {
   MediaAttachment,
 } from '../types';
 import { ensureFirebaseSession, firebaseApp, firestoreDb } from './firebaseClient';
-import { getMediaBlob, getMediaBlobUrl, saveMediaBlob } from './storageService';
+import { compressImageFile, getMediaBlob, getMediaBlobUrl, saveMediaBlob } from './storageService';
+
+import { encodeEconomyVideo } from './economyVideo';
 
 const FAMILY_ROOT = 'families/los_nazco';
 const RAW_CHUNK_BYTES = 480_000; // ~640 KB base64 per chunk — comfortably under Firestore 1 MiB doc limit
@@ -175,11 +177,17 @@ export async function uploadAttachmentWithProgress(
     onProgress?.(100);
     return att;
   }
+  if (att.kind === 'IMAGE') return prepareAttachmentForCloud(att, authorId);
   const cloudMediaId = await uploadChunkedMediaToCloud(blob, att, authorId, onProgress);
-  return {
-    ...att,
-    cloudMediaId,
-  };
+  const compressed = att.kind === 'VIDEO' ? await encodeEconomyVideo(blob) : null;
+  if (!compressed) return { ...att, cloudMediaId };
+  try {
+    const id = await uploadChunkedMediaToCloud(compressed,
+      { ...att, cloudMediaId: `${cloudMediaId}_economy`, mimeType: compressed.type }, authorId);
+    return { ...att, cloudMediaId, economyVideo: { id, mimeType: compressed.type, sizeBytes: compressed.size } };
+  } catch {
+    return { ...att, cloudMediaId };
+  }
 }
 
 const activeDownloads = new Map<string, Promise<string | null>>();
@@ -264,6 +272,18 @@ export async function resolvePlayableMediaUrl(att: MediaAttachment): Promise<str
  * - Small images/audios (<= 480 KB) inline directly for zero extra latency.
  * - Videos & larger files (up to 25 MB) automatically upload as Firestore chunks!
  */
+function readInlineMedia(blob: Blob): Promise<string | undefined> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const data = reader.result;
+      resolve(typeof data === 'string' && data.length <= MAX_CLOUD_DATA_URL_LEN ? data : undefined);
+    };
+    reader.onerror = () => resolve(undefined);
+    reader.readAsDataURL(blob);
+  });
+}
+
 async function prepareAttachmentForCloud(
   att: MediaAttachment,
   authorId: string
@@ -294,17 +314,20 @@ async function prepareAttachmentForCloud(
     };
   }
 
+  if (att.kind === 'IMAGE' && blob.size > 60_000) {
+    const thumbnail = await compressImageFile(new File([blob], att.fileName, { type: blob.type }), 640, .66);
+    if (thumbnail.size < Math.min(blob.size * .8, 130_000)) {
+      const previewUrl = await readInlineMedia(thumbnail);
+      if (previewUrl) {
+        const cloudMediaId = await uploadChunkedMediaToCloud(blob, att, authorId);
+        return { ...att, cloudMediaId, previewUrl };
+      }
+    }
+  }
+
   // Small images/audio -> inline directly
   if (att.kind !== 'VIDEO' && blob.size <= MAX_INLINE_BYTES) {
-    const dataUrl = await new Promise<string | undefined>((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const out = typeof reader.result === 'string' ? reader.result : undefined;
-        resolve(out && out.length <= MAX_CLOUD_DATA_URL_LEN ? out : undefined);
-      };
-      reader.onerror = () => resolve(undefined);
-      reader.readAsDataURL(blob);
-    });
+    const dataUrl = await readInlineMedia(blob);
     if (dataUrl) {
       return { ...att, previewUrl: dataUrl };
     }

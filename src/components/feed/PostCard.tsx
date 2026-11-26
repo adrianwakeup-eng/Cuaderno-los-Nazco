@@ -20,6 +20,7 @@ import {
 import { useAppearance } from '../../context/AppearanceContext';
 import { useFamilyApp } from '../../context/FamilyAppContext';
 import { resolvePlayableMediaUrl } from '../../services/firebaseSyncService';
+import { isCubaMember } from '../../services/localFamilyPreferences';
 import { formatBytes, formatDuration } from '../../services/storageService';
 import type { FamilyPost, MediaAttachment } from '../../types';
 import { MemberAvatar } from '../auth/FamilyAuthModal';
@@ -27,6 +28,33 @@ import { AMIGURUMI_REACTIONS, CrochetHeart3D, YarnBallLoader } from '../crochet/
 import { BottomSheet } from '../shared/BottomSheet';
 import { StickerGifBadge } from '../shared/StickerGifPicker';
 import { CommentThread } from './CommentThread';
+
+const EconomyVideo: React.FC<{ att: MediaAttachment }> = ({ att }) => {
+  const [choice, setChoice] = useState<'economy' | 'original' | null>(null);
+  const copy = att.economyVideo;
+
+  if (choice === 'economy' && copy) {
+    return <CloudVideoPlayer att={{
+      ...att, cloudMediaId: copy.id, mimeType: copy.mimeType, sizeBytes: copy.sizeBytes,
+      previewUrl: undefined, storageKey: undefined,
+    }} />;
+  }
+  if (choice === 'original') return <CloudVideoPlayer att={att} />;
+
+  return (
+    <div className="photo-heirloom-frame overflow-hidden rounded-2xl bg-forest-900 p-4 text-cotton-50">
+      {att.posterUrl?.startsWith('data:image/') && (
+        <img className="mb-3 max-h-52 w-full rounded-xl object-cover" src={att.posterUrl}
+          alt="Vista previa del video" loading="lazy" />
+      )}
+      <button type="button" className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-cotton-50 px-3 text-sm font-bold text-forest-900"
+        onClick={() => setChoice(copy ? 'economy' : 'original')}>
+        <Play size={16} aria-hidden="true" />
+        {copy ? 'Ver video ligero' : 'Cargar video original'} · {formatBytes(copy?.sizeBytes ?? att.sizeBytes)}
+      </button>
+    </div>
+  );
+};
 
 /** Smart video player that automatically hydrates local IndexedDB or chunked Firestore cloud videos */
 const CloudVideoPlayer: React.FC<{ att: MediaAttachment }> = ({ att }) => {
@@ -77,7 +105,7 @@ const CloudVideoPlayer: React.FC<{ att: MediaAttachment }> = ({ att }) => {
           poster={att.posterUrl}
           controls
           playsInline
-          preload="metadata"
+          preload="none"
           className="max-h-[460px] w-full bg-black"
         >
           <source src={safariSrc} type={att.mimeType || 'video/mp4'} />
@@ -460,30 +488,36 @@ export const PostCard: React.FC<{ post: FamilyPost }> = ({ post }) => {
             }`}
           >
             {post.attachments.map((att) => {
-              if (att.kind === 'IMAGE' && att.previewUrl) {
+              if (att.kind === 'IMAGE' && (att.previewUrl || att.cloudMediaId)) {
                 return (
                   <button
                     key={att.id}
                     type="button"
-                    onClick={(e) => {
+                    onClick={async (e) => {
                       e.stopPropagation();
+                      const useLightPhoto = isCubaMember(currentUser) && att.previewUrl;
+                      const url = useLightPhoto || (!att.cloudMediaId ? att.previewUrl : null) ||
+                        await resolvePlayableMediaUrl(att);
+                      if (!url) return;
                       setZoom(1);
-                      setLightboxUrl(att.previewUrl!);
+                      setLightboxUrl(url);
                     }}
                     className="photo-heirloom-frame group relative overflow-hidden rounded-2xl bg-cotton-50 text-left"
                   >
-                    <img
-                      src={att.previewUrl}
-                      alt="Foto de la publicación"
-                      loading="lazy"
-                      className="max-h-[540px] w-full object-cover transition duration-300 group-hover:scale-[1.015]"
-                    />
+                    {att.previewUrl ? (
+                      <img src={att.previewUrl} alt="Foto de la publicación" loading="lazy"
+                        className="max-h-[540px] w-full object-cover transition duration-300 group-hover:scale-[1.015]" />
+                    ) : (
+                      <span className="block p-3 text-sm font-semibold">Cargar foto · {formatBytes(att.sizeBytes)}</span>
+                    )}
                   </button>
                 );
               }
 
               if (att.kind === 'VIDEO') {
-                return <CloudVideoPlayer key={att.id} att={att} />;
+                return isCubaMember(currentUser)
+                  ? <EconomyVideo key={att.id} att={att} />
+                  : <CloudVideoPlayer key={att.id} att={att} />;
               }
 
               if (att.kind === 'AUDIO') {

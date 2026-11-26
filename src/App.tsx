@@ -111,6 +111,16 @@ const CuadernoContent: React.FC = () => {
       }
     : null;
 
+  React.useEffect(() => {
+    if (!currentUser) return;
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('section') !== 'MESSAGES') return;
+    setActiveSection('MESSAGES');
+    const url = new URL(window.location.href);
+    url.searchParams.delete('section');
+    window.history.replaceState(window.history.state, '', url);
+  }, [currentUser, setActiveSection]);
+
   const [locationLink, setLocationLink] = React.useState(
     () => new URLSearchParams(window.location.search).get('editarUbicacion') === '1'
   );

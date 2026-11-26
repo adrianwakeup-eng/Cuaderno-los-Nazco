@@ -104,6 +104,19 @@ export const MessengerView: React.FC = () => {
       .sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
   }, [snapshot.chats, currentUser, membersById]);
 
+  useEffect(() => {
+    if (!currentUser) return;
+    const url = new URL(window.location.href);
+    const requestedId = url.searchParams.get('chatId');
+    if (!requestedId) return;
+    const allowed = myChats.some((chat) => chat.id === requestedId && chat.participantIds.includes(currentUser.id));
+    if (!allowed) return;
+    setActiveChatId(requestedId);
+    setMobileShowThread(true);
+    url.searchParams.delete('chatId');
+    window.history.replaceState(window.history.state, '', url);
+  }, [currentUser, myChats, setActiveChatId]);
+
   const activeChat: FamilyChat | undefined =
     myChats.find((c) => c.id === activeChatId) ?? myChats[0];
 

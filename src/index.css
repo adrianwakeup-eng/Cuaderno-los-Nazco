@@ -1101,3 +1101,22 @@ html[data-mode='LIGHT'] * {
 .family-feed-readable .card-crochet .liquid-chat-input::placeholder { color: #655b4c; opacity: 1; }
 .family-feed-readable .card-crochet p.whitespace-pre-wrap { font-size: 1rem; line-height: 1.65; overflow-wrap: anywhere; }
 .family-feed-readable .crochet-green-3d { background-color: #164d32; background-image: linear-gradient(155deg,#246a43,#164d32); }
+
+
+/* Subtle embossed typography on the family wall. */
+.family-feed-readable :is(.card-crochet,.card-warm,.crochet-card,.crochet-parchment) {
+  font-weight: 500;
+}
+.family-feed-readable :is(.text-espresso-600,.text-espresso-700,.text-espresso-800,.text-espresso-900,.text-forest-700,.text-forest-800,.text-forest-900) {
+  text-shadow: 0 1px 0 rgba(255,255,255,.85);
+}
+.family-feed-readable .card-crochet p.whitespace-pre-wrap {
+  font-weight: 600;
+  text-shadow: 0 1px 0 rgba(255,255,255,.85);
+}
+.family-feed-readable :is(h2,h3,.font-editorial,.font-crochet-script) {
+  font-weight: 800;
+  text-shadow: 0 1px 0 #fffdf8, 0 2px 2px rgba(60,42,22,.18);
+}
+.family-feed-readable .card-crochet .liquid-chat-input { font-weight: 500; }
+.family-feed-readable .card-crochet .liquid-chat-input::placeholder { font-weight: 500; }

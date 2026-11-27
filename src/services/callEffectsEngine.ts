@@ -165,7 +165,7 @@ interface FaceLandmarkerResult {
 }
 
 interface FaceLandmarkerLike {
-  detectForVideo(video: HTMLVideoElement, timestampMs: number): FaceLandmarkerResult;
+  detectForVideo(video: HTMLCanvasElement, timestampMs: number): FaceLandmarkerResult;
 }
 
 let sharedLandmarkerPromise: Promise<FaceLandmarkerLike | null> | null = null;
@@ -1442,6 +1442,9 @@ export class CallVideoEffectsEngine {
   private landmarkerRequested = false;
   private lastVideoTime = -1;
   private lastDetectMs = 0;
+  private detectionIntervalMs = 100;
+  private readonly detectionCanvas = document.createElement('canvas');
+  private readonly detectionContext = this.detectionCanvas.getContext('2d', { alpha: false });
   private trackedFaces: TrackedFace[] = [];
   private particles: SparkParticle[] = [];
   private state: CallEffectsState = {
@@ -1475,6 +1478,10 @@ export class CallVideoEffectsEngine {
   }
 
   setSourceTrack(track: MediaStreamTrack | null) {
+    const source = this.sourceVideo.srcObject as MediaStream | null;
+    if ((source?.getVideoTracks()[0] ?? null) === track) return;
+    this.lastVideoTime = -1;
+    this.trackedFaces = [];
     if (!track) {
       this.sourceVideo.srcObject = null;
       return;
@@ -1504,7 +1511,7 @@ export class CallVideoEffectsEngine {
     if (this.running && this.outputStream) {
       return this.outputStream.getVideoTracks()[0] ?? null;
     }
-    this.running = true;
+    if (!this.sourceVideo.srcObject) return null;
     if (this.state.maskId !== 'none') {
       this.ensureLandmarkerLoaded();
     }
@@ -1512,13 +1519,27 @@ export class CallVideoEffectsEngine {
       const cap = (this.canvas as HTMLCanvasElement & { captureStream?: (fps?: number) => MediaStream })
         .captureStream;
       if (!cap) return null;
-      this.outputStream = cap.call(this.canvas, 30);
+      this.outputStream = cap.call(this.canvas, 24);
+    }
+    const track = this.outputStream.getVideoTracks()[0];
+    if (!track) {
+      this.stop();
+      return null;
     }
 
+    this.running = true;
     const startMs = performance.now();
+    const frameIntervalMs = 1000 / 24;
+    let nextFrameMs = startMs;
+    let lastRenderedVideoTime = -1;
     const tick = (nowMs: number) => {
       if (!this.running) return;
-      this.renderFrame(nowMs, (nowMs - startMs) * 0.001);
+      if (nowMs >= nextFrameMs && this.sourceVideo.readyState >= 2 &&
+          this.sourceVideo.currentTime !== lastRenderedVideoTime) {
+        lastRenderedVideoTime = this.sourceVideo.currentTime;
+        nextFrameMs = Math.max(nextFrameMs + frameIntervalMs, nowMs);
+        this.renderFrame(nowMs, (nowMs - startMs) * 0.001);
+      }
       this.rafId = window.requestAnimationFrame(tick);
     };
     this.rafId = window.requestAnimationFrame(tick);
@@ -1546,8 +1567,7 @@ export class CallVideoEffectsEngine {
     const v = this.sourceVideo;
     if (v.readyState < 2 || v.videoWidth === 0 || v.videoHeight === 0) return;
 
-    // Keep resolution crisp & silky at 30 FPS on mobile and desktop (max 864px on longest edge)
-    const maxEdge = 864;
+    const maxEdge = 640;
     const scale = Math.min(1, maxEdge / Math.max(v.videoWidth, v.videoHeight));
     const w = Math.max(2, Math.round((v.videoWidth * scale) / 2) * 2);
     const h = Math.max(2, Math.round((v.videoHeight * scale) / 2) * 2);
@@ -1597,12 +1617,24 @@ export class CallVideoEffectsEngine {
 
     // 4. Real-time 468-point FaceLandmarker detection & organic AR mask rendering
     if (maskId !== 'none') {
-      if (this.landmarker && v.currentTime !== this.lastVideoTime) {
+      if (this.landmarker && this.detectionContext && v.currentTime !== this.lastVideoTime &&
+          nowMs - this.lastDetectMs >= this.detectionIntervalMs) {
         this.lastVideoTime = v.currentTime;
         const detectTs = Math.max(this.lastDetectMs + 1, Math.round(nowMs));
         this.lastDetectMs = detectTs;
         try {
-          const res = this.landmarker.detectForVideo(v, detectTs);
+          const scale = Math.min(1, 320 / Math.max(w, h));
+          const detectionWidth = Math.max(2, Math.round(w * scale));
+          const detectionHeight = Math.max(2, Math.round(h * scale));
+          if (this.detectionCanvas.width !== detectionWidth || this.detectionCanvas.height !== detectionHeight) {
+            this.detectionCanvas.width = detectionWidth;
+            this.detectionCanvas.height = detectionHeight;
+          }
+          const startedAt = performance.now();
+          this.detectionContext.drawImage(v, 0, 0, detectionWidth, detectionHeight);
+          const res = this.landmarker.detectForVideo(this.detectionCanvas, detectTs);
+          const costMs = performance.now() - startedAt;
+          this.detectionIntervalMs = Math.min(500, Math.max(100, costMs * 6));
           const detected = res.faceLandmarks ?? [];
           if (detected.length > 0) {
             const nextTracked: TrackedFace[] = detected.map((lms, idx) => {

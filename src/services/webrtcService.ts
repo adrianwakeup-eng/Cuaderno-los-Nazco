@@ -203,6 +203,7 @@ export class FamilyWebRtcController {
 
   async setEffectVideoTrack(track: MediaStreamTrack | null): Promise<void> {
     if (this.effectTrack === track) return;
+    const previousTrack = this.effectTrack;
     this.effectTrack = track;
     if (this.screenStream) return;
     const targetTrack = track ?? this.cameraTrack;
@@ -210,7 +211,12 @@ export class FamilyWebRtcController {
       if (this.cameraTrack) {
         targetTrack.enabled = this.cameraTrack.enabled;
       }
-      await this.replaceOutgoingVideoTrack(targetTrack);
+      try {
+        await this.replaceOutgoingVideoTrack(targetTrack);
+      } catch (error) {
+        if (this.effectTrack === track) this.effectTrack = previousTrack;
+        throw error;
+      }
     }
     this.callbacks.onLocalStream(this.buildOutgoingStream());
   }

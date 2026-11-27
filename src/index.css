@@ -1120,3 +1120,45 @@ html[data-mode='LIGHT'] * {
 }
 .family-feed-readable .card-crochet .liquid-chat-input { font-weight: 500; }
 .family-feed-readable .card-crochet .liquid-chat-input::placeholder { font-weight: 500; }
+
+/* Refined heirloom album styling, scoped to the family wall. */
+.family-feed-readable .card-crochet {
+  background: linear-gradient(145deg,#fffdf7,#faf1df);
+  border: 1px solid #cdb478;
+  border-radius: 24px;
+  box-shadow: inset 0 0 0 4px #fffaf0, inset 0 0 0 5px #dfc999, 0 5px 14px #30251326;
+}
+.family-feed-readable .crochet-parchment {
+  background: linear-gradient(135deg,#fffdf7,#f6e9cf);
+  border: 1px solid #d6bb80;
+}
+.family-feed-readable :is(h2,h3,.font-editorial,.font-crochet-script) {
+  color: #174b35;
+  letter-spacing: .015em;
+  text-shadow: 0 1px 0 #fff,0 2px 1px #a58d5b45;
+}
+.family-feed-readable .card-crochet p.whitespace-pre-wrap {
+  color: #352e25;
+  font-weight: 600;
+  line-height: 1.75;
+  letter-spacing: .005em;
+}
+.family-feed-readable .card-crochet .liquid-chat-input {
+  border: 1px solid #d6bb80;
+  box-shadow: inset 0 2px 5px #6a4e1910;
+}
+.family-feed-readable .crochet-green-3d {
+  background: linear-gradient(155deg,#287451,#174b35);
+  border: 1px solid #d6bb80;
+  box-shadow: inset 0 1px 0 #ffffff40,0 3px 5px #173d3029;
+  color: #fffdf7;
+}
+.family-feed-readable .crochet-gold-3d {
+  background: linear-gradient(155deg,#ffe6a0,#e7b94f);
+  color: #174b35;
+  border: 1px solid #b58b38;
+}
+.family-feed-readable .card-crochet :focus-visible {
+  outline: 2px solid #226b47;
+  outline-offset: 3px;
+}

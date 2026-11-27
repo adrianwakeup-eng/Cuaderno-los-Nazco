@@ -238,7 +238,7 @@ export const AppShell: React.FC<{ children: React.ReactNode }> = ({ children }) 
   };
 
   return (
-    <div className="relative min-h-[100dvh] pb-[92px] lg:pb-10">
+    <div className="family-app-shell relative min-h-[100dvh] pb-[92px] lg:pb-10">
       <OfflineNoticeBar isOffline={isOffline} />
 
       {/* Top Tropical Foliage & Warm Fairy Lights Canopy */}

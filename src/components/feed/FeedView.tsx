@@ -60,7 +60,7 @@ export const FeedView: React.FC = () => {
 
   return (
     <div
-      className="space-y-4"
+      className="family-feed-readable space-y-4"
       onTouchStart={(e) => {
         if (window.scrollY <= 4) {
           pullStartY.current = e.touches[0].clientY;

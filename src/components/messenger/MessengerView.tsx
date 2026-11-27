@@ -817,7 +817,7 @@ export const MessengerView: React.FC = () => {
                   </div>
                 )}
 
-                <div className="flex items-center gap-1 sm:gap-1.5">
+                <div className="mobile-chat-composer flex items-center gap-1 sm:gap-1.5">
                   <input
                     ref={cameraInputRef}
                     type="file"

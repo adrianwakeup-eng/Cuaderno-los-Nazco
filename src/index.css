@@ -1080,3 +1080,24 @@ html[data-mode='LIGHT'] * {
 @media (hover: none) {
   html[data-mode='IMMERSIVE_3D'][data-effects3d='on'] :is(.card-warm,.card-crochet,.crochet-card):hover { transform: none; }
 }
+
+
+/* Family wall: opaque cotton reading surfaces, preserving decorative gold stitching. */
+.family-feed-readable :is(.card-crochet,.card-warm,.crochet-card,.crochet-parchment) {
+  background-color: #fffaf0;
+  background-image: linear-gradient(145deg,#fffdf8,#f8efdf);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  color: #24352a;
+}
+.family-feed-readable :is(.text-espresso-600,.text-espresso-700,.text-espresso-800,.text-espresso-900) { color: #40372d; }
+.family-feed-readable :is(.text-forest-700,.text-forest-800,.text-forest-900) { color: #164d32; }
+.family-feed-readable .card-crochet .liquid-chat-input {
+  background: #fffdf8;
+  color: #24352a;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+.family-feed-readable .card-crochet .liquid-chat-input::placeholder { color: #655b4c; opacity: 1; }
+.family-feed-readable .card-crochet p.whitespace-pre-wrap { font-size: 1rem; line-height: 1.65; overflow-wrap: anywhere; }
+.family-feed-readable .crochet-green-3d { background-color: #164d32; background-image: linear-gradient(155deg,#246a43,#164d32); }

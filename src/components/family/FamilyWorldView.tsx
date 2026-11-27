@@ -616,7 +616,7 @@ export const FamilyWorldView: React.FC = () => {
     zoomRef.current = zoom;
   }, [zoom]);
   const [topDownMode, setTopDownMode] = useState(false);
-  const [webglReady, setWebglReady] = useState(true);
+  const [webglReady, setWebglReady] = useState(false);
 
   const camRef = useRef({
     yaw: 68, // Centers Americas right in the foreground
@@ -688,9 +688,9 @@ export const FamilyWorldView: React.FC = () => {
     if (!ovCtx) return;
 
     const gl = glCanvas.getContext('webgl', {
-      antialias: true,
+      antialias: false,
       alpha: false,
-      powerPreference: 'high-performance',
+      powerPreference: 'low-power',
     });
 
     let prog: WebGLProgram | null = null;
@@ -704,6 +704,13 @@ export const FamilyWorldView: React.FC = () => {
     let uSunAngle: WebGLUniformLocation | null = null;
     let uHasTex: WebGLUniformLocation | null = null;
     let texLoaded = false;
+    let disposed = false;
+    let contextLost = false;
+    const textures: WebGLTexture[] = [];
+    const images: HTMLImageElement[] = [];
+    const onLost = (event: Event) => { event.preventDefault(); contextLost = true; setWebglReady(false); };
+    glCanvas.addEventListener('webglcontextlost', onLost);
+    setWebglReady(false);
 
     const setupTexture = (
       glCtx: WebGLRenderingContext,
@@ -712,6 +719,7 @@ export const FamilyWorldView: React.FC = () => {
       onLoad?: () => void
     ) => {
       const tex = glCtx.createTexture();
+      if (tex) textures.push(tex);
       glCtx.activeTexture(glCtx.TEXTURE0 + unit);
       glCtx.bindTexture(glCtx.TEXTURE_2D, tex);
       glCtx.texImage2D(
@@ -725,19 +733,29 @@ export const FamilyWorldView: React.FC = () => {
         glCtx.UNSIGNED_BYTE,
         new Uint8Array([14, 58, 108, 140])
       );
-      glCtx.texParameteri(glCtx.TEXTURE_2D, glCtx.TEXTURE_WRAP_S, glCtx.REPEAT);
+      glCtx.texParameteri(glCtx.TEXTURE_2D, glCtx.TEXTURE_WRAP_S, glCtx.CLAMP_TO_EDGE);
       glCtx.texParameteri(glCtx.TEXTURE_2D, glCtx.TEXTURE_WRAP_T, glCtx.CLAMP_TO_EDGE);
       glCtx.texParameteri(glCtx.TEXTURE_2D, glCtx.TEXTURE_MIN_FILTER, glCtx.LINEAR);
       glCtx.texParameteri(glCtx.TEXTURE_2D, glCtx.TEXTURE_MAG_FILTER, glCtx.LINEAR);
 
       const img = new Image();
+      images.push(img);
       img.crossOrigin = 'anonymous';
       img.onload = () => {
+        if (disposed || contextLost) return;
         glCtx.activeTexture(glCtx.TEXTURE0 + unit);
         glCtx.bindTexture(glCtx.TEXTURE_2D, tex);
         glCtx.pixelStorei(glCtx.UNPACK_PREMULTIPLY_ALPHA_WEBGL, 0);
-        glCtx.texImage2D(glCtx.TEXTURE_2D, 0, glCtx.RGBA, glCtx.RGBA, glCtx.UNSIGNED_BYTE, img);
-        onLoad?.();
+        const limit = Math.min(glCtx.getParameter(glCtx.MAX_TEXTURE_SIZE), 2048);
+        const ratio = Math.min(1, limit / Math.max(img.width, img.height));
+        const scaled = document.createElement('canvas');
+        scaled.width = Math.max(1, Math.round(img.width * ratio));
+        scaled.height = Math.max(1, Math.round(img.height * ratio));
+        const ctx = scaled.getContext('2d');
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, scaled.width, scaled.height);
+        glCtx.texImage2D(glCtx.TEXTURE_2D, 0, glCtx.RGBA, glCtx.RGBA, glCtx.UNSIGNED_BYTE, scaled);
+        if (glCtx.getError() === glCtx.NO_ERROR) onLoad?.();
       };
       img.src = src;
       return tex;
@@ -779,9 +797,9 @@ export const FamilyWorldView: React.FC = () => {
             gl.uniform1i(gl.getUniformLocation(prog, 'uCloudTex'), 1);
             setupTexture(gl, 0, './textures/earth-day.webp', () => {
               texLoaded = true;
+              setWebglReady(true);
             });
             setupTexture(gl, 1, './textures/earth-clouds.webp');
-            setWebglReady(true);
           } else {
             prog = null;
             setWebglReady(false);
@@ -795,9 +813,12 @@ export const FamilyWorldView: React.FC = () => {
     let rafId = 0;
     const startMs = performance.now();
 
+    let lastFrame = -Infinity;
     const render = (nowMs: number) => {
+      if (document.hidden || nowMs - lastFrame < 32) { rafId = window.requestAnimationFrame(render); return; }
+      lastFrame = nowMs;
       const elapsedSec = (nowMs - startMs) * 0.001;
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.25);
       const rect = ovCanvas.getBoundingClientRect();
       const w = Math.max(1, rect.width);
       const h = Math.max(1, rect.height);
@@ -842,7 +863,7 @@ export const FamilyWorldView: React.FC = () => {
       const sunAngle = animActive ? 0.55 + elapsedSec * ORBIT_SPEED : 0.95;
 
       // 1. Render Photorealistic WebGL Flat Earth + Surrounding Ocean + Orbiting Sun & Moon
-      if (gl && prog) {
+      if (gl && prog && !contextLost && texLoaded) {
         gl.viewport(0, 0, targetW, targetH);
         gl.uniform2f(uRes, targetW, targetH);
         gl.uniform1f(uYaw, (cam.yaw * Math.PI) / 180);
@@ -860,7 +881,7 @@ export const FamilyWorldView: React.FC = () => {
       ovCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ovCtx.clearRect(0, 0, w, h);
 
-      if (gl && prog) {
+      if (gl && prog && !contextLost && texLoaded) {
         const time = animActive ? elapsedSec : 0;
         for (const animal of MARINE_LIFE) {
           const whale = animal.kind === 'whale';
@@ -893,6 +914,16 @@ export const FamilyWorldView: React.FC = () => {
         }
       }
 
+      if (!texLoaded || contextLost || !prog) {
+        const radius = Math.min(w,h)*0.32;
+        ovCtx.save();
+        ovCtx.translate(w/2,h/2);
+        ovCtx.scale(1,0.76);
+        ovCtx.beginPath(); ovCtx.arc(0,0,radius,0,Math.PI*2);
+        ovCtx.fillStyle='rgba(36,101,139,.12)'; ovCtx.fill();
+        ovCtx.strokeStyle='#d9bc68'; ovCtx.lineWidth=2; ovCtx.stroke();
+        ovCtx.restore();
+      }
       // Draw graceful elevated 3D orbital track ring for the Sun & Moon above the Flat Earth
       const ringSteps = 72;
       ovCtx.save();
@@ -1064,7 +1095,13 @@ export const FamilyWorldView: React.FC = () => {
     };
 
     rafId = window.requestAnimationFrame(render);
-    return () => window.cancelAnimationFrame(rafId);
+    return () => {
+      disposed = true;
+      window.cancelAnimationFrame(rafId);
+      glCanvas.removeEventListener('webglcontextlost', onLost);
+      images.forEach(img => { img.onload = null; });
+      if (gl && !contextLost) { textures.forEach(tex => gl.deleteTexture(tex)); if (prog) gl.deleteProgram(prog); }
+    };
   }, [memberGeos, prefs.animationsEnabled, prefs.mode]);
 
   if (!currentUser) return null;
@@ -1197,7 +1234,8 @@ export const FamilyWorldView: React.FC = () => {
             }}
           >
             {/* Layer 1: GPU WebGL Flat Earth Disc, Animated Ocean Backdrop & 3D Orbiting Sun + Moon */}
-            <canvas ref={glCanvasRef} className="absolute inset-0 h-full w-full" />
+            <canvas ref={glCanvasRef} className="absolute inset-0 h-full w-full" style={{ opacity: webglReady ? 1 : 0 }} />
+            {!webglReady && <img src="./textures/earth-day.webp" alt="Mapa mundial de respaldo" className="pointer-events-none absolute inset-0 m-auto h-auto max-h-full w-full object-contain opacity-80" /> }
 
             {/* Layer 2: 3D Orbital Halo, Sun/Moon Light Beams, Elevated Golden Family Arcs & Beacons */}
             <canvas
@@ -1246,7 +1284,7 @@ export const FamilyWorldView: React.FC = () => {
             {/* Top-left Live 3D badge */}
             <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-solar-300/70 bg-[#071E38]/75 px-2.5 py-1 text-[10px] font-bold text-solar-200 backdrop-blur-md">
               <Sparkles className="h-3 w-3 text-solar-300" />
-              {webglReady ? '☀️ Sol y 🌙 Luna en órbita · Océano 3D' : 'Plano 3D Interactivo'}
+              {webglReady ? '☀️ Sol y 🌙 Luna en órbita · Océano 3D' : 'Vista ligera · cargando 3D'}
             </span>
 
             <span className="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-solar-300/70 bg-[#071E38]/78 px-3.5 py-1 text-[11px] font-semibold text-solar-100 shadow-md backdrop-blur-md">

@@ -19,7 +19,7 @@ export interface PushSenderAvatarInfo {
   avatarColor?: string;
 }
 
-const AVATAR_CACHE_STORAGE_KEY = 'nazco_push_avatar_cache_v1';
+const AVATAR_CACHE_STORAGE_KEY = 'nazco_push_avatar_cache_v2';
 const avatarMediaCache = new Map<string, string>();
 let livePushSubs: StoredPushSubscription[] = [];
 let livePushSubsReady = false;
@@ -123,7 +123,7 @@ async function renderCircularAvatarPng(
   sender: PushSenderAvatarInfo
 ): Promise<{ base64: string; sizeBytes: number } | null> {
   if (typeof document === 'undefined') return null;
-  const size = 192;
+  const size = 96;
   const canvas = document.createElement('canvas');
   canvas.width = size;
   canvas.height = size;
@@ -133,7 +133,7 @@ async function renderCircularAvatarPng(
   ctx.clearRect(0, 0, size, size);
   const cx = size / 2;
   const cy = size / 2;
-  const radius = size / 2 - 4;
+  const radius = size / 2 - 2;
 
   // Clip strictly to a circle so outside corners remain 100% transparent
   ctx.save();
@@ -164,7 +164,7 @@ async function renderCircularAvatarPng(
     ctx.fillStyle = bg;
     ctx.fillRect(0, 0, size, size);
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = '700 72px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
+    ctx.font = '700 36px system-ui, -apple-system, BlinkMacSystemFont, sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(getInitials(sender.name), cx, cy + 3);
@@ -175,7 +175,7 @@ async function renderCircularAvatarPng(
   ctx.beginPath();
   ctx.arc(cx, cy, radius - 1.5, 0, Math.PI * 2);
   ctx.strokeStyle = 'rgba(255, 250, 238, 0.92)';
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 1.5;
   ctx.stroke();
 
   const dataUrl = canvas.toDataURL('image/png');
@@ -202,7 +202,7 @@ export async function ensureSenderCircularAvatarMediaId(
   try {
     await ensureFirebaseSession();
     const safeMemberId = sender.id.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 56) || 'member';
-    const contentHash = hashStringPair(fingerprint);
+    const contentHash = hashStringPair('96px-v2|' + fingerprint);
     const mediaId = `av_${safeMemberId}_${contentHash}`.slice(0, 115);
 
     // Pure read first: media docs are immutable (allow update: if false)

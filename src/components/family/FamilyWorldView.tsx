@@ -141,16 +141,16 @@ const outlines: {color:string; points:number[][]}[] = [
 {color:'#d88e77',points:[[-12,130],[-15,145],[-28,153],[-39,145],[-35,116],[-22,114]]},
 {color:'#93ba65',points:[[6,95],[-6,105],[-8,120],[-3,140],[4,125],[7,110]]}
 ];
-function xy(lat:number,lon:number){return [(lon+180)/360*360,(90-lat)/180*180];}
+function xy(lat:number,lon:number){return [(lon+170)*1.15,(80-lat)*1.4];}
 export const FamilyWorldView: React.FC = () => {
  const {snapshot,currentUser,openChatWithMember,openProfile,startCall}=useFamilyApp();
  const {prefs,triggerFeedback}=useAppearance();
  const [selectedMemberId,setSelectedMemberId]=useState<string|null>(null);
  const [zoom,setZoom]=useState(1);
- const [center,setCenter]=useState([180,90]);
+ const [center,setCenter]=useState([100,90]);
  const drag=useRef<{x:number;y:number}|null>(null);
  const activeMembers=useMemo(()=>snapshot.members.filter(m=>m.status==='ACTIVE'&&m.role!=='ADMIN'),[snapshot.members]);
- const memberGeos=useMemo(()=>activeMembers.flatMap(member=>{const geo=getSafeRegionCoords(member.location);return geo?[{member,geo}]:[]}),[activeMembers]);
+ const memberGeos=useMemo(()=>activeMembers.flatMap(member=>{const geo=getSafeRegionCoords(member.location);return geo&&geo.lon>=-170&&geo.lon<=-30?[{member,geo}]:[]}),[activeMembers]);
  const flyToLocation=(lat:number,lon:number)=>{setCenter(xy(lat,lon));setZoom(z=>Math.max(z,2));};
  if(!currentUser)return null;
  const selectedMember=activeMembers.find(m=>m.id===selectedMemberId)??activeMembers[0];
@@ -158,24 +158,23 @@ export const FamilyWorldView: React.FC = () => {
  const groups=new Map<string,typeof memberGeos>();
  memberGeos.forEach(item=>{const k=item.geo.lat.toFixed(1)+','+item.geo.lon.toFixed(1);groups.set(k,[...(groups.get(k)??[]),item]);});
  return (<div className="mx-auto max-w-6xl space-y-5"><div className="card-crochet overflow-hidden rounded-3xl p-4 sm:p-6">
- <span className="inline-flex items-center gap-2 rounded-full bg-forest-700 px-3 py-1 text-xs font-bold text-solar-300"><Sun className="h-4 w-4"/>Mapa crochet 2D · ligero</span>
+ <span className="inline-flex items-center gap-2 rounded-full bg-forest-700 px-3 py-1 text-xs font-bold text-solar-300"><Sun className="h-4 w-4"/>América · mapa crochet 2D</span>
  <h2 className="mt-2 font-editorial text-2xl font-bold text-forest-900">Nuestra familia conectada 🌎</h2>
  <p className="text-sm text-espresso-700">Toca un familiar o acerca el mapa. Ubicaciones aproximadas.</p>
  <div className="my-3 flex gap-2">
  <button aria-label="Alejar" className="liquid-glass-pill rounded-xl p-3" onClick={()=>setZoom(z=>Math.max(1,z/1.5))}><ZoomOut size={20}/></button>
  <button aria-label="Acercar" className="liquid-glass-pill rounded-xl p-3" onClick={()=>setZoom(z=>Math.min(8,z*1.5))}><ZoomIn size={20}/></button>
- <button aria-label="Restablecer" className="liquid-glass-pill rounded-xl p-3" onClick={()=>{setZoom(1);setCenter([180,90]);}}><RotateCcw size={20}/></button></div>
+ <button aria-label="Restablecer" className="liquid-glass-pill rounded-xl p-3" onClick={()=>{setZoom(1);setCenter([100,90]);}}><RotateCcw size={20}/></button></div>
  <div className="mt-4 grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
  <div className="relative lg:col-span-7">
- <svg viewBox={`${Math.max(0,Math.min(360-360/zoom,center[0]-180/zoom))} ${Math.max(0,Math.min(180-180/zoom,center[1]-90/zoom))} ${360/zoom} ${180/zoom}`} className="w-full rounded-2xl" style={{touchAction:zoom>1?'none':'pan-y',background:'#87c5d2'}} onPointerDown={e=>{if(zoom>1){drag.current={x:e.clientX,y:e.clientY};e.currentTarget.setPointerCapture(e.pointerId);}}} onPointerMove={e=>{if(!drag.current)return;const scale=360/zoom/e.currentTarget.getBoundingClientRect().width;const dx=(drag.current.x-e.clientX)*scale,dy=(drag.current.y-e.clientY)*scale;setCenter(c=>[Math.max(180/zoom,Math.min(360-180/zoom,c[0]+dx)),Math.max(90/zoom,Math.min(180-90/zoom,c[1]+dy))]);drag.current={x:e.clientX,y:e.clientY};}} onPointerUp={()=>{drag.current=null;}} onPointerCancel={()=>{drag.current=null;}}>
+ <svg viewBox={`${Math.max(0,Math.min(180-180/zoom,center[0]-90/zoom))} ${Math.max(0,Math.min(210-210/zoom,center[1]-105/zoom))} ${180/zoom} ${210/zoom}`} className="w-full rounded-2xl" style={{touchAction:zoom>1?'none':'pan-y',background:'#87c5d2',height:'60dvh',minHeight:320}} onPointerDown={e=>{if(zoom>1){drag.current={x:e.clientX,y:e.clientY};e.currentTarget.setPointerCapture(e.pointerId);}}} onPointerMove={e=>{if(!drag.current)return;const scale=210/zoom/e.currentTarget.getBoundingClientRect().height;const dx=(drag.current.x-e.clientX)*scale,dy=(drag.current.y-e.clientY)*scale;setCenter(c=>[Math.max(90/zoom,Math.min(180-90/zoom,c[0]+dx)),Math.max(105/zoom,Math.min(210-105/zoom,c[1]+dy))]);drag.current={x:e.clientX,y:e.clientY};}} onPointerUp={()=>{drag.current=null;}} onPointerCancel={()=>{drag.current=null;}}>
  <defs><pattern id="family-yarn" width="5" height="5" patternUnits="userSpaceOnUse"><path d="M0 0 Q5 2.5 0 5 M2.5 0 Q7.5 2.5 2.5 5" fill="none" stroke="#fff" strokeOpacity=".28" strokeWidth=".6"/></pattern></defs>
- <rect width="360" height="180" fill="#87c5d2"/>
- {outlines.map((o,i)=><polygon key={i} points={o.points.map(([lat,lon])=>xy(lat,lon).join(',')).join(' ')} fill={o.color} stroke="#fff1c8" strokeWidth="1.2" strokeLinejoin="round"/>)}
- <path d="M0 169 Q90 165 180 171 T360 169 V180 H0Z" fill="#eee8d6"/>
- <rect width="360" height="180" fill="url(#family-yarn)" pointerEvents="none"/>
- <g pointerEvents="none"><circle cx="30" cy="22" r="9" fill="#ffd45d" stroke="#d69c35" strokeDasharray="2 2" strokeWidth="2"/><path d="M324 13 A10 10 0 1 0 337 27 A9 9 0 0 1 324 13" fill="#fff2cc"/>{prefs.animationsEnabled&&<animateTransform attributeName="transform" type="translate" values="0 0;5 2;0 0" dur="12s" repeatCount="indefinite"/>}</g>
- {Array.from(groups.values()).map(items=>{const [x,y]=xy(items[0].geo.lat,items[0].geo.lon);const member=(items.find(i=>i.member.id===selectedMemberId)??items.find(i=>i.member.avatarUrl)??items[0]).member;return <g key={items[0].member.id} transform={`translate(${x} ${y}) scale(${1/Math.sqrt(zoom)})`} role="button" tabIndex={0} aria-label={items.map(i=>i.member.name).join(', ')} onPointerDown={e=>e.stopPropagation()} onClick={()=>{triggerFeedback('tap');const index=items.findIndex(i=>i.member.id===selectedMemberId);setSelectedMemberId(items[(index+1)%items.length].member.id);}} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();const index=items.findIndex(i=>i.member.id===selectedMemberId);setSelectedMemberId(items[(index+1)%items.length].member.id);}}} style={{cursor:'pointer'}}><circle r="9" fill="#225b43" stroke="#ffe29a" strokeWidth="2"/><foreignObject x="-8" y="-8" width="16" height="16" pointerEvents="none"><div style={{width:"100%",height:"100%",borderRadius:"50%",overflow:"hidden",display:"grid",placeItems:"center",background:"#225b43",color:"white",fontSize:8,fontWeight:700}}><span style={{gridArea:"1 / 1"}}>{member.name.charAt(0)}</span>{member.avatarUrl && <img key={member.avatarUrl} src={member.avatarUrl} alt="" loading="lazy" decoding="async" width={32} height={32} style={{gridArea:"1 / 1",width:"100%",height:"100%",objectFit:"cover"}} onError={e=>{e.currentTarget.style.display="none";}}/>}</div></foreignObject>{items.length>1&&<g pointerEvents="none"><circle cx="8" cy="8" r="4.5" fill="#225b43" stroke="#ffe29a" strokeWidth="1"/><text x="8" y="10" textAnchor="middle" fontSize="6" fill="white">{items.length}</text></g>}</g>;})}
- </svg><p className="mt-2 text-center text-xs text-espresso-700">Mapa ilustrado · toca los grupos para recorrer sus familiares</p></div>
+ <rect width="180" height="210" fill="#87c5d2"/>
+ {outlines.slice(0,3).map((o,i)=><polygon key={i} points={o.points.map(([lat,lon])=>xy(lat,lon).join(',')).join(' ')} fill={o.color} stroke="#fff1c8" strokeWidth="1.2" strokeLinejoin="round"/>)}
+ <ellipse cx={xy(21.5,-78.9)[0]} cy={xy(21.5,-78.9)[1]} rx="5" ry="1.6" fill="#93ba65" stroke="#fff1c8" strokeWidth=".6"/>
+ <rect width="180" height="210" fill="url(#family-yarn)" pointerEvents="none"/>
+ {Array.from(groups.values()).flatMap(items=>items.map(({member,geo},index)=>{const [x,y]=xy(geo.lat,geo.lon);const angle=index*2.399963;const distance=index===0?0:Math.ceil(Math.sqrt(index))*19/zoom;return <g key={member.id} transform={`translate(${x+Math.cos(angle)*distance} ${y+Math.sin(angle)*distance}) scale(${1/zoom})`} role="button" tabIndex={0} aria-label={member.name} onPointerDown={e=>e.stopPropagation()} onClick={()=>{triggerFeedback('tap');setSelectedMemberId(member.id);}} onKeyDown={e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setSelectedMemberId(member.id);}}} style={{cursor:'pointer'}}><circle r="9" fill="#225b43" stroke={selectedMemberId===member.id?'#fff':'#ffe29a'} strokeWidth="1.5"/><foreignObject x="-8" y="-8" width="16" height="16" pointerEvents="none"><div style={{width:'100%',height:'100%',borderRadius:'50%',overflow:'hidden',display:'grid',placeItems:'center',background:'#225b43',color:'white',fontSize:3.2,lineHeight:1.05,textAlign:'center',fontWeight:700}}><span style={{gridArea:'1 / 1',overflowWrap:'anywhere',padding:1}}>{member.name.split(' ')[0]}</span>{member.avatarUrl&&<img key={member.avatarUrl} src={member.avatarUrl} alt="" loading="lazy" decoding="async" style={{gridArea:'1 / 1',width:'100%',height:'100%',objectFit:'cover'}} onError={e=>{e.currentTarget.style.display='none';}}/>}</div></foreignObject></g>;}))}
+ </svg><p className="mt-2 text-center text-xs text-espresso-700">América · toca una burbuja para ver al familiar</p></div>
           {/* Authorized Selected Family Member Card */}
           {selectedMember && (
             <div className="crochet-parchment rounded-3xl p-5 lg:col-span-5">

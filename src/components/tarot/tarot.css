@@ -673,3 +673,18 @@
     max-width: min(42rem, calc((100dvh - 215px) * .8055));
   }
 }
+
+@media (max-width: 759px) {
+ .tarot-reading-room .tarot-heading { display:grid; grid-template-columns:1fr auto; align-items:center; gap:0 .4rem; padding:.15rem .65rem .4rem; }
+ .tarot-reading-room .tarot-back { order:-2; font-size:.75rem; }
+ .tarot-reading-room .tarot-sign-edit { order:-1; font-size:.75rem; }
+ .tarot-reading-room .tarot-heading h1, .tarot-reading-room .tarot-heading p { grid-column:1/-1; margin:0; }
+ .tarot-reading-room .tarot-heading h1 { font-size:1.35rem; }
+ .tarot-reading-room .tarot-heading p { font-size:.8rem; line-height:1.25; }
+ .tarot-reading-room .tarot-table { aspect-ratio:auto; height:clamp(190px, calc(100dvh - 280px), 480px); }
+ .tarot-reading-room .tarot-reader { object-position:center 30%; }
+ .tarot-reading-room .tarot-deck { width:min(78%, 240px); bottom:5%; gap:8%; z-index:5; }
+ .tarot-reading-room .tarot-card { animation:none; transform:rotateZ(var(--table-angle)); }
+ .tarot-reading-room .tarot-card-face { border-radius:.4rem; }
+ .tarot-reading-room .tarot-position { font-size:.65rem; }
+}

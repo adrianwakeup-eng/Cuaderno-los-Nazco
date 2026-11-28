@@ -481,7 +481,7 @@ void main() {
 
       // Luminous golden-crystalline outer rim separating the flat Earth from the infinite ocean
       float rimGold = smoothstep(0.982, 0.999, r);
-      surfaceCol = mix(surfaceCol, vec3(0.98, 0.86, 0.52), rimGold * 0.65);
+      // No decorative outer rim.
 
       col = surfaceCol;
     } else {
@@ -588,6 +588,8 @@ void main() {
 
   // Subtle filmic tone curve for luminous highlights without clipping
   col = col / (1.0 + col * 0.18);
+  float planeT = rd.y < -0.0012 ? -camPos.y / rd.y : -1.0;
+  if (planeT <= 0.0 || length((camPos + rd * planeT).xz) > 1.0) discard;
   gl_FragColor = vec4(clamp(col, 0.0, 1.0), 1.0);
 }
 `;
@@ -689,7 +691,7 @@ export const FamilyWorldView: React.FC = () => {
 
     const gl = glCanvas.getContext('webgl', {
       antialias: false,
-      alpha: false,
+      alpha: true,
       powerPreference: 'low-power',
     });
 
@@ -865,6 +867,8 @@ export const FamilyWorldView: React.FC = () => {
       // 1. Render Photorealistic WebGL Flat Earth + Surrounding Ocean + Orbiting Sun & Moon
       if (gl && prog && !contextLost && texLoaded) {
         gl.viewport(0, 0, targetW, targetH);
+        gl.clearColor(0, 0, 0, 0);
+        gl.clear(gl.COLOR_BUFFER_BIT);
         gl.uniform2f(uRes, targetW, targetH);
         gl.uniform1f(uYaw, (cam.yaw * Math.PI) / 180);
         gl.uniform1f(uPitch, (cam.pitch * Math.PI) / 180);
@@ -883,7 +887,7 @@ export const FamilyWorldView: React.FC = () => {
 
       if (gl && prog && !contextLost && texLoaded) {
         const time = animActive ? elapsedSec : 0;
-        for (const animal of MARINE_LIFE) {
+        for (const animal of MARINE_LIFE.slice(0, 0)) {
           const whale = animal.kind === 'whale';
           const angle = animal.phase + time * animal.speed;
           const stroke = time * (whale ? 2.1 : 4.2) + animal.phase;
@@ -921,7 +925,7 @@ export const FamilyWorldView: React.FC = () => {
         ovCtx.scale(1,0.76);
         ovCtx.beginPath(); ovCtx.arc(0,0,radius,0,Math.PI*2);
         ovCtx.fillStyle='rgba(36,101,139,.12)'; ovCtx.fill();
-        ovCtx.strokeStyle='#d9bc68'; ovCtx.lineWidth=2; ovCtx.stroke();
+        
         ovCtx.restore();
       }
       // Draw graceful elevated 3D orbital track ring for the Sun & Moon above the Flat Earth
@@ -1134,7 +1138,7 @@ export const FamilyWorldView: React.FC = () => {
             </h2>
             <p className="mt-0.5 text-xs text-espresso-700 sm:text-sm">
               Visualiza todos los continentes al mismo tiempo con el Sol y la Luna girando sobre el
-              plano. Busca delfines y ballenas alrededor. Arrastra para girar y toca a un familiar.
+              plano. Arrastra para girar y toca a un familiar.
             </p>
           </div>
 
@@ -1209,7 +1213,7 @@ export const FamilyWorldView: React.FC = () => {
         <div className="mt-4 grid grid-cols-1 items-center gap-5 lg:grid-cols-12">
           {/* Interactive Photorealistic WebGL Flat Earth Disc + Ocean + Orbiting Sun & Moon */}
           <div
-            className="relative h-[360px] w-full cursor-grab touch-none overflow-hidden rounded-3xl border border-solar-300/80 bg-[#05203E] shadow-[0_20px_50px_-14px_rgba(4,24,48,0.72)] active:cursor-grabbing sm:h-[430px] lg:col-span-7"
+            className="relative h-[360px] w-full cursor-grab touch-none overflow-hidden bg-transparent active:cursor-grabbing sm:h-[430px] lg:col-span-7"
             onPointerDown={(e) => {
               camRef.current.targetYaw = null;
               camRef.current.targetPitch = null;
@@ -1284,7 +1288,7 @@ export const FamilyWorldView: React.FC = () => {
             {/* Top-left Live 3D badge */}
             <span className="pointer-events-none absolute left-3 top-3 inline-flex items-center gap-1.5 rounded-full border border-solar-300/70 bg-[#071E38]/75 px-2.5 py-1 text-[10px] font-bold text-solar-200 backdrop-blur-md">
               <Sparkles className="h-3 w-3 text-solar-300" />
-              {webglReady ? '☀️ Sol y 🌙 Luna en órbita · Océano 3D' : 'Vista ligera · cargando 3D'}
+              {webglReady ? 'Tierra 3D interactiva' : 'Vista ligera · cargando 3D'}
             </span>
 
             <span className="pointer-events-none absolute bottom-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full border border-solar-300/70 bg-[#071E38]/78 px-3.5 py-1 text-[11px] font-semibold text-solar-100 shadow-md backdrop-blur-md">

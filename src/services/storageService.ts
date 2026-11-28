@@ -261,8 +261,9 @@ export async function prepareAndStoreAttachment(
   }
 ): Promise<MediaAttachment> {
   if (options.kind === 'IMAGE' && file instanceof File) {
-    file = await editPhoto(file);
-    options = { ...options, fileName: file.name, mimeType: file.type };
+    const editedFile = await editPhoto(file);
+    file = editedFile;
+    options = { ...options, fileName: editedFile.name, mimeType: editedFile.type };
   }
   let finalBlob: Blob = file;
   let finalMime = options.mimeType || file.type || 'application/octet-stream';

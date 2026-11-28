@@ -1,3 +1,4 @@
+import { editPhoto } from './photoEditor';
 import type { MediaAttachment, MediaKind, StorageUsageSummary } from '../types';
 
 const DB_NAME = 'CuadernoLosNazcoMediaDB';
@@ -259,6 +260,10 @@ export async function prepareAndStoreAttachment(
     autoCompressImages: boolean;
   }
 ): Promise<MediaAttachment> {
+  if (options.kind === 'IMAGE' && file instanceof File) {
+    file = await editPhoto(file);
+    options = { ...options, fileName: file.name, mimeType: file.type };
+  }
   let finalBlob: Blob = file;
   let finalMime = options.mimeType || file.type || 'application/octet-stream';
 

@@ -1027,6 +1027,14 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   );
 
   // --- Feed Actions (Cloud Real-Time Synced) ---
+  const pushFamilyActivity = useCallback((title: string, body: string, targets?: string[]) => {
+    if (!currentUser) return;
+    void dispatchPushNotification({
+      targetMemberIds: targets ?? snapshotRef.current.members.filter(m => m.status === 'ACTIVE').map(m => m.id),
+      excludeMemberId: currentUser.id, title, body, kind: 'TEST',
+    });
+  }, [currentUser]);
+
   const createPost = useCallback(
     (input: {
       text: string;
@@ -1061,6 +1069,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       void firebaseSyncService
         .savePost(post)
         .then(() => {
+          pushFamilyActivity(post.category === 'ANNOUNCEMENT' ? '📢 Anuncio familiar' : '🌻 Nueva publicación', currentUser.name + ' compartió una novedad en el muro.');
           if (hasVideo) {
             notify('¡Video sincronizado en la nube! Ya se puede reproducir en todos los teléfonos 🎬✨', 'success');
           }
@@ -1077,13 +1086,17 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         'success'
       );
     },
-    [currentUser, commitSnapshot, triggerJoyBurst, notify]
+    [currentUser, commitSnapshot, triggerJoyBurst, notify, pushFamilyActivity]
   );
 
   const toggleReaction = useCallback(
     (postId: string, emoji: ReactionKey) => {
       if (!currentUser) return;
       let added = false;
+      const original = snapshotRef.current.posts.find(p => p.id === postId);
+      if (original && !(original.reactions[emoji] ?? []).includes(currentUser.id)) {
+        pushFamilyActivity('💛 Nueva reacción', currentUser.name + ' reaccionó a tu publicación.', [original.authorId]);
+      }
       commitSnapshot((prev) => ({
         ...prev,
         posts: prev.posts.map((post) => {
@@ -1106,7 +1119,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }));
       if (added) triggerJoyBurst(emoji, 6);
     },
-    [currentUser, commitSnapshot, triggerJoyBurst]
+    [currentUser, commitSnapshot, triggerJoyBurst, pushFamilyActivity]
   );
 
   const addComment = useCallback(
@@ -1123,6 +1136,8 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
         stickerId,
         createdAt: new Date().toISOString(),
       };
+      const original = snapshotRef.current.posts.find(p => p.id === postId);
+      if (original) pushFamilyActivity('💬 Nuevo comentario', currentUser.name + ' comentó tu publicación.', [original.authorId]);
       commitSnapshot((prev) => ({
         ...prev,
         posts: prev.posts.map((post) => {
@@ -1134,7 +1149,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
       }));
       if (stickerId) triggerJoyBurst('✨', 4);
     },
-    [currentUser, commitSnapshot, triggerJoyBurst]
+    [currentUser, commitSnapshot, triggerJoyBurst, pushFamilyActivity]
   );
 
   const deleteComment = useCallback(
@@ -1240,8 +1255,8 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   // --- Stories & Albums Cloud Publishing ---
   const publishCloudStory = useCallback((story: FamilyStory) => {
     setCloudStories((prev) => [story, ...prev.filter((s) => s.id !== story.id)]);
-    void firebaseSyncService.saveStory(story).catch(() => {});
-  }, []);
+    void firebaseSyncService.saveStory(story).then(() => pushFamilyActivity('✨ Nueva historia', 'Un familiar compartió una historia.')).catch(() => {});
+  }, [pushFamilyActivity]);
 
   const publishCloudAlbumPhoto = useCallback((photo: AlbumPhotoItem) => {
     setCloudAlbumPhotos((prev) => [photo, ...prev.filter((p) => p.id !== photo.id)]);

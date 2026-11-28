@@ -157,7 +157,7 @@ export const FamilyWorldView: React.FC = () => {
  const selectedGeo=selectedMember?getSafeRegionCoords(selectedMember.location):null;
  const groups=new Map<string,typeof memberGeos>();
  memberGeos.forEach(item=>{const k=item.geo.lat.toFixed(1)+','+item.geo.lon.toFixed(1);groups.set(k,[...(groups.get(k)??[]),item]);});
- return <div className="mx-auto max-w-6xl space-y-5"><div className="card-crochet overflow-hidden rounded-3xl p-4 sm:p-6">
+ return (<div className="mx-auto max-w-6xl space-y-5"><div className="card-crochet overflow-hidden rounded-3xl p-4 sm:p-6">
  <span className="inline-flex items-center gap-2 rounded-full bg-forest-700 px-3 py-1 text-xs font-bold text-solar-300"><Sun className="h-4 w-4"/>Mapa crochet 2D · ligero</span>
  <h2 className="mt-2 font-editorial text-2xl font-bold text-forest-900">Nuestra familia conectada 🌎</h2>
  <p className="text-sm text-espresso-700">Toca un familiar o acerca el mapa. Ubicaciones aproximadas.</p>

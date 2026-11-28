@@ -1032,6 +1032,7 @@ export const FamilyAppProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     void dispatchPushNotification({
       targetMemberIds: targets ?? snapshotRef.current.members.filter(m => m.status === 'ACTIVE').map(m => m.id),
       excludeMemberId: currentUser.id, title, body, kind: 'TEST',
+      sender: { id: currentUser.id, name: currentUser.name, avatarUrl: currentUser.avatarUrl, avatarColor: currentUser.avatarColor },
     });
   }, [currentUser]);
 

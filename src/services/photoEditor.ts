@@ -69,6 +69,32 @@ async function openEditor(file: File): Promise<File> {
     button('Usar original',()=>finish(file));
     const save=button('Guardar edición',()=>{save.disabled=true;canvas.toBlob(blob=>{if(blob)finish(new File([blob],file.name.replace(/\.[^.]+$/,'')+'.jpg',{type:'image/jpeg'}));else save.disabled=false;},'image/jpeg',.86);});
     dialog.oncancel=e=>{e.preventDefault();finish(file);};
-    dialog.append(heading,canvas,controls);document.body.append(dialog);render();dialog.showModal();
+    const items = Array.from(controls.children) as HTMLElement[];
+    const style = document.createElement('style');
+    style.textContent = '.nazco-editor{background:#123b2e!important;color:#fff8e7!important;padding:0!important;border:1px solid #b99a56!important;box-shadow:0 20px 80px #0008;max-height:96dvh!important;width:min(100%,720px)!important}.nazco-editor::backdrop{background:#081a14bb}.nazco-editor button{background:#254f40!important;color:#fff8e7!important;border:1px solid #b99a5666!important;font-size:13px!important;min-height:44px!important}.nazco-editor button[data-active="true"]{background:#d6bb80!important;color:#173a2c!important}.nazco-editor input{accent-color:#d6bb80;color:#fff8e7!important;background:#173b2e!important}.nazco-editor label{font-size:13px}.nazco-editor .editor-tabs{display:flex;overflow-x:auto;gap:5px;padding:8px 12px;border-top:1px solid #b99a5655}.nazco-editor .editor-tabs button{flex:1 0 62px;white-space:pre-line;line-height:1.4}.nazco-editor .editor-panel{min-height:90px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px}.nazco-editor .editor-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px}.nazco-editor .editor-save{background:#d6bb80!important;color:#173a2c!important}.nazco-editor canvas{max-height:52dvh!important;max-width:100%!important}.nazco-editor .editor-stage{background:#081e17;padding:10px;display:grid;place-items:center;min-height:180px}.nazco-editor .editor-history{display:flex;justify-content:center;gap:8px;padding:8px}';
+    dialog.className='nazco-editor';
+    const header=document.createElement('div');header.className='editor-header';
+    heading.textContent='Editar foto';heading.style.cssText='font-size:18px;font-weight:700;margin:0';
+    const original=items.find(x=>x.textContent==='Usar original')!;
+    original.textContent='✕ Original';
+    save.textContent='✓ Listo';save.className='editor-save';
+    header.append(original,heading,save);
+    const stage=document.createElement('div');stage.className='editor-stage';stage.append(canvas);
+    const tabs=document.createElement('div');tabs.className='editor-tabs';
+    const panel=document.createElement('div');panel.className='editor-panel';
+    const historyBar=document.createElement('div');historyBar.className='editor-history';
+    for(const name of ['Deshacer','Rehacer','Restaurar']){const el=items.find(x=>x.textContent===name);if(el)historyBar.append(el);}
+    const groups=[
+      {name:'✂\\nRecorte',elements:items.slice(0,7).concat(items.filter(x=>x.textContent?.startsWith('Zoom')))},
+      {name:'◐\\nFiltros',elements:items.slice(7,11)},
+      {name:'☀\\nAjustes',elements:items.filter(x=>['Brillo','Contraste','Saturación'].some(n=>x.textContent?.startsWith(n)))},
+      {name:'Aa\\nTexto',elements:[caption,color]},
+      {name:'♡\\nStickers',elements:items.filter(x=>['💚','🌻','🎂','🧶','✨','❤️'].includes(x.textContent||''))},
+      {name:'✎\\nDibujo',elements:[drawButton,items.find(x=>x.textContent==='Borrar dibujo')!,color]},
+      {name:'▣\\nMarco',elements:items.filter(x=>x.textContent==='Marco dorado')}
+    ];
+    const selectTab=(index:number)=>{pen=false;drawButton.textContent='Dibujar';panel.replaceChildren(...groups[index].elements.filter(Boolean));Array.from(tabs.children).forEach((el,i)=>(el as HTMLElement).dataset.active=String(i===index));};
+    groups.forEach((group,i)=>{const b=document.createElement('button');b.type='button';b.textContent=group.name;b.onclick=()=>selectTab(i);tabs.append(b);});
+    dialog.append(style,header,stage,historyBar,tabs,panel);document.body.append(dialog);selectTab(0);render();dialog.showModal();
   });
 }
